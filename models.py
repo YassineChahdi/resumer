@@ -1,12 +1,35 @@
-from __future__ import annotations
-
-
 class Resume:
     def __init__(self, resume: dict):
         self.experience = [Experience(item) for item in resume["experience"]]
         self.projects = [Project(item) for item in resume["projects"]]
         self.techs = [Tech(item) for item in resume["technologies"]]
         self.languages = [Language(item) for item in resume["languages"]]
+
+    def __str__(self) -> str:
+        sections: list[str] = []
+        if self.experience:
+            lines = ["Experience"]
+            for exp in self.experience:
+                header = f"- {exp.title} @ {exp.employer}"
+                if exp.duration:
+                    header += f" ({exp.duration})"
+                lines.append(header)
+                lines.extend(f"  - {bullet.text}" for bullet in exp.bullets)
+            sections.append("\n".join(lines))
+
+        if self.projects:
+            lines = ["Projects"]
+            for project in self.projects:
+                suffix = f" [{', '.join(project.languages)}]" if project.languages else ""
+                lines.append(f"- {project.title}{suffix}")
+                lines.extend(f"  - {bullet.text}" for bullet in project.bullets)
+            sections.append("\n".join(lines))
+
+        if self.techs:
+            sections.append("Technologies\n" + ", ".join(getattr(item, "text", str(item)) for item in self.techs))
+        if self.languages:
+            sections.append("Languages\n" + ", ".join(getattr(item, "text", str(item)) for item in self.languages))
+        return "\n\n".join(sections)
 
     def to_dict(self) -> dict:
         return {
@@ -50,9 +73,9 @@ class Project:
 
 
 class Tech:
-    def __init__(self, tech: dict):
-        self.text = tech["text"]
-        self.similarity = tech["similarity"]
+    def __init__(self, tech: str):
+        self.text = tech
+        self.similarity = None
 
     def to_dict(self) -> dict:
         return {
@@ -62,9 +85,9 @@ class Tech:
 
 
 class Language:
-    def __init__(self, language: dict):
-        self.text = language["text"]
-        self.similarity = language["similarity"]
+    def __init__(self, language: str):
+        self.text = language
+        self.similarity = None
 
     def to_dict(self) -> dict:
         return {
@@ -76,8 +99,8 @@ class Language:
 class Bullet:
     def __init__(self, bullet: dict):
         self.text = bullet["text"]
-        self.impressiveness = bullet["impressiveness"]
-        self.similarity = bullet["similarity"]
+        self.impressiveness = bullet["impressiveness"] or 0.5
+        self.similarity = None
 
     def to_dict(self) -> dict:
         return {
