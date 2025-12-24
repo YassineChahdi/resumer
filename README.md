@@ -3,6 +3,7 @@
 ## Goal
 Build tailored resume from data, balancing impressiveness and similarity for given job descriptions.
 
+
 ## Organization
 
 ### Data
@@ -22,3 +23,16 @@ Select the best resume content for a given job description.
 
 #### Skills
 - Skill is scored as a function of its similarity to the job description.
+
+
+## Usage
+You can build a Resume object from a data json.
+
+```python
+from resumer import Resumer
+
+resumer = Resumer()
+resume = resumer.extract_resume_from_json("data/data.json")
+
+print(resume)
+```
