@@ -7,11 +7,14 @@ class Resume:
 
     def __str__(self) -> str:
         def metrics(obj, keys):
+            def fmt(value):
+                return f"{value:.2f}" if isinstance(value, float) else str(value)
+
             parts = []
             for key, label in keys:
                 value = getattr(obj, key, None)
                 if value is not None:
-                    parts.append(f"{label}={value}")
+                    parts.append(f"{label}={fmt(value)}")
             return f" ({', '.join(parts)})" if parts else ""
 
         sections = []
