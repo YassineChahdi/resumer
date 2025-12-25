@@ -26,13 +26,16 @@ Select the best resume content for a given job description.
 
 
 ## Usage
-You can build a Resume object from a data json.
+Get resume metrics for job description from data file.
 
 ```python
 from resumer import Resumer
 
-resumer = Resumer()
-resume = resumer.extract_resume_from_json("data/data.json")
+with open("path/to/job_description", 'r') as f:
+    job_desc = f.read()
 
-print(resume)
+resumer = Resumer(data_file_path="path/to/data_file")
+resumer.populate_resume_metrics(job_desc)
+
+print(resumer.resume)
 ```
