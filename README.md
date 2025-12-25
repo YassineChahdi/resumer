@@ -35,7 +35,7 @@ with open("path/to/job_description", 'r') as f:
     job_desc = f.read()
 
 resumer = Resumer(data_file_path="path/to/data_file")
-resumer.populate_resume_metrics(job_desc)
+resume = resumer.build_resume(job_desc)
 
-print(resumer.resume)
+print(resume)
 ```
