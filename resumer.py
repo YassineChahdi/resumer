@@ -11,15 +11,22 @@ class Resumer():
         self.bullets = self.exp_bullets + self.proj_bullets
         self.relevance_engine = Relevance()
 
-    def build_resume(self, job_description: str, exp_bullet_count=5, proj_bullet_count=3, tech_count=5, lang_count=5) -> Resume:
-        self.populate_resume_metrics(job_description)
-        self.trim_resume(exp_bullet_count, proj_bullet_count, tech_count, lang_count)
-        return self.resume
-
     def extract_resume_from_json(self, filepath: str) -> Resume:
         with open(filepath, 'r') as f:
             data = json.load(f)
         return Resume(data)
+
+    def export_to_json(self, output_path="./data/my_facts.json"):
+        with open(output_path, 'w') as f:
+            json.dump(self.resume.to_dict(), f)
+
+    def export_to_template(self, template_path="./data/jake.tex"):
+        pass
+
+    def build_resume(self, job_description: str, exp_bullet_count=5, proj_bullet_count=3, tech_count=5, lang_count=5) -> Resume:
+        self.populate_resume_metrics(job_description)
+        self.trim_resume(exp_bullet_count, proj_bullet_count, tech_count, lang_count)
+        return self.resume
 
     def trim_resume(self, exp_bullet_count=5, proj_bullet_count=3, tech_count=5, lang_count=5):
         for exp in self.resume.experience:
