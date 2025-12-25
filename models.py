@@ -6,29 +6,48 @@ class Resume:
         self.languages = [Language(item) for item in resume["languages"]]
 
     def __str__(self) -> str:
-        sections: list[str] = []
+        def metrics(obj, keys):
+            parts = []
+            for key, label in keys:
+                value = getattr(obj, key, None)
+                if value is not None:
+                    parts.append(f"{label}={value}")
+            return f" ({', '.join(parts)})" if parts else ""
+
+        sections = []
         if self.experience:
             lines = ["Experience"]
             for exp in self.experience:
                 header = f"- {exp.title} @ {exp.employer}"
                 if exp.duration:
                     header += f" ({exp.duration})"
+                header += metrics(exp, [("similarity", "sim"), ("impressiveness", "imp"), ("score", "score")])
                 lines.append(header)
-                lines.extend(f"  - {bullet.text}" for bullet in exp.bullets)
+                lines.extend(
+                    f"  - {bullet.text}{metrics(bullet, [('impressiveness', 'imp'), ('similarity', 'sim'), ('score', 'score')])}"
+                    for bullet in exp.bullets
+                )
             sections.append("\n".join(lines))
 
         if self.projects:
             lines = ["Projects"]
             for project in self.projects:
                 suffix = f" [{', '.join(project.languages)}]" if project.languages else ""
-                lines.append(f"- {project.title}{suffix}")
-                lines.extend(f"  - {bullet.text}" for bullet in project.bullets)
+                header = f"- {project.title}{suffix}"
+                header += metrics(project, [("similarity", "sim"), ("impressiveness", "imp"), ("score", "score")])
+                lines.append(header)
+                lines.extend(
+                    f"  - {bullet.text}{metrics(bullet, [('impressiveness', 'imp'), ('similarity', 'sim'), ('score', 'score')])}"
+                    for bullet in project.bullets
+                )
             sections.append("\n".join(lines))
 
         if self.techs:
-            sections.append("Technologies\n" + ", ".join(getattr(item, "text", str(item)) for item in self.techs))
+            tech_items = [f"{item.text}{metrics(item, [('score', 'score')])}" for item in self.techs]
+            sections.append("Technologies\n" + ", ".join(tech_items))
         if self.languages:
-            sections.append("Languages\n" + ", ".join(getattr(item, "text", str(item)) for item in self.languages))
+            language_items = [f"{item.text}{metrics(item, [('score', 'score')])}" for item in self.languages]
+            sections.append("Languages\n" + ", ".join(language_items))
         return "\n\n".join(sections)
 
     def to_dict(self) -> dict:
@@ -47,6 +66,9 @@ class Experience:
         self.location = experience["location"]
         self.duration = experience["duration"]
         self.bullets = [Bullet(bullet) for bullet in experience["bullets"]]
+        self.similarity = None
+        self.impressiveness = None
+        self.score = None
 
     def to_dict(self) -> dict:
         return {
@@ -55,6 +77,9 @@ class Experience:
             "location": self.location,
             "duration": self.duration,
             "bullets": [bullet.to_dict() for bullet in self.bullets],
+            "similarity": self.similarity,
+            "impressiveness": self.impressiveness,
+            "score": self.score,
         }
 
 
@@ -63,48 +88,56 @@ class Project:
         self.title = project["title"]
         self.languages = project["languages"]
         self.bullets = [Bullet(bullet) for bullet in project["bullets"]]
+        self.similarity = None
+        self.impressiveness = None
+        self.score = None
 
     def to_dict(self) -> dict:
         return {
             "title": self.title,
             "languages": self.languages,
             "bullets": [bullet.to_dict() for bullet in self.bullets],
+            "similarity": self.similarity,
+            "impressiveness": self.impressiveness,
+            "score": self.score,
         }
 
 
 class Tech:
     def __init__(self, tech: str):
         self.text = tech
-        self.similarity = None
+        self.score = None
 
     def to_dict(self) -> dict:
         return {
             "text": self.text,
-            "similarity": self.similarity,
+            "score": self.score,
         }
 
 
 class Language:
     def __init__(self, language: str):
         self.text = language
-        self.similarity = None
+        self.score = None
 
     def to_dict(self) -> dict:
         return {
             "text": self.text,
-            "similarity": self.similarity,
+            "score": self.score,
         }
 
 
 class Bullet:
     def __init__(self, bullet: dict):
-        self.text = bullet["text"]
-        self.impressiveness = bullet["impressiveness"] or 0.5
+        self.text = bullet.get("text")
+        self.impressiveness = bullet.get("impressiveness")
         self.similarity = None
+        self.score = None
 
     def to_dict(self) -> dict:
         return {
             "text": self.text,
             "impressiveness": self.impressiveness,
             "similarity": self.similarity,
+            "score": self.score,
         }
