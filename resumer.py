@@ -155,7 +155,7 @@ class Resumer:
         bullet_sims = self._get_bullet_similarities(bullets, job_description)
         self._set_bullet_similarities(bullets, bullet_sims)
         
-        bullet_scores = [bullet.calculate_score() for bullet in bullets]
+        bullet_scores = [bullet.calculate_score(sim_weight=0.4, imp_weight=0.6) for bullet in bullets]
         self._set_bullet_scores(bullets, bullet_scores)
 
         self._populate_experience_metrics(resume)
@@ -170,7 +170,7 @@ class Resumer:
         for experience in resume.experience:
             experience.similarity = experience.avg_similarity()
             experience.impressiveness = experience.avg_impressiveness()
-            experience.score = experience.calculate_score()
+            experience.score = experience.calculate_score(sim_weight=0.4, imp_weight=0.6)
             experience.sort_bullets_by_score()
         resume.sort_experience_by_score()
 
@@ -178,7 +178,7 @@ class Resumer:
         for project in resume.projects:
             project.similarity = project.avg_similarity()
             project.impressiveness = project.avg_impressiveness()
-            project.score = project.calculate_score()
+            project.score = project.calculate_score(sim_weight=0.4, imp_weight=0.6)
             project.sort_bullets_by_score()
         resume.sort_projects_by_score()
 

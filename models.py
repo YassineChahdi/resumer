@@ -155,8 +155,8 @@ class Experience:
         self.impressiveness = experience.get("impressiveness")
         self.score = experience.get("score")
 
-    def calculate_score(self) -> float:
-        return (self.similarity + self.impressiveness) / 2
+    def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
+        return self.similarity * sim_weight + self.impressiveness * imp_weight
 
     def avg_similarity(self) -> float:
         total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
@@ -191,8 +191,8 @@ class Project:
         self.impressiveness = project.get("impressiveness")
         self.score = project.get("score")
 
-    def calculate_score(self) -> float:
-        return (self.similarity + self.impressiveness) / 2
+    def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
+        return self.similarity * sim_weight + self.impressiveness * imp_weight
 
     def avg_similarity(self) -> float:
         total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
@@ -247,8 +247,8 @@ class Bullet:
         self.similarity = bullet.get("similarity")
         self.score = bullet.get("score")
 
-    def calculate_score(self) -> float:
-        return (self.similarity + self.impressiveness) / 2
+    def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
+        return self.similarity * sim_weight + self.impressiveness * imp_weight
 
     def to_dict(self) -> dict:
         return {
