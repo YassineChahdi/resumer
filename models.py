@@ -8,6 +8,32 @@ class Resume:
         self.techs = [Tech(item) for item in resume["technologies"]]
         self.languages = [Language(item) for item in resume["languages"]]
 
+    def all_bullets(self) -> list["Bullet"]:
+        exp_bullets = [bullet for exp in self.experience for bullet in exp.bullets]
+        proj_bullets = [bullet for project in self.projects for bullet in project.bullets]
+        return exp_bullets + proj_bullets
+
+    def all_keywords(self) -> list:
+        return self.languages + self.techs
+
+    def trim(self, exp_bullet_count: int, proj_bullet_count: int, tech_count: int, lang_count: int):
+        for exp in self.experience:
+            exp.bullets = exp.bullets[:exp_bullet_count]
+        for proj in self.projects:
+            proj.bullets = proj.bullets[:proj_bullet_count]
+        self.techs = self.techs[:tech_count]
+        self.languages = self.languages[:lang_count]
+
+    def sort_experience_by_score(self):
+        self.experience.sort(key=lambda exp: exp.score, reverse=True)
+
+    def sort_projects_by_score(self):
+        self.projects.sort(key=lambda proj: proj.score, reverse=True)
+
+    def sort_keywords_by_score(self):
+        self.techs.sort(key=lambda t: t.score, reverse=True)
+        self.languages.sort(key=lambda l: l.score, reverse=True)
+
     def __str__(self) -> str:
         def fmt(value):
             return f"{value:.2f}" if isinstance(value, float) else str(value)
@@ -129,6 +155,20 @@ class Experience:
         self.impressiveness = experience.get("impressiveness")
         self.score = experience.get("score")
 
+    def calculate_score(self) -> float:
+        return (self.similarity + self.impressiveness) / 2
+
+    def avg_similarity(self) -> float:
+        total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def avg_impressiveness(self) -> float:
+        total = sum(bullet.impressiveness if bullet.impressiveness else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def sort_bullets_by_score(self):
+        self.bullets.sort(key=lambda b: b.score, reverse=True)
+
     def to_dict(self) -> dict:
         return {
             "employer": self.employer,
@@ -150,6 +190,20 @@ class Project:
         self.similarity = project.get("similarity")
         self.impressiveness = project.get("impressiveness")
         self.score = project.get("score")
+
+    def calculate_score(self) -> float:
+        return (self.similarity + self.impressiveness) / 2
+
+    def avg_similarity(self) -> float:
+        total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def avg_impressiveness(self) -> float:
+        total = sum(bullet.impressiveness if bullet.impressiveness else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def sort_bullets_by_score(self):
+        self.bullets.sort(key=lambda b: b.score, reverse=True)
 
     def to_dict(self) -> dict:
         return {
@@ -192,6 +246,9 @@ class Bullet:
         self.impressiveness = bullet.get("impressiveness")
         self.similarity = bullet.get("similarity")
         self.score = bullet.get("score")
+
+    def calculate_score(self) -> float:
+        return (self.similarity + self.impressiveness) / 2
 
     def to_dict(self) -> dict:
         return {
