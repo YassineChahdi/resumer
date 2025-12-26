@@ -1,7 +1,5 @@
 # Resumer
-
-## Goal
-Build tailored resume from data, balancing impressiveness and similarity for given job descriptions.
+Build tailored resume from data, balancing impressiveness and similarity to given job descriptions.
 
 
 ## Organization
@@ -26,16 +24,24 @@ Select the best resume content for a given job description.
 
 
 ## Usage
-Get resume metrics for job description from data file.
+Build tailored resumes for different job descriptions.
 
 ```python
 from resumer import Resumer
 
-with open("path/to/job_description", 'r') as f:
-    job_desc = f.read()
+resumer = Resumer()
 
-resumer = Resumer(data_file_path="path/to/data_file")
-resume = resumer.build_resume(job_desc)
+# Tailor resume to machine learning type job
+with open("./data/job_desc_ML.txt", 'r') as f:
+    job_desc_ml = f.read()
 
-print(resume)
+resumer.build_resume(job_desc_ml)
+resumer.export_to_latex(output_path="./data/resume_ml.tex")
+
+# Tailor resume to software engineering type job
+with open("./data/job_desc_SWE.txt", 'r') as f:
+    job_desc_swe = f.read()
+
+resumer.build_resume(job_desc_swe)
+resumer.export_to_latex(output_path="./data/resume_swe.tex")
 ```
