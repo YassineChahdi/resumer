@@ -3,10 +3,16 @@ from sentence_transformers import SentenceTransformer
 
 class Relevance():
     def __init__(self, model_name="Qwen/Qwen3-Embedding-0.6B"):
-        self.model = SentenceTransformer(model_name)
+        try:
+            self.model = SentenceTransformer(model_name)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load embedding model '{model_name}': {e}")
         self._embedding_cache = {}
 
     def _get_embeddings(self, strings: list[str]) -> list:
+        if not strings:
+            return []
+        
         to_embed = [s for s in strings if s not in self._embedding_cache]
 
         if to_embed:
@@ -17,6 +23,11 @@ class Relevance():
         return [self._embedding_cache[s] for s in strings]
 
     def calculate_similarities(self, strings: list[str], target: str) -> list[float]:
+        if not strings:
+            return []
+        if not target:
+            return [0.5] * len(strings)  # Neutral scores if no job description
+        
         query_embeddings = self.model.encode(strings, prompt_name="query")
         document_embeddings = self.model.encode([target])
 

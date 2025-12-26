@@ -25,14 +25,14 @@ class Resume:
         self.languages = self.languages[:lang_count]
 
     def sort_experience_by_score(self):
-        self.experience.sort(key=lambda exp: exp.score, reverse=True)
+        self.experience.sort(key=lambda exp: exp.score if exp.score is not None else 0, reverse=True)
 
     def sort_projects_by_score(self):
-        self.projects.sort(key=lambda proj: proj.score, reverse=True)
+        self.projects.sort(key=lambda proj: proj.score if proj.score is not None else 0, reverse=True)
 
     def sort_keywords_by_score(self):
-        self.techs.sort(key=lambda t: t.score, reverse=True)
-        self.languages.sort(key=lambda l: l.score, reverse=True)
+        self.techs.sort(key=lambda t: t.score if t.score is not None else 0, reverse=True)
+        self.languages.sort(key=lambda l: l.score if l.score is not None else 0, reverse=True)
 
     def __str__(self) -> str:
         def fmt(value):
@@ -156,18 +156,24 @@ class Experience:
         self.score = experience.get("score")
 
     def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
-        return self.similarity * sim_weight + self.impressiveness * imp_weight
+        sim = self.similarity if self.similarity is not None else 0.5
+        imp = self.impressiveness if self.impressiveness is not None else 0.5
+        return sim * sim_weight + imp * imp_weight
 
     def avg_similarity(self) -> float:
+        if not self.bullets:
+            return 0.5
         total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
         return total / len(self.bullets)
 
     def avg_impressiveness(self) -> float:
+        if not self.bullets:
+            return 0.5
         total = sum(bullet.impressiveness if bullet.impressiveness else 0.5 for bullet in self.bullets)
         return total / len(self.bullets)
 
     def sort_bullets_by_score(self):
-        self.bullets.sort(key=lambda b: b.score, reverse=True)
+        self.bullets.sort(key=lambda b: b.score if b.score is not None else 0, reverse=True)
 
     def to_dict(self) -> dict:
         return {
@@ -192,18 +198,24 @@ class Project:
         self.score = project.get("score")
 
     def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
-        return self.similarity * sim_weight + self.impressiveness * imp_weight
+        sim = self.similarity if self.similarity is not None else 0.5
+        imp = self.impressiveness if self.impressiveness is not None else 0.5
+        return sim * sim_weight + imp * imp_weight
 
     def avg_similarity(self) -> float:
+        if not self.bullets:
+            return 0.5
         total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
         return total / len(self.bullets)
 
     def avg_impressiveness(self) -> float:
+        if not self.bullets:
+            return 0.5
         total = sum(bullet.impressiveness if bullet.impressiveness else 0.5 for bullet in self.bullets)
         return total / len(self.bullets)
 
     def sort_bullets_by_score(self):
-        self.bullets.sort(key=lambda b: b.score, reverse=True)
+        self.bullets.sort(key=lambda b: b.score if b.score is not None else 0, reverse=True)
 
     def to_dict(self) -> dict:
         return {
@@ -248,7 +260,9 @@ class Bullet:
         self.score = bullet.get("score")
 
     def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
-        return self.similarity * sim_weight + self.impressiveness * imp_weight
+        sim = self.similarity if self.similarity is not None else 0.5
+        imp = self.impressiveness if self.impressiveness is not None else 0.5
+        return sim * sim_weight + imp * imp_weight
 
     def to_dict(self) -> dict:
         return {
