@@ -3,6 +3,7 @@ import subprocess
 import tempfile
 import shutil
 import os
+import re
 from models import Resume, Bullet
 from relevance import Relevance
 
@@ -194,10 +195,11 @@ class Resumer:
             bullet.score = score
 
     def _get_keyword_scores(self, keywords: list, job_description: str) -> list[float]:
-        return [self._calculate_keyword_score(kw.text) for kw in keywords]
+        return [self._calculate_keyword_score(kw.text, job_description) for kw in keywords]
     
-    def _calculate_keyword_score(self, keyword: str) -> float:
-        return 1
+    def _calculate_keyword_score(self, keyword: str, job_description: str) -> float:
+        pattern = rf'\b{re.escape(keyword)}\b'
+        return 1.0 if re.search(pattern, job_description, re.IGNORECASE) else 0.0
 
     def _set_keyword_scores(self, keywords: list, scores: list[float]):
         for keyword, score in zip(keywords, scores):
