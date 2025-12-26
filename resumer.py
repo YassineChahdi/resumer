@@ -20,15 +20,108 @@ class Resumer():
         with open(output_path, 'w') as f:
             json.dump(self.resume.to_dict(), f)
 
-    def export_to_template(self, template_path="./data/jake.tex"):
-        pass
+    def export_to_latex(self, template_path="./data/jake_template.tex", output_path="./data/my_resume.tex"):
+        with open(template_path, 'r') as f:
+            content = f.read()
+        
+        content = content.replace("{{FULL_NAME}}", self._escape_latex(self.resume.full_name or ""))
+        content = content.replace("{{PHONE}}", self._escape_latex(self.resume.contacts.get("phone", "")))
+        content = content.replace("{{EMAIL}}", self.resume.contacts.get("email", ""))
+        content = content.replace("{{GITHUB}}", self.resume.contacts.get("github", ""))
+        content = content.replace("{{LINKEDIN}}", self.resume.contacts.get("linkedin", ""))
+        
+        content = content.replace("{{EDUCATION_ENTRIES}}", self._generate_education_latex())
+        content = content.replace("{{EXPERIENCE_ENTRIES}}", self._generate_experience_latex())
+        content = content.replace("{{PROJECT_ENTRIES}}", self._generate_projects_latex())
+        content = content.replace("{{LANGUAGES_LIST}}", self._generate_languages_list())
+        content = content.replace("{{TECHNOLOGIES_LIST}}", self._generate_technologies_list())
+        
+        with open(output_path, 'w') as f:
+            f.write(content)
+    
+    def _escape_latex(self, text: str) -> str:
+        if not text:
+            return ""
+        replacements = [
+            ('\\', r'\textbackslash{}'),
+            ('&', r'\&'),
+            ('%', r'\%'),
+            ('$', r'\$'),
+            ('#', r'\#'),
+            ('_', r'\_'),
+            ('{', r'\{'),
+            ('}', r'\}'),
+            ('~', r'\textasciitilde{}'),
+            ('^', r'\textasciicircum{}'),
+        ]
+        for char, escape in replacements:
+            text = text.replace(char, escape)
+        return text
+    
+    def _generate_education_latex(self) -> str:
+        entries = []
+        for edu in self.resume.education:
+            est_name = self._escape_latex(edu.est_name or "")
+            location = self._escape_latex(edu.location or "")
+            degree = self._escape_latex(edu.degree or "")
+            gpa_str = f", GPA: {edu.gpa}" if edu.gpa else ""
+            year = self._escape_latex(edu.year or "")
+            
+            entry = f"    \\resumeSubheading\n      {{{est_name}}}{{{location}}}\n      {{{degree}{gpa_str}}}{{{year}}}"
+            entries.append(entry)
+        return "\n".join(entries)
+    
+    def _generate_experience_latex(self) -> str:
+        entries = []
+        for exp in self.resume.experience:
+            employer = self._escape_latex(exp.employer or "")
+            location = self._escape_latex(exp.location or "")
+            title = self._escape_latex(exp.title or "")
+            duration = self._escape_latex(exp.duration or "")
+            
+            entry_lines = [
+                f"    \\resumeSubheading",
+                f"      {{{employer}}}{{{location}}}",
+                f"      {{{title}}}{{{duration}}}",
+                f"      \\resumeItemListStart",
+            ]
+            for bullet in exp.bullets:
+                bullet_text = self._escape_latex(bullet.text or "")
+                entry_lines.append(f"        \\resumeItem{{{bullet_text}}}")
+            entry_lines.append("      \\resumeItemListEnd")
+            entries.append("\n".join(entry_lines))
+        return "\n".join(entries)
+    
+    def _generate_projects_latex(self) -> str:
+        entries = []
+        for proj in self.resume.projects:
+            title = self._escape_latex(proj.title or "")
+            languages = ", ".join(self._escape_latex(lang) for lang in (proj.languages or []))
+            
+            entry_lines = [
+                f"    \\resumeProjectHeading",
+                f"        {{\\textbf{{{title}}} $|$ \\emph{{{languages}}}}}{{}}",
+                f"        \\resumeItemListStart",
+            ]
+            for bullet in proj.bullets:
+                bullet_text = self._escape_latex(bullet.text or "")
+                entry_lines.append(f"            \\resumeItem{{{bullet_text}}}")
+            entry_lines.append("        \\resumeItemListEnd")
+            entries.append("\n".join(entry_lines))
+        return "\n".join(entries)
+    
+    def _generate_languages_list(self) -> str:
+        return ", ".join(self._escape_latex(lang.text or "") for lang in self.resume.languages)
+    
+    def _generate_technologies_list(self) -> str:
+        return ", ".join(self._escape_latex(tech.text or "") for tech in self.resume.techs)
 
-    def build_resume(self, job_description: str, exp_bullet_count=5, proj_bullet_count=3, tech_count=5, lang_count=5) -> Resume:
+    def build_resume(self, job_description: str, exp_bullet_count=7, proj_bullet_count=5, tech_count=5, lang_count=5) -> Resume:
         self.populate_resume_metrics(job_description)
         self.trim_resume(exp_bullet_count, proj_bullet_count, tech_count, lang_count)
         return self.resume
 
-    def trim_resume(self, exp_bullet_count=5, proj_bullet_count=3, tech_count=5, lang_count=5):
+    def trim_resume(self, exp_bullet_count=7, proj_bullet_count=5, tech_count=5, lang_count=5):
         for exp in self.resume.experience:
             exp.bullets = exp.bullets[:exp_bullet_count]
         for proj in self.resume.projects:
@@ -116,12 +209,13 @@ class Resumer():
         self.resume.techs.sort(key=lambda t: t.score, reverse=True)
         self.resume.languages.sort(key=lambda l: l.score, reverse=True)
 
-    def calculate_keyword_score(self, keyword: str, job_description: str):
-        return float(keyword in job_description) # 0.0 if in job desc, else 1.0
+    def calculate_keyword_score(self, keyword: str):
+        #TODO
+        return 1
 
     def get_all_keyword_scores(self, job_description: str) -> list[float]:
         keywords = [lang.text for lang in self.resume.languages] + [tech.text for tech in self.resume.techs]
-        scores = [self.calculate_keyword_score(keyword, job_description) for keyword in keywords]
+        scores = [self.calculate_keyword_score(keyword) for keyword in keywords]
         return scores
     
     def set_all_keyword_scores(self, scores: list[float]):
