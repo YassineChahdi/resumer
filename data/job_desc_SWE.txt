@@ -1,0 +1,28 @@
+Title: Software Engineer
+Team: Core Platform
+Employment Type: Full-time
+
+Overview
+We are looking for a Software Engineer to build and maintain reliable, scalable backend systems. This role focuses on system design, APIs, data stores, and infrastructure rather than machine learning or model development.
+
+Responsibilities
+- Design, implement, and maintain backend services and APIs used by multiple products.
+- Build reliable data storage layers, including schema design, migrations, and performance tuning.
+- Improve system scalability, fault tolerance, and observability.
+- Write clean, well-tested code and participate in code reviews.
+- Collaborate with frontend engineers and product managers to define clear service contracts.
+- Implement authentication, authorization, and access control mechanisms.
+- Debug production issues and contribute to incident response and postmortems.
+- Improve developer tooling, CI/CD pipelines, and deployment workflows.
+
+Required Skills
+- Strong experience with at least one backend programming language (e.g., Java, Go, Python, C++).
+- Experience building REST or RPC-based services.
+- Solid understanding of databases (SQL or NoSQL) and data modeling.
+- Familiarity with containerization, CI/CD, and cloud infrastructure.
+- Experience writing unit, integration, and end-to-end tests.
+
+Nice to Have
+- Experience with distributed systems or high-traffic services.
+- Knowledge of frontend fundamentals or API client development.
+- Familiarity with performance profiling and capacity planning.

@@ -1,0 +1,28 @@
+Title: Machine Learning Engineer
+Team: Applied ML Platform
+Employment Type: Full-time
+
+Overview
+We are seeking a Machine Learning Engineer to design, train, evaluate, and deploy learning systems that operate at scale. This role is focused on model development, experimentation, and production ML pipelines rather than general application engineering.
+
+Responsibilities
+- Design and train machine learning models for prediction, classification, ranking, or generation tasks.
+- Build end-to-end ML pipelines covering data ingestion, feature engineering, training, evaluation, and deployment.
+- Experiment with model architectures, loss functions, and optimization strategies to improve performance metrics.
+- Perform offline and online evaluations using statistically sound methodologies.
+- Collaborate with data engineers to define datasets, labeling strategies, and data quality checks.
+- Monitor deployed models for performance drift, bias, and degradation over time.
+- Optimize inference latency and memory usage for production constraints.
+- Document model assumptions, limitations, and evaluation results for internal stakeholders.
+
+Required Skills
+- Strong experience with Python and machine learning frameworks (e.g., PyTorch, TensorFlow, JAX).
+- Solid understanding of supervised and unsupervised learning techniques.
+- Experience with feature engineering, model evaluation metrics, and error analysis.
+- Familiarity with experiment tracking, versioning, and reproducibility.
+- Experience deploying machine learning models into production systems.
+
+Nice to Have
+- Experience with large-scale or distributed model training.
+- Background in NLP, computer vision, or recommender systems.
+- Familiarity with model fairness, robustness, or interpretability techniques.

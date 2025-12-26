@@ -1,0 +1,258 @@
+{
+  "full_name": "Jason Doe",
+  "contacts": {
+    "phone": "514-343-9781",
+    "email": "jason.doe@example.com",
+    "github": "github.com/example",
+    "linkedin": "linkedin.com/in/example"
+  },
+  "education": [
+    {
+      "est_name": "State University",
+      "location": "Toronto, ON",
+      "degree": "B.Sc. Computer Science",
+      "gpa": 3.7,
+      "year": "Apr. 2027"
+    },
+    {
+      "est_name": "City College",
+      "location": "Toronto, ON",
+      "degree": "Diploma, Software Engineering",
+      "gpa": null,
+      "year": "Sep. 2021 -- May 2023"
+    }
+  ],
+  "experience": [
+    {
+      "employer": "BlueRiver Technologies",
+      "title": "Software Engineering Intern",
+      "location": "Toronto, ON",
+      "duration": "May 2025 - Aug. 2025",
+      "bullets": [
+        {
+          "text": "Built and shipped backend APIs for a workflow automation product, focusing on reliability and clear versioning.",
+          "impressiveness": 0.78
+        },
+        {
+          "text": "Implemented request validation, structured logging, and standardized error responses to improve debuggability.",
+          "impressiveness": 0.73
+        },
+        {
+          "text": "Designed data models and migrations for a Postgres datastore, adding indexes and constraints for correctness.",
+          "impressiveness": 0.8
+        },
+        {
+          "text": "Added background job processing for long-running tasks, improving responsiveness for end users.",
+          "impressiveness": 0.77
+        },
+        {
+          "text": "Introduced caching for frequently accessed endpoints and tuned pagination for large result sets.",
+          "impressiveness": 0.76
+        },
+        {
+          "text": "Built a small internal dashboard to monitor job throughput, retries, and failure reasons in production.",
+          "impressiveness": 0.74
+        },
+        {
+          "text": "Improved CI pipelines with linting, unit tests, and build artifacts, reducing broken merges.",
+          "impressiveness": 0.72
+        },
+        {
+          "text": "Wrote integration tests for key API flows and added contract checks for critical endpoints.",
+          "impressiveness": 0.79
+        },
+        {
+          "text": "Collaborated with frontend engineers to define stable API schemas and reduce breaking changes.",
+          "impressiveness": 0.7
+        },
+        {
+          "text": "Implemented role-based access control checks and audit trails for administrative actions.",
+          "impressiveness": 0.82
+        },
+        {
+          "text": "Tracked performance regressions using basic profiling and improved latency on slow endpoints.",
+          "impressiveness": 0.75
+        },
+        {
+          "text": "Created developer documentation (setup, runbooks, API examples) to speed up onboarding.",
+          "impressiveness": 0.68
+        },
+        {
+          "text": "Helped triage production incidents by analyzing logs/metrics and proposing fixes with clear postmortems.",
+          "impressiveness": 0.77
+        },
+        {
+          "text": "Refactored a monolithic module into smaller services with clearer boundaries and improved testability.",
+          "impressiveness": 0.81
+        },
+        {
+          "text": "Contributed to an internal release checklist and improved deployment safety with preflight checks.",
+          "impressiveness": 0.69
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "VectorDocs Search",
+      "languages": ["TypeScript", "React", "Python"],
+      "bullets": [
+        {
+          "text": "Built a full-stack document search app with semantic retrieval, combining a Python API and a React UI.",
+          "impressiveness": 0.83
+        },
+        {
+          "text": "Implemented ingestion pipelines (chunking, metadata extraction, deduping) to prepare documents for indexing.",
+          "impressiveness": 0.8
+        },
+        {
+          "text": "Added embedding-based search and hybrid ranking (keyword + semantic) to improve result quality.",
+          "impressiveness": 0.86
+        },
+        {
+          "text": "Created an evaluation harness with labeled queries and metrics (precision@k, recall@k) for ranking iteration.",
+          "impressiveness": 0.84
+        },
+        {
+          "text": "Built a query UI with filters, highlights, and saved searches, optimized for fast navigation through results.",
+          "impressiveness": 0.74
+        },
+        {
+          "text": "Implemented authentication and per-collection access control to support multi-user usage.",
+          "impressiveness": 0.78
+        },
+        {
+          "text": "Added background re-indexing jobs with progress reporting and safe retries on failures.",
+          "impressiveness": 0.77
+        },
+        {
+          "text": "Instrumented latency and error-rate dashboards and added alerting for index health.",
+          "impressiveness": 0.76
+        },
+        {
+          "text": "Deployed with Docker and automated CI checks (tests, lint, build) on every pull request.",
+          "impressiveness": 0.72
+        },
+        {
+          "text": "Implemented exportable result reports for sharing and reproducible investigations.",
+          "impressiveness": 0.67
+        },
+        {
+          "text": "Added prompt-safe summaries of search results with strict truncation and citations to source snippets.",
+          "impressiveness": 0.79
+        },
+        {
+          "text": "Optimized throughput with batching and caching, reducing repeated embedding calls for identical inputs.",
+          "impressiveness": 0.81
+        }
+      ]
+    },
+    {
+      "title": "Service Reliability Simulator",
+      "languages": ["Python"],
+      "bullets": [
+        {
+          "text": "Built a simulation framework to model request traffic, retries, and cascading failures in microservice graphs.",
+          "impressiveness": 0.8
+        },
+        {
+          "text": "Implemented configurable latency distributions, error injection, and circuit breaker policies.",
+          "impressiveness": 0.78
+        },
+        {
+          "text": "Computed SLO-style metrics (availability, tail latency, error budgets) over simulated runs.",
+          "impressiveness": 0.76
+        },
+        {
+          "text": "Ran parameter sweeps to compare mitigation strategies and summarized outcomes in repeatable reports.",
+          "impressiveness": 0.82
+        },
+        {
+          "text": "Added a lightweight visualization module for timelines and dependency bottlenecks.",
+          "impressiveness": 0.69
+        },
+        {
+          "text": "Packaged the tool as a CLI with configuration files, enabling reproducible experiments.",
+          "impressiveness": 0.71
+        },
+        {
+          "text": "Implemented unit tests for stochastic components using fixed seeds and property-based assertions.",
+          "impressiveness": 0.74
+        },
+        {
+          "text": "Documented common failure patterns and recommended operational guardrails based on experiments.",
+          "impressiveness": 0.7
+        }
+      ]
+    },
+    {
+      "title": "Image Quality Classifier",
+      "languages": ["Python"],
+      "bullets": [
+        {
+          "text": "Trained a deep learning classifier to predict whether user-uploaded images meet quality thresholds for downstream processing.",
+          "impressiveness": 0.82
+        },
+        {
+          "text": "Built a data pipeline for labeling and balancing classes (blurry, low-light, occluded, acceptable).",
+          "impressiveness": 0.79
+        },
+        {
+          "text": "Applied transfer learning with augmentation and calibrated probability thresholds for high recall on low-quality images.",
+          "impressiveness": 0.83
+        },
+        {
+          "text": "Added leakage checks and near-duplicate detection to keep train/validation splits clean.",
+          "impressiveness": 0.8
+        },
+        {
+          "text": "Tracked experiments and compared models using F1 and ROC-AUC on a held-out set.",
+          "impressiveness": 0.77
+        },
+        {
+          "text": "Implemented an inference script that batch-scores a folder and outputs per-image explanations and tags.",
+          "impressiveness": 0.73
+        },
+        {
+          "text": "Profiled inference latency and introduced batching to improve throughput on consumer hardware.",
+          "impressiveness": 0.75
+        },
+        {
+          "text": "Documented limitations and common failure cases, plus a plan for data collection improvements.",
+          "impressiveness": 0.72
+        },
+        {
+          "text": "Packaged training/inference into a reproducible project structure with configuration-driven runs.",
+          "impressiveness": 0.74
+        }
+      ]
+    }
+  ],
+  "technologies": [
+    { "text": "PyTorch" },
+    { "text": "Scikit-learn" },
+    { "text": "FastAPI" },
+    { "text": "PostgreSQL" },
+    { "text": "React" },
+    { "text": "Node.js" },
+    { "text": "Docker" },
+    { "text": "Git" },
+    { "text": "CI/CD" }
+  ],
+  "languages": [
+    { "text": "Python" },
+    { "text": "TypeScript" },
+    { "text": "JavaScript" },
+    { "text": "SQL" },
+    { "text": "Java" },
+    { "text": "C" },
+    { "text": "C++" },
+    { "text": "Go" },
+    { "text": "Bash" },
+    { "text": "R" },
+    { "text": "Rust" },
+    { "text": "Kotlin" },
+    { "text": "Swift" },
+    { "text": "Assembly" }
+  ]
+}
