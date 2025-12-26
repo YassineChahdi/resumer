@@ -1,4 +1,8 @@
 import json
+import subprocess
+import tempfile
+import shutil
+import os
 from models import Resume, Bullet, Experience, Project
 from relevance import Relevance
 
@@ -20,7 +24,34 @@ class Resumer():
         with open(output_path, 'w') as f:
             json.dump(self.resume.to_dict(), f)
 
+    def export_to_pdf(self, template_path="./data/jake_template.tex", output_path="./data/my_resume.pdf"):
+        latex_resume = self.resume_to_latex_from_template(template_path)
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            tex_file = os.path.join(temp_dir, "resume.tex")
+
+            with open(tex_file, 'w') as f:
+                f.write(latex_resume)
+
+            for _ in range(2):
+                result = subprocess.run(
+                    ["pdflatex", "-interaction=nonstopmode", "-output-directory", temp_dir, tex_file],
+                    capture_output=True,
+                    text=True
+                )
+                if result.returncode != 0:
+                    raise RuntimeError(f"pdflatex compilation failed:\n{result.stdout}\n{result.stderr}")
+
+            pdf_file = os.path.join(temp_dir, "resume.pdf")
+            shutil.copy(pdf_file, output_path)
+
     def export_to_latex(self, template_path="./data/jake_template.tex", output_path="./data/my_resume.tex"):
+        latex_resume = self.resume_to_latex_from_template(template_path)
+        
+        with open(output_path, 'w') as f:
+            f.write(latex_resume)
+    
+    def resume_to_latex_from_template(self, template_path="./data/jake_template.tex") -> str:
         with open(template_path, 'r') as f:
             content = f.read()
         
@@ -35,10 +66,9 @@ class Resumer():
         content = content.replace("{{PROJECT_ENTRIES}}", self._generate_projects_latex())
         content = content.replace("{{LANGUAGES_LIST}}", self._generate_languages_list())
         content = content.replace("{{TECHNOLOGIES_LIST}}", self._generate_technologies_list())
-        
-        with open(output_path, 'w') as f:
-            f.write(content)
-    
+
+        return content
+
     def _escape_latex(self, text: str) -> str:
         if not text:
             return ""
