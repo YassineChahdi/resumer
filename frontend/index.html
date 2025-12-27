@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumer - Tailor Your Resume</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Resumer</h1>
+            <p class="subtitle">Tailor your resume to any job description</p>
+        </header>
+
+        <main>
+            <!-- Left Column: Form -->
+            <section class="form-section">
+                <!-- Personal Info -->
+                <div class="card">
+                    <h2>Personal Information</h2>
+                    <div class="form-row">
+                        <input type="text" id="fullName" placeholder="Full Name" />
+                    </div>
+                    <div class="form-row two-cols">
+                        <input type="tel" id="phone" placeholder="Phone" />
+                        <input type="email" id="email" placeholder="Email" />
+                    </div>
+                    <div class="form-row two-cols">
+                        <input type="text" id="github" placeholder="GitHub (e.g. github.com/user)" />
+                        <input type="text" id="linkedin" placeholder="LinkedIn (e.g. linkedin.com/in/user)" />
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div class="card">
+                    <h2>Education <button class="btn-add" onclick="addEducation()">+ Add</button></h2>
+                    <div id="educationList"></div>
+                </div>
+
+                <!-- Experience -->
+                <div class="card">
+                    <h2>Experience <button class="btn-add" onclick="addExperience()">+ Add</button></h2>
+                    <div id="experienceList"></div>
+                </div>
+
+                <!-- Projects -->
+                <div class="card">
+                    <h2>Projects <button class="btn-add" onclick="addProject()">+ Add</button></h2>
+                    <div id="projectList"></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="card">
+                    <h2>Skills</h2>
+                    <div class="form-row">
+                        <label>Languages (comma-separated)</label>
+                        <input type="text" id="languages" placeholder="Python, JavaScript, SQL, ..." />
+                    </div>
+                    <div class="form-row">
+                        <label>Technologies (comma-separated)</label>
+                        <input type="text" id="technologies" placeholder="Docker, React, PostgreSQL, ..." />
+                    </div>
+                </div>
+
+                <!-- Job Description -->
+                <div class="card">
+                    <h2>Job Description</h2>
+                    <textarea id="jobDescription" rows="8" placeholder="Paste the job description here..."></textarea>
+                </div>
+
+                <!-- Template & Actions -->
+                <div class="card actions-card">
+                    <div class="form-row">
+                        <label>Template</label>
+                        <select id="template">
+                            <option value="jake">Jake (ATS-friendly)</option>
+                            <option value="mirage">Mirage (Modern)</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="generatePreview()">Generate Preview</button>
+                        <button class="btn btn-secondary" onclick="downloadPDF()" id="downloadPdfBtn" disabled>Download PDF</button>
+                        <button class="btn btn-secondary" onclick="downloadLatex()" id="downloadLatexBtn" disabled>Download LaTeX</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Preview -->
+            <section class="preview-section">
+                <div class="card preview-card">
+                    <h2>Preview</h2>
+                    <div id="preview" class="preview-content">
+                        <p class="placeholder-text">Fill in your details and click "Generate Preview" to see your tailored resume.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
