@@ -191,11 +191,6 @@ async function generatePreview() {
     const jobDesc = document.getElementById('jobDescription').value;
     const preview = document.getElementById('preview');
 
-    if (!jobDesc) {
-        alert('Enter a job description');
-        return;
-    }
-
     preview.innerHTML = '<span class="loading">Loading...</span>';
 
     try {
