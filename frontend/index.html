@@ -26,19 +26,19 @@
 
                 <!-- Education -->
                 <fieldset>
-                    <legend>Education <button type="button" onclick="addEducation()">+ Add</button></legend>
+                    <legend>Education <button type="button" onclick="addItem('edu')">+ Add</button></legend>
                     <div id="educationList"></div>
                 </fieldset>
 
                 <!-- Experience -->
                 <fieldset>
-                    <legend>Experience <button type="button" onclick="addExperience()">+ Add</button></legend>
+                    <legend>Experience <button type="button" onclick="addItem('exp')">+ Add</button></legend>
                     <div id="experienceList"></div>
                 </fieldset>
 
                 <!-- Projects -->
                 <fieldset>
-                    <legend>Projects <button type="button" onclick="addProject()">+ Add</button></legend>
+                    <legend>Projects <button type="button" onclick="addItem('proj')">+ Add</button></legend>
                     <div id="projectList"></div>
                 </fieldset>
 
@@ -58,6 +58,9 @@
                 <!-- Actions -->
                 <fieldset class="actions">
                     <legend>Actions</legend>
+                    <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
+                    <button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button>
+                    <button type="button" onclick="downloadJson()">Save JSON</button>
                     <label>
                         Template:
                         <select id="template">
