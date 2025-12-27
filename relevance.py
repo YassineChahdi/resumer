@@ -28,7 +28,7 @@ class Relevance():
         if not target:
             return [0.5] * len(strings)  # Neutral scores if no job description
         
-        query_embeddings = self.model.encode(strings, prompt_name="query")
+        query_embeddings = self._get_embeddings(strings)
         document_embeddings = self.model.encode([target])
 
         # Compute the (cosine) similarity between the query and document embeddings
