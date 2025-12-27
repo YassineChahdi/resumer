@@ -54,10 +54,7 @@ class Resumer:
             content = f.read()
         
         content = content.replace("{{FULL_NAME}}", self._escape_latex(resume.full_name or ""))
-        content = content.replace("{{PHONE}}", self._escape_latex(resume.contacts.get("phone", "")))
-        content = content.replace("{{EMAIL}}", resume.contacts.get("email", ""))
-        content = content.replace("{{GITHUB}}", resume.contacts.get("github", ""))
-        content = content.replace("{{LINKEDIN}}", resume.contacts.get("linkedin", ""))
+        content = content.replace("{{CONTACT_LINE}}", self._generate_contact_line(resume))
         
         content = content.replace("{{EDUCATION_ENTRIES}}", self._generate_education_latex(resume))
         content = content.replace("{{EXPERIENCE_ENTRIES}}", self._generate_experience_latex(resume))
@@ -66,6 +63,24 @@ class Resumer:
         content = content.replace("{{TECHNOLOGIES_LIST}}", self._generate_technologies_list(resume))
 
         return content
+
+    def _generate_contact_line(self, resume: Resume) -> str:
+        parts = []
+        phone = resume.contacts.get("phone", "")
+        email = resume.contacts.get("email", "")
+        github = resume.contacts.get("github", "")
+        linkedin = resume.contacts.get("linkedin", "")
+        
+        if phone:
+            parts.append(self._escape_latex(phone))
+        if email:
+            parts.append(f"\\href{{mailto:{email}}}{{{email}}}")
+        if github:
+            parts.append(f"\\href{{https://{github}}}{{{github}}}")
+        if linkedin:
+            parts.append(f"\\href{{https://{linkedin}}}{{{linkedin}}}")
+        
+        return " $|$ ".join(parts)
 
     def _escape_latex(self, text: str) -> str:
         if not text:

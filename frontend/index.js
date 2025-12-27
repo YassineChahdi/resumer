@@ -212,19 +212,11 @@ async function generatePreview() {
     const preview = document.getElementById('preview');
     preview.innerHTML = '<span class="loading">Loading...</span>';
 
-    // Prepare data for API (convert languages string back to array for projects)
-    const apiData = {
-        ...resumeData,
-        projects: resumeData.projects.map(p => ({ ...p, languages: p.languages.split(',').map(s => s.trim()).filter(Boolean) })),
-        languages: resumeData.languages.map(l => ({ text: l })),
-        technologies: resumeData.technologies.map(t => ({ text: t }))
-    };
-
     try {
         const res = await fetch(`${API_BASE}/tailor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resume: apiData, job_description: document.getElementById('jobDescription').value })
+            body: JSON.stringify({ resume: prepareApiData(), job_description: document.getElementById('jobDescription').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         tailoredResume = await res.json();
@@ -270,12 +262,13 @@ function renderPreview(r) {
 }
 
 async function downloadPDF() {
-    if (!tailoredResume) return;
+    syncFromForm();
+    const apiData = prepareApiData();
     try {
         const res = await fetch(`${API_BASE}/export/pdf`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resume: tailoredResume, template: document.getElementById('template').value })
+            body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         download(await res.blob(), 'resume.pdf');
@@ -283,27 +276,32 @@ async function downloadPDF() {
 }
 
 async function downloadLatex() {
-    if (!tailoredResume) return;
+    syncFromForm();
+    const apiData = prepareApiData();
     try {
         const res = await fetch(`${API_BASE}/export/latex`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resume: tailoredResume, template: document.getElementById('template').value })
+            body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         download(new Blob([await res.text()], { type: 'text/plain' }), 'resume.tex');
     } catch (e) { alert('Error: ' + e.message); }
 }
 
-function downloadJson() {
-    syncFromForm();
-    const data = {
+// Prepare data for API (convert formats)
+function prepareApiData() {
+    return {
         ...resumeData,
         projects: resumeData.projects.map(p => ({ ...p, languages: p.languages.split(',').map(s => s.trim()).filter(Boolean) })),
         languages: resumeData.languages.map(l => ({ text: l })),
         technologies: resumeData.technologies.map(t => ({ text: t }))
     };
-    download(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }), 'resume.json');
+}
+
+function downloadJson() {
+    syncFromForm();
+    download(new Blob([JSON.stringify(prepareApiData(), null, 2)], { type: 'application/json' }), 'resume.json');
 }
 
 function download(blob, name) {
