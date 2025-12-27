@@ -13,16 +13,16 @@ class Resumer:
     def __init__(self):
         self.relevance_engine = Relevance()
 
-    def load_resume(self, data_file_path: str = "./data/data.json") -> Resume:
+    def load_resume(self, data_file_path: str = "../data/data.json") -> Resume:
         with open(data_file_path, 'r') as f:
             data = json.load(f)
         return Resume(data)
 
-    def export_to_json(self, resume: Resume, output_path: str = "./data/my_facts.json"):
+    def export_to_json(self, resume: Resume, output_path: str = "../data/my_facts.json"):
         with open(output_path, 'w') as f:
             json.dump(resume.to_dict(), f)
 
-    def export_to_pdf(self, resume: Resume, template_path: str = "./data/jake_template.tex", output_path: str = "./data/my_resume.pdf"):
+    def export_to_pdf(self, resume: Resume, template_path: str = "../data/templates/jake_template.tex", output_path: str = "../data/my_resume.pdf"):
         latex_resume = self.resume_to_latex_from_template(resume, template_path)
         
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -43,13 +43,13 @@ class Resumer:
             pdf_file = os.path.join(temp_dir, "resume.pdf")
             shutil.copy(pdf_file, output_path)
 
-    def export_to_latex(self, resume: Resume, template_path: str = "./data/jake_template.tex", output_path: str = "./data/my_resume.tex"):
+    def export_to_latex(self, resume: Resume, template_path: str = "../data/templates/jake_template.tex", output_path: str = "../data/my_resume.tex"):
         latex_resume = self.resume_to_latex_from_template(resume, template_path)
         
         with open(output_path, 'w') as f:
             f.write(latex_resume)
     
-    def resume_to_latex_from_template(self, resume: Resume, template_path: str = "./data/jake_template.tex") -> str:
+    def resume_to_latex_from_template(self, resume: Resume, template_path: str = "../data/templates/jake_template.tex") -> str:
         with open(template_path, 'r') as f:
             content = f.read()
         
