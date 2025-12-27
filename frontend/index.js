@@ -1,126 +1,126 @@
-// === Configuration ===
 const API_BASE = 'http://localhost:8000';
-
-// Store the tailored resume for downloads
 let tailoredResume = null;
 
-// === Initialization ===
+// Init
 document.addEventListener('DOMContentLoaded', () => {
-    // Add initial entries
     addEducation();
     addExperience();
     addProject();
 });
 
-// === Education ===
-let educationCount = 0;
-
+// Education
+let eduCount = 0;
 function addEducation() {
-    educationCount++;
-    const id = `edu-${educationCount}`;
+    eduCount++;
+    const id = `edu-${eduCount}`;
     const html = `
         <div class="list-item" id="${id}">
             <div class="list-item-header">
-                <h3>Education #${educationCount}</h3>
-                <button class="btn-remove" onclick="removeItem('${id}')">✕</button>
+                <span>Education #${eduCount}</span>
+                <button class="btn-remove" onclick="remove('${id}')">×</button>
             </div>
-            <div class="form-row two-cols">
-                <input type="text" placeholder="Institution Name" data-field="est_name" />
+            <div class="row">
+                <input type="text" placeholder="Institution" data-field="est_name" />
                 <input type="text" placeholder="Location" data-field="location" />
             </div>
-            <div class="form-row two-cols">
+            <div class="row">
                 <input type="text" placeholder="Degree" data-field="degree" />
-                <input type="text" placeholder="Year (e.g. May 2025)" data-field="year" />
+                <input type="text" placeholder="Year" data-field="year" />
             </div>
-            <div class="form-row">
-                <input type="number" step="0.1" min="0" max="4" placeholder="GPA (optional)" data-field="gpa" />
-            </div>
+            <input type="number" step="0.1" placeholder="GPA (optional)" data-field="gpa" />
         </div>
     `;
     document.getElementById('educationList').insertAdjacentHTML('beforeend', html);
 }
 
-// === Experience ===
-let experienceCount = 0;
-
+// Experience
+let expCount = 0;
 function addExperience() {
-    experienceCount++;
-    const id = `exp-${experienceCount}`;
+    expCount++;
+    const id = `exp-${expCount}`;
     const html = `
         <div class="list-item" id="${id}">
             <div class="list-item-header">
-                <h3>Experience #${experienceCount}</h3>
-                <button class="btn-remove" onclick="removeItem('${id}')">✕</button>
+                <span>Experience #${expCount}</span>
+                <button class="btn-remove" onclick="remove('${id}')">×</button>
             </div>
-            <div class="form-row two-cols">
+            <div class="row">
                 <input type="text" placeholder="Employer" data-field="employer" />
                 <input type="text" placeholder="Location" data-field="location" />
             </div>
-            <div class="form-row two-cols">
-                <input type="text" placeholder="Job Title" data-field="title" />
-                <input type="text" placeholder="Duration (e.g. Jan 2024 - Present)" data-field="duration" />
+            <div class="row">
+                <input type="text" placeholder="Title" data-field="title" />
+                <input type="text" placeholder="Duration" data-field="duration" />
             </div>
-            <div class="bullets-section">
-                <label>Bullets (with impressiveness score 0-1)</label>
-                <div class="bullets-container" id="${id}-bullets"></div>
-                <button class="btn-add-bullet" onclick="addBullet('${id}-bullets')">+ Add Bullet</button>
-            </div>
+            <div class="bullets" id="${id}-bullets"></div>
+            <button class="btn-add-bullet" onclick="addBullet('${id}-bullets')">+ Bullet</button>
         </div>
     `;
     document.getElementById('experienceList').insertAdjacentHTML('beforeend', html);
-    // Add initial bullet
     addBullet(`${id}-bullets`);
 }
 
-// === Projects ===
-let projectCount = 0;
-
+// Projects
+let projCount = 0;
 function addProject() {
-    projectCount++;
-    const id = `proj-${projectCount}`;
+    projCount++;
+    const id = `proj-${projCount}`;
     const html = `
         <div class="list-item" id="${id}">
             <div class="list-item-header">
-                <h3>Project #${projectCount}</h3>
-                <button class="btn-remove" onclick="removeItem('${id}')">✕</button>
+                <span>Project #${projCount}</span>
+                <button class="btn-remove" onclick="remove('${id}')">×</button>
             </div>
-            <div class="form-row two-cols">
-                <input type="text" placeholder="Project Title" data-field="title" />
-                <input type="text" placeholder="Languages (comma-separated)" data-field="languages" />
+            <div class="row">
+                <input type="text" placeholder="Title" data-field="title" />
+                <input type="text" placeholder="Languages (comma-sep)" data-field="languages" />
             </div>
-            <div class="bullets-section">
-                <label>Bullets (with impressiveness score 0-1)</label>
-                <div class="bullets-container" id="${id}-bullets"></div>
-                <button class="btn-add-bullet" onclick="addBullet('${id}-bullets')">+ Add Bullet</button>
-            </div>
+            <div class="bullets" id="${id}-bullets"></div>
+            <button class="btn-add-bullet" onclick="addBullet('${id}-bullets')">+ Bullet</button>
         </div>
     `;
     document.getElementById('projectList').insertAdjacentHTML('beforeend', html);
-    // Add initial bullet
     addBullet(`${id}-bullets`);
 }
 
-// === Bullets ===
+// Bullets
 function addBullet(containerId) {
     const html = `
-        <div class="bullet-item">
-            <input type="text" placeholder="Bullet point text" data-field="text" />
+        <div class="bullet-row">
+            <input type="text" placeholder="Bullet text" data-field="text" />
             <input type="number" step="0.1" min="0" max="1" placeholder="Imp" data-field="impressiveness" value="0.7" />
-            <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+            <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
         </div>
     `;
     document.getElementById(containerId).insertAdjacentHTML('beforeend', html);
 }
 
-// === Remove Item ===
-function removeItem(id) {
-    document.getElementById(id).remove();
+function remove(id) {
+    const el = document.getElementById(id);
+    const parent = el.parentElement;
+    el.remove();
+    // Decrement counter and renumber remaining items
+    if (id.startsWith('edu')) {
+        eduCount--;
+        parent.querySelectorAll('.list-item').forEach((item, i) => {
+            item.querySelector('.list-item-header span').textContent = `Education #${i + 1}`;
+        });
+    } else if (id.startsWith('exp')) {
+        expCount--;
+        parent.querySelectorAll('.list-item').forEach((item, i) => {
+            item.querySelector('.list-item-header span').textContent = `Experience #${i + 1}`;
+        });
+    } else {
+        projCount--;
+        parent.querySelectorAll('.list-item').forEach((item, i) => {
+            item.querySelector('.list-item-header span').textContent = `Project #${i + 1}`;
+        });
+    }
 }
 
-// === Collect Form Data ===
-function collectFormData() {
-    // Personal Info
-    const resume = {
+// Collect form data
+function collectData() {
+    const data = {
         full_name: document.getElementById('fullName').value,
         contacts: {
             phone: document.getElementById('phone').value,
@@ -135,7 +135,6 @@ function collectFormData() {
         languages: [],
     };
 
-    // Education
     document.querySelectorAll('#educationList .list-item').forEach(item => {
         const edu = {
             est_name: item.querySelector('[data-field="est_name"]').value,
@@ -144,10 +143,9 @@ function collectFormData() {
             year: item.querySelector('[data-field="year"]').value,
             gpa: parseFloat(item.querySelector('[data-field="gpa"]').value) || null,
         };
-        if (edu.est_name || edu.degree) resume.education.push(edu);
+        if (edu.est_name || edu.degree) data.education.push(edu);
     });
 
-    // Experience
     document.querySelectorAll('#experienceList .list-item').forEach(item => {
         const exp = {
             employer: item.querySelector('[data-field="employer"]').value,
@@ -156,232 +154,161 @@ function collectFormData() {
             duration: item.querySelector('[data-field="duration"]').value,
             bullets: [],
         };
-        item.querySelectorAll('.bullet-item').forEach(bullet => {
-            const text = bullet.querySelector('[data-field="text"]').value;
-            const imp = parseFloat(bullet.querySelector('[data-field="impressiveness"]').value) || 0.5;
+        item.querySelectorAll('.bullet-row').forEach(b => {
+            const text = b.querySelector('[data-field="text"]').value;
+            const imp = parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.5;
             if (text) exp.bullets.push({ text, impressiveness: imp });
         });
-        if (exp.employer || exp.title) resume.experience.push(exp);
+        if (exp.employer || exp.title) data.experience.push(exp);
     });
 
-    // Projects
     document.querySelectorAll('#projectList .list-item').forEach(item => {
         const proj = {
             title: item.querySelector('[data-field="title"]').value,
             languages: item.querySelector('[data-field="languages"]').value.split(',').map(s => s.trim()).filter(Boolean),
             bullets: [],
         };
-        item.querySelectorAll('.bullet-item').forEach(bullet => {
-            const text = bullet.querySelector('[data-field="text"]').value;
-            const imp = parseFloat(bullet.querySelector('[data-field="impressiveness"]').value) || 0.5;
+        item.querySelectorAll('.bullet-row').forEach(b => {
+            const text = b.querySelector('[data-field="text"]').value;
+            const imp = parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.5;
             if (text) proj.bullets.push({ text, impressiveness: imp });
         });
-        if (proj.title) resume.projects.push(proj);
+        if (proj.title) data.projects.push(proj);
     });
 
-    // Skills
     const langs = document.getElementById('languages').value;
-    resume.languages = langs.split(',').map(s => s.trim()).filter(Boolean).map(text => ({ text }));
+    data.languages = langs.split(',').map(s => s.trim()).filter(Boolean).map(text => ({ text }));
 
     const techs = document.getElementById('technologies').value;
-    resume.technologies = techs.split(',').map(s => s.trim()).filter(Boolean).map(text => ({ text }));
+    data.technologies = techs.split(',').map(s => s.trim()).filter(Boolean).map(text => ({ text }));
 
-    return resume;
+    return data;
 }
 
-// === Generate Preview ===
+// Preview
 async function generatePreview() {
-    const resumeData = collectFormData();
-    const jobDescription = document.getElementById('jobDescription').value;
+    const resume = collectData();
+    const jobDesc = document.getElementById('jobDescription').value;
+    const preview = document.getElementById('preview');
 
-    if (!jobDescription) {
-        alert('Please enter a job description');
+    if (!jobDesc) {
+        alert('Enter a job description');
         return;
     }
 
-    const previewEl = document.getElementById('preview');
-    previewEl.innerHTML = '<p class="placeholder-text"><span class="loading"></span> Generating preview...</p>';
+    preview.innerHTML = '<span class="loading">Loading...</span>';
 
     try {
-        const response = await fetch(`${API_BASE}/tailor`, {
+        const res = await fetch(`${API_BASE}/tailor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                resume: resumeData,
-                job_description: jobDescription,
-            }),
+            body: JSON.stringify({ resume, job_description: jobDesc }),
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to tailor resume');
-        }
+        if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
 
-        tailoredResume = await response.json();
+        tailoredResume = await res.json();
         renderPreview(tailoredResume);
 
-        // Enable download buttons
-        document.getElementById('downloadPdfBtn').disabled = false;
-        document.getElementById('downloadLatexBtn').disabled = false;
-
-    } catch (error) {
-        previewEl.innerHTML = `<p class="placeholder-text" style="color: var(--danger);">Error: ${error.message}</p>`;
+        document.getElementById('btnPdf').disabled = false;
+        document.getElementById('btnLatex').disabled = false;
+    } catch (e) {
+        preview.innerHTML = `<span class="error">Error: ${e.message}</span>`;
     }
 }
 
-// === Render Preview ===
-function renderPreview(resume) {
-    const previewEl = document.getElementById('preview');
-
+function renderPreview(r) {
     let html = `
         <div class="preview-header">
-            <h1>${resume.full_name || 'Your Name'}</h1>
-            <p class="preview-contact">
-                ${[resume.contacts?.phone, resume.contacts?.email, resume.contacts?.github, resume.contacts?.linkedin]
-                    .filter(Boolean).join(' | ')}
-            </p>
+            <h2>${r.full_name || 'Name'}</h2>
+            <div>${[r.contacts?.phone, r.contacts?.email, r.contacts?.github, r.contacts?.linkedin].filter(Boolean).join(' | ')}</div>
         </div>
     `;
 
-    // Education
-    if (resume.education?.length) {
-        html += '<h3 class="preview-section-title">Education</h3>';
-        resume.education.forEach(edu => {
-            html += `
-                <div class="preview-entry">
-                    <div class="preview-entry-header">
-                        <span>${edu.est_name || ''}</span>
-                        <span>${edu.location || ''}</span>
-                    </div>
-                    <div class="preview-entry-subtitle">
-                        <span>${edu.degree || ''}${edu.gpa ? `, GPA: ${edu.gpa}` : ''}</span>
-                        <span>${edu.year || ''}</span>
-                    </div>
-                </div>
-            `;
+    if (r.education?.length) {
+        html += '<div class="preview-section-title">Education</div>';
+        r.education.forEach(e => {
+            html += `<div class="preview-entry">
+                <div class="preview-entry-header"><span>${e.est_name}</span><span>${e.location}</span></div>
+                <div class="preview-entry-subtitle"><span>${e.degree}${e.gpa ? ', GPA: ' + e.gpa : ''}</span><span>${e.year}</span></div>
+            </div>`;
         });
     }
 
-    // Experience
-    if (resume.experience?.length) {
-        html += '<h3 class="preview-section-title">Experience</h3>';
-        resume.experience.forEach(exp => {
-            html += `
-                <div class="preview-entry">
-                    <div class="preview-entry-header">
-                        <span>${exp.employer || ''}</span>
-                        <span>${exp.location || ''}</span>
-                    </div>
-                    <div class="preview-entry-subtitle">
-                        <span>${exp.title || ''}</span>
-                        <span>${exp.duration || ''}</span>
-                    </div>
-                    <ul class="preview-bullets">
-                        ${(exp.bullets || []).map(b => `<li>${b.text}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
+    if (r.experience?.length) {
+        html += '<div class="preview-section-title">Experience</div>';
+        r.experience.forEach(e => {
+            html += `<div class="preview-entry">
+                <div class="preview-entry-header"><span>${e.employer}</span><span>${e.location}</span></div>
+                <div class="preview-entry-subtitle"><span>${e.title}</span><span>${e.duration}</span></div>
+                <ul class="preview-bullets">${(e.bullets || []).map(b => `<li>${b.text}</li>`).join('')}</ul>
+            </div>`;
         });
     }
 
-    // Projects
-    if (resume.projects?.length) {
-        html += '<h3 class="preview-section-title">Projects</h3>';
-        resume.projects.forEach(proj => {
-            html += `
-                <div class="preview-entry">
-                    <div class="preview-entry-header">
-                        <span><strong>${proj.title || ''}</strong> | <em>${(proj.languages || []).join(', ')}</em></span>
-                    </div>
-                    <ul class="preview-bullets">
-                        ${(proj.bullets || []).map(b => `<li>${b.text}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
+    if (r.projects?.length) {
+        html += '<div class="preview-section-title">Projects</div>';
+        r.projects.forEach(p => {
+            html += `<div class="preview-entry">
+                <div class="preview-entry-header"><span>${p.title} | ${(p.languages || []).join(', ')}</span></div>
+                <ul class="preview-bullets">${(p.bullets || []).map(b => `<li>${b.text}</li>`).join('')}</ul>
+            </div>`;
         });
     }
 
-    // Skills
-    const languages = (resume.languages || []).map(l => l.text).join(', ');
-    const technologies = (resume.technologies || []).map(t => t.text).join(', ');
-    if (languages || technologies) {
-        html += '<h3 class="preview-section-title">Skills</h3>';
-        html += '<div class="preview-skills">';
-        if (languages) html += `<p><strong>Languages:</strong> ${languages}</p>`;
-        if (technologies) html += `<p><strong>Technologies:</strong> ${technologies}</p>`;
-        html += '</div>';
+    const langs = (r.languages || []).map(l => l.text).join(', ');
+    const techs = (r.technologies || []).map(t => t.text).join(', ');
+    if (langs || techs) {
+        html += '<div class="preview-section-title">Skills</div>';
+        if (langs) html += `<div><b>Languages:</b> ${langs}</div>`;
+        if (techs) html += `<div><b>Technologies:</b> ${techs}</div>`;
     }
 
-    previewEl.innerHTML = html;
+    document.getElementById('preview').innerHTML = html;
 }
 
-// === Download PDF ===
+// Downloads
 async function downloadPDF() {
     if (!tailoredResume) return;
-
     const template = document.getElementById('template').value;
 
     try {
-        const response = await fetch(`${API_BASE}/export/pdf`, {
+        const res = await fetch(`${API_BASE}/export/pdf`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                resume: tailoredResume,
-                template: template,
-            }),
+            body: JSON.stringify({ resume: tailoredResume, template }),
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to generate PDF');
-        }
-
-        const blob = await response.blob();
-        downloadBlob(blob, 'resume.pdf');
-
-    } catch (error) {
-        alert(`Error: ${error.message}`);
+        if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
+        const blob = await res.blob();
+        download(blob, 'resume.pdf');
+    } catch (e) {
+        alert('Error: ' + e.message);
     }
 }
 
-// === Download LaTeX ===
 async function downloadLatex() {
     if (!tailoredResume) return;
-
     const template = document.getElementById('template').value;
 
     try {
-        const response = await fetch(`${API_BASE}/export/latex`, {
+        const res = await fetch(`${API_BASE}/export/latex`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                resume: tailoredResume,
-                template: template,
-            }),
+            body: JSON.stringify({ resume: tailoredResume, template }),
         });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Failed to generate LaTeX');
-        }
-
-        const text = await response.text();
-        const blob = new Blob([text], { type: 'text/plain' });
-        downloadBlob(blob, 'resume.tex');
-
-    } catch (error) {
-        alert(`Error: ${error.message}`);
+        if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
+        const text = await res.text();
+        download(new Blob([text], { type: 'text/plain' }), 'resume.tex');
+    } catch (e) {
+        alert('Error: ' + e.message);
     }
 }
 
-// === Helper: Download Blob ===
-function downloadBlob(blob, filename) {
+function download(blob, name) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
+    a.download = name;
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }

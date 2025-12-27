@@ -3,101 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resumer - Tailor Your Resume</title>
+    <title>Resumer</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Resumer</h1>
-            <p class="subtitle">Tailor your resume to any job description</p>
         </header>
 
         <main>
-            <!-- Left Column: Form -->
             <section class="form-section">
                 <!-- Personal Info -->
-                <div class="card">
-                    <h2>Personal Information</h2>
-                    <div class="form-row">
-                        <input type="text" id="fullName" placeholder="Full Name" />
-                    </div>
-                    <div class="form-row two-cols">
-                        <input type="tel" id="phone" placeholder="Phone" />
-                        <input type="email" id="email" placeholder="Email" />
-                    </div>
-                    <div class="form-row two-cols">
-                        <input type="text" id="github" placeholder="GitHub (e.g. github.com/user)" />
-                        <input type="text" id="linkedin" placeholder="LinkedIn (e.g. linkedin.com/in/user)" />
-                    </div>
-                </div>
+                <fieldset>
+                    <legend>Personal Info</legend>
+                    <input type="text" id="fullName" placeholder="Full Name" />
+                    <input type="text" id="phone" placeholder="Phone" />
+                    <input type="email" id="email" placeholder="Email" />
+                    <input type="text" id="github" placeholder="GitHub URL" />
+                    <input type="text" id="linkedin" placeholder="LinkedIn URL" />
+                </fieldset>
 
                 <!-- Education -->
-                <div class="card">
-                    <h2>Education <button class="btn-add" onclick="addEducation()">+ Add</button></h2>
+                <fieldset>
+                    <legend>Education <button type="button" onclick="addEducation()">+ Add</button></legend>
                     <div id="educationList"></div>
-                </div>
+                </fieldset>
 
                 <!-- Experience -->
-                <div class="card">
-                    <h2>Experience <button class="btn-add" onclick="addExperience()">+ Add</button></h2>
+                <fieldset>
+                    <legend>Experience <button type="button" onclick="addExperience()">+ Add</button></legend>
                     <div id="experienceList"></div>
-                </div>
+                </fieldset>
 
                 <!-- Projects -->
-                <div class="card">
-                    <h2>Projects <button class="btn-add" onclick="addProject()">+ Add</button></h2>
+                <fieldset>
+                    <legend>Projects <button type="button" onclick="addProject()">+ Add</button></legend>
                     <div id="projectList"></div>
-                </div>
+                </fieldset>
 
                 <!-- Skills -->
-                <div class="card">
-                    <h2>Skills</h2>
-                    <div class="form-row">
-                        <label>Languages (comma-separated)</label>
-                        <input type="text" id="languages" placeholder="Python, JavaScript, SQL, ..." />
-                    </div>
-                    <div class="form-row">
-                        <label>Technologies (comma-separated)</label>
-                        <input type="text" id="technologies" placeholder="Docker, React, PostgreSQL, ..." />
-                    </div>
-                </div>
+                <fieldset>
+                    <legend>Skills</legend>
+                    <input type="text" id="languages" placeholder="Languages (comma-separated)" />
+                    <input type="text" id="technologies" placeholder="Technologies (comma-separated)" />
+                </fieldset>
 
                 <!-- Job Description -->
-                <div class="card">
-                    <h2>Job Description</h2>
-                    <textarea id="jobDescription" rows="8" placeholder="Paste the job description here..."></textarea>
-                </div>
+                <fieldset>
+                    <legend>Job Description</legend>
+                    <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
+                </fieldset>
 
-                <!-- Template & Actions -->
-                <div class="card actions-card">
-                    <div class="form-row">
-                        <label>Template</label>
+                <!-- Actions -->
+                <fieldset class="actions">
+                    <legend>Actions</legend>
+                    <label>
+                        Template:
                         <select id="template">
-                            <option value="jake">Jake (ATS-friendly)</option>
-                            <option value="mirage">Mirage (Modern)</option>
+                            <option value="jake">Jake</option>
+                            <option value="mirage">Mirage</option>
                         </select>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="generatePreview()">Generate Preview</button>
-                        <button class="btn btn-secondary" onclick="downloadPDF()" id="downloadPdfBtn" disabled>Download PDF</button>
-                        <button class="btn btn-secondary" onclick="downloadLatex()" id="downloadLatexBtn" disabled>Download LaTeX</button>
-                    </div>
-                </div>
+                    </label>
+                    <button type="button" onclick="generatePreview()">Preview</button>
+                    <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
+                    <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
+                </fieldset>
             </section>
 
-            <!-- Right Column: Preview -->
             <section class="preview-section">
-                <div class="card preview-card">
-                    <h2>Preview</h2>
-                    <div id="preview" class="preview-content">
-                        <p class="placeholder-text">Fill in your details and click "Generate Preview" to see your tailored resume.</p>
-                    </div>
-                </div>
+                <fieldset>
+                    <legend>Preview</legend>
+                    <div id="preview">Fill in your resume and click Preview.</div>
+                </fieldset>
             </section>
         </main>
     </div>
-
     <script src="index.js"></script>
 </body>
 </html>
