@@ -144,7 +144,7 @@ class Resumer:
     def _generate_technologies_list(self, resume: Resume) -> str:
         return ", ".join(self._escape_latex(tech.text or "") for tech in resume.techs)
 
-    def build_resume(self, resume: Resume, job_description: str, exp_bullet_count: int = 7, proj_bullet_count: int = 5, tech_count: int = 5, lang_count: int = 5) -> Resume:
+    def tailor_resume(self, resume: Resume, job_description: str, exp_bullet_count: int = 7, proj_bullet_count: int = 5, tech_count: int = 5, lang_count: int = 5) -> Resume:
         self._populate_resume_metrics(resume, job_description)
         resume.trim(exp_bullet_count, proj_bullet_count, tech_count, lang_count)
         return resume
