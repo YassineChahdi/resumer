@@ -238,6 +238,9 @@ async function loadResumes() {
     const authHeader = await getAuthHeader();
     if (!authHeader) return;
     
+    // Show loading state
+    document.getElementById('resumesList').innerHTML = 'Loading...';
+    
     try {
         const res = await fetch(`${API_BASE}/resumes`, { headers: authHeader });
         if (!res.ok) throw new Error('Failed to load resumes');
@@ -246,6 +249,7 @@ async function loadResumes() {
         renderResumesList(cachedResumes);
     } catch (e) {
         console.error('Failed to load resumes:', e);
+        document.getElementById('resumesList').innerHTML = 'Failed to load resumes.';
     }
 }
 
@@ -339,9 +343,8 @@ async function loadCloudResume(id) {
         const resume = data.resume;
         
         currentResumeId = resume.id;
-        document.getElementById('resumeName').value = resume.name || '';
         
-        // Load full_resume into form
+        // Load full_resume into form (don't populate save name field)
         if (resume.full_resume) {
             const fr = resume.full_resume;
             resumeData = {
