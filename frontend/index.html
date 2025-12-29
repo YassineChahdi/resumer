@@ -24,12 +24,15 @@
         <div id="loginModal" class="modal" style="display:none;">
             <div class="modal-content">
                 <span class="modal-close" onclick="hideLoginModal()">&times;</span>
-                <h2>Log In</h2>
+                <h2 id="authModalTitle">Log In</h2>
                 <div class="auth-form">
                     <input type="email" id="authEmail" placeholder="Email" />
                     <input type="password" id="authPassword" placeholder="Password" />
-                    <button onclick="loginWithEmail()">Log In with Email</button>
-                    <button onclick="signupWithEmail()">Sign Up with Email</button>
+                    <button id="authSubmitBtn" onclick="submitAuth()">Log In</button>
+                    <div class="auth-toggle">
+                        <span id="authToggleText">Don't have an account?</span>
+                        <a href="#" onclick="toggleAuthMode(); return false;" id="authToggleLink">Sign up</a>
+                    </div>
                     <div class="auth-divider">or</div>
                     <button onclick="loginWithGoogle()">Continue with Google</button>
                 </div>

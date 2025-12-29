@@ -109,7 +109,11 @@ function updateAuthUI(loggedIn) {
 }
 
 // Modal controls
+let isSignupMode = false;
+
 function showLoginModal() {
+    isSignupMode = false;
+    updateAuthModalUI();
     document.getElementById('loginModal').style.display = 'flex';
 }
 
@@ -117,6 +121,26 @@ function hideLoginModal() {
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('authEmail').value = '';
     document.getElementById('authPassword').value = '';
+}
+
+function toggleAuthMode() {
+    isSignupMode = !isSignupMode;
+    updateAuthModalUI();
+}
+
+function updateAuthModalUI() {
+    document.getElementById('authModalTitle').textContent = isSignupMode ? 'Sign Up' : 'Log In';
+    document.getElementById('authSubmitBtn').textContent = isSignupMode ? 'Sign Up' : 'Log In';
+    document.getElementById('authToggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    document.getElementById('authToggleLink').textContent = isSignupMode ? 'Log in' : 'Sign up';
+}
+
+async function submitAuth() {
+    if (isSignupMode) {
+        await signupWithEmail();
+    } else {
+        await loginWithEmail();
+    }
 }
 
 // Email/Password Auth
@@ -182,7 +206,25 @@ async function logout() {
     await supabaseClient.auth.signOut();
     currentUser = null;
     currentResumeId = null;
+    cachedResumes = [];
     updateAuthUI(false);
+    
+    // Clear all fields
+    resumeData = {
+        full_name: '',
+        contacts: { phone: '', email: '', github: '', linkedin: '' },
+        education: [],
+        experience: [],
+        projects: [],
+        languages: [],
+        technologies: []
+    };
+    tailoredResume = null;
+    localStorage.removeItem(STORAGE_KEY);
+    renderForm();
+    document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
+    document.getElementById('btnPdf').disabled = true;
+    document.getElementById('btnLatex').disabled = true;
 }
 
 // === Cloud Resume Management ===
@@ -200,10 +242,27 @@ async function loadResumes() {
         const res = await fetch(`${API_BASE}/resumes`, { headers: authHeader });
         if (!res.ok) throw new Error('Failed to load resumes');
         const data = await res.json();
-        renderResumesList(data.resumes || []);
+        cachedResumes = data.resumes || [];
+        renderResumesList(cachedResumes);
     } catch (e) {
         console.error('Failed to load resumes:', e);
     }
+}
+
+// Cache resumes list for duplicate name check
+let cachedResumes = [];
+
+function getUniqueName(baseName) {
+    const existingNames = cachedResumes.map(r => r.name);
+    if (!existingNames.includes(baseName)) return baseName;
+    
+    let counter = 1;
+    let uniqueName = `${baseName} (${counter})`;
+    while (existingNames.includes(uniqueName)) {
+        counter++;
+        uniqueName = `${baseName} (${counter})`;
+    }
+    return uniqueName;
 }
 
 function renderResumesList(resumes) {
@@ -222,11 +281,17 @@ function renderResumesList(resumes) {
 
 async function saveToCloud() {
     syncFromForm();
-    const name = document.getElementById('resumeName').value.trim() || 'Untitled Resume';
+    let name = document.getElementById('resumeName').value.trim() || 'Untitled Resume';
     const authHeader = await getAuthHeader();
     if (!authHeader) {
         alert('Please login first');
         return;
+    }
+    
+    // For new resumes, ensure unique name
+    if (!currentResumeId) {
+        name = getUniqueName(name);
+        document.getElementById('resumeName').value = name;
     }
     
     try {
@@ -278,7 +343,14 @@ async function loadCloudResume(id) {
         
         // Load full_resume into form
         if (resume.full_resume) {
-            resumeData = { ...resumeData, ...resume.full_resume };
+            const fr = resume.full_resume;
+            resumeData = {
+                ...resumeData,
+                ...fr,
+                // Extract .text from skill objects if needed
+                languages: (fr.languages || []).map(l => typeof l === 'string' ? l : l.text || ''),
+                technologies: (fr.technologies || []).map(t => typeof t === 'string' ? t : t.text || '')
+            };
             renderForm();
             saveToStorage();
         }

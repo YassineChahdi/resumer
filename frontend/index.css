@@ -135,6 +135,21 @@ header h1 {
     margin: 0.5rem 0;
 }
 
+.auth-toggle {
+    text-align: center;
+    font-size: 0.9em;
+    color: #888;
+}
+
+.auth-toggle a {
+    color: #8cf;
+    text-decoration: none;
+}
+
+.auth-toggle a:hover {
+    text-decoration: underline;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;
