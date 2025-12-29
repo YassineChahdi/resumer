@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumer</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Resumer</h1>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <!-- Personal Info -->
+                <fieldset>
+                    <legend>Personal Info</legend>
+                    <input type="text" id="fullName" placeholder="Full Name" />
+                    <input type="text" id="phone" placeholder="Phone" />
+                    <input type="email" id="email" placeholder="Email" />
+                    <input type="text" id="github" placeholder="GitHub URL" />
+                    <input type="text" id="linkedin" placeholder="LinkedIn URL" />
+                </fieldset>
+
+                <!-- Education -->
+                <fieldset>
+                    <legend>Education <button type="button" onclick="addItem('edu')">+ Add</button></legend>
+                    <div id="educationList"></div>
+                </fieldset>
+
+                <!-- Experience -->
+                <fieldset>
+                    <legend>Experience <button type="button" onclick="addItem('exp')">+ Add</button></legend>
+                    <div id="experienceList"></div>
+                </fieldset>
+
+                <!-- Projects -->
+                <fieldset>
+                    <legend>Projects <button type="button" onclick="addItem('proj')">+ Add</button></legend>
+                    <div id="projectList"></div>
+                </fieldset>
+
+                <!-- Skills -->
+                <fieldset>
+                    <legend>Skills</legend>
+                    <input type="text" id="languages" placeholder="Languages (comma-separated)" />
+                    <input type="text" id="technologies" placeholder="Technologies (comma-separated)" />
+                </fieldset>
+
+                <!-- Job Description -->
+                <fieldset>
+                    <legend>Job Description</legend>
+                    <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
+                </fieldset>
+
+                <!-- Actions -->
+                <fieldset class="actions">
+                    <legend>Actions</legend>
+                    <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
+                    <button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button>
+                    <button type="button" onclick="downloadJson()">Save JSON</button>
+                    <label>
+                        Template:
+                        <select id="template">
+                            <option value="jake">Jake</option>
+                            <option value="mirage">Mirage</option>
+                        </select>
+                    </label>
+                    <button type="button" onclick="generatePreview()">Preview</button>
+                    <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
+                    <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
+                </fieldset>
+            </section>
+
+            <section class="preview-section">
+                <fieldset>
+                    <legend>Preview</legend>
+                    <div id="preview">Fill in your resume and click Preview.</div>
+                </fieldset>
+            </section>
+        </main>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
