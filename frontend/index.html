@@ -5,11 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumer</title>
     <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Resumer</h1>
+            <div id="authSection">
+                <button id="btnLogin" onclick="login()">Login with Google</button>
+                <div id="userInfo" style="display:none;">
+                    <span id="userEmail"></span>
+                    <button onclick="logout()">Logout</button>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -26,19 +34,34 @@
 
                 <!-- Education -->
                 <fieldset>
-                    <legend>Education <button type="button" onclick="addItem('edu')">+ Add</button></legend>
+                    <legend>
+                        <button type="button" class="btn-toggle" data-toggle="edu" onclick="toggleSection('edu')">▼</button>
+                        Education 
+                        <button type="button" onclick="addItem('edu')">+ Add</button>
+                        <button type="button" class="btn-clear" onclick="clearSection('edu')">Clear</button>
+                    </legend>
                     <div id="educationList"></div>
                 </fieldset>
 
                 <!-- Experience -->
                 <fieldset>
-                    <legend>Experience <button type="button" onclick="addItem('exp')">+ Add</button></legend>
+                    <legend>
+                        <button type="button" class="btn-toggle" data-toggle="exp" onclick="toggleSection('exp')">▼</button>
+                        Experience 
+                        <button type="button" onclick="addItem('exp')">+ Add</button>
+                        <button type="button" class="btn-clear" onclick="clearSection('exp')">Clear</button>
+                    </legend>
                     <div id="experienceList"></div>
                 </fieldset>
 
                 <!-- Projects -->
                 <fieldset>
-                    <legend>Projects <button type="button" onclick="addItem('proj')">+ Add</button></legend>
+                    <legend>
+                        <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')">▼</button>
+                        Projects 
+                        <button type="button" onclick="addItem('proj')">+ Add</button>
+                        <button type="button" class="btn-clear" onclick="clearSection('proj')">Clear</button>
+                    </legend>
                     <div id="projectList"></div>
                 </fieldset>
 
@@ -55,12 +78,23 @@
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
+                <!-- My Resumes (Auth Required) -->
+                <fieldset id="myResumesSection" style="display:none;">
+                    <legend>My Resumes</legend>
+                    <div id="resumesList">No saved resumes. Save your first resume!</div>
+                    <div class="resume-save-row">
+                        <input type="text" id="resumeName" placeholder="Resume name" />
+                        <button type="button" onclick="saveToCloud()">Save to Cloud</button>
+                    </div>
+                </fieldset>
+
                 <!-- Actions -->
                 <fieldset class="actions">
                     <legend>Actions</legend>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
                     <button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button>
                     <button type="button" onclick="downloadJson()">Save JSON</button>
+                    <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                     <label>
                         Template:
                         <select id="template">
