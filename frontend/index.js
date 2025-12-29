@@ -108,9 +108,67 @@ function updateAuthUI(loggedIn) {
     }
 }
 
-async function login() {
+// Modal controls
+function showLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+function hideLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
+// Email/Password Auth
+async function loginWithEmail() {
     if (!supabaseClient) {
-        alert('Supabase not configured. Add your project credentials to index.js');
+        alert('Supabase not configured');
+        return;
+    }
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        hideLoginModal();
+    } catch (e) {
+        alert('Login failed: ' + e.message);
+    }
+}
+
+async function signupWithEmail() {
+    if (!supabaseClient) {
+        alert('Supabase not configured');
+        return;
+    }
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    try {
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) throw error;
+        alert('Check your email for a confirmation link!');
+        hideLoginModal();
+    } catch (e) {
+        alert('Signup failed: ' + e.message);
+    }
+}
+
+// Google OAuth
+async function loginWithGoogle() {
+    if (!supabaseClient) {
+        alert('Supabase not configured');
         return;
     }
     await supabaseClient.auth.signInWithOAuth({ 

@@ -12,13 +12,29 @@
         <header>
             <h1>Resumer</h1>
             <div id="authSection">
-                <button id="btnLogin" onclick="login()">Login with Google</button>
+                <button id="btnLogin" onclick="showLoginModal()">Log In</button>
                 <div id="userInfo" style="display:none;">
                     <span id="userEmail"></span>
                     <button onclick="logout()">Logout</button>
                 </div>
             </div>
         </header>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="modal-close" onclick="hideLoginModal()">&times;</span>
+                <h2>Log In</h2>
+                <div class="auth-form">
+                    <input type="email" id="authEmail" placeholder="Email" />
+                    <input type="password" id="authPassword" placeholder="Password" />
+                    <button onclick="loginWithEmail()">Log In with Email</button>
+                    <button onclick="signupWithEmail()">Sign Up with Email</button>
+                    <div class="auth-divider">or</div>
+                    <button onclick="loginWithGoogle()">Continue with Google</button>
+                </div>
+            </div>
+        </div>
 
         <main>
             <section class="form-section">
@@ -84,7 +100,7 @@
                     <div id="resumesList">No saved resumes. Save your first resume!</div>
                     <div class="resume-save-row">
                         <input type="text" id="resumeName" placeholder="Resume name" />
-                        <button type="button" onclick="saveToCloud()">Save to Cloud</button>
+                        <button type="button" onclick="saveToCloud()">Save</button>
                     </div>
                 </fieldset>
 
