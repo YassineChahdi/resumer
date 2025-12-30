@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resumer</title>
+    <title>resumer</title>
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Resumer</h1>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <img src="logo.svg" alt="resumer Logo" style="height: 2rem; width: auto;">
+                <h1>resumer</h1>
+            </div>
             <div id="authSection">
                 <button id="btnLogin" onclick="showLoginModal()">Log In</button>
                 <div id="userInfo" style="display:none;">
