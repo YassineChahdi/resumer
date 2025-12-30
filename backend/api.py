@@ -246,9 +246,11 @@ async def delete_resume(resume_id: str, user: dict = Depends(get_current_user)):
 
 def _get_template_path(template_name: str) -> str:
     """Get full path to template file."""
+    # Use TEMPLATES_DIR env var (for Docker) or fallback to relative path (local dev)
+    templates_dir = os.getenv("TEMPLATES_DIR", "../data/templates")
     templates = {
-        "jake": "../data/templates/jake_template.tex",
-        "mirage": "../data/templates/mirage_template.tex",
+        "jake": f"{templates_dir}/jake_template.tex",
+        "mirage": f"{templates_dir}/mirage_template.tex",
     }
     if template_name not in templates:
         raise HTTPException(status_code=400, detail=f"Unknown template: {template_name}")

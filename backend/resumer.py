@@ -31,14 +31,15 @@ class Resumer:
             with open(tex_file, 'w') as f:
                 f.write(latex_resume)
 
-            for _ in range(2):
-                result = subprocess.run(
-                    ["pdflatex", "-interaction=nonstopmode", "-output-directory", temp_dir, tex_file],
-                    capture_output=True,
-                    text=True
-                )
-                if result.returncode != 0:
-                    raise RuntimeError(f"pdflatex compilation failed:\n{result.stdout}\n{result.stderr}")
+            # Use Tectonic (lightweight LaTeX) - handles everything in one pass
+            result = subprocess.run(
+                ["tectonic", "-X", "compile", tex_file],
+                capture_output=True,
+                text=True,
+                cwd=temp_dir
+            )
+            if result.returncode != 0:
+                raise RuntimeError(f"Tectonic compilation failed:\n{result.stdout}\n{result.stderr}")
 
             pdf_file = os.path.join(temp_dir, "resume.pdf")
             shutil.copy(pdf_file, output_path)

@@ -1,0 +1,92 @@
+\documentclass[11pt,letterpaper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}       % Times New Roman font
+\usepackage[margin=0.5in]{geometry} % 0.5 inch margins
+\usepackage{enumitem}       % Custom bullet points
+\usepackage{titlesec}       % Custom section titles
+\usepackage{nopageno}       % No page numbers
+\usepackage{hyperref}       % Hyperlinks for email/linkedin
+
+\pagestyle{empty}           % No page numbers (built-in, no package needed)
+
+% --- Formatting ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Custom Section Header
+\titleformat{\section}
+  {\normalfont\large\bfseries\uppercase} % Format
+  {}                                     % Label
+  {0em}                                  % Separation
+  {}                                     % Before code
+  [\titlerule]                           % After code (horizontal line)
+
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+
+% Custom Lists (Bullets)
+\setlist[itemize]{topsep=0pt, parsep=0pt, partopsep=0pt, itemsep=2pt, leftmargin=1.5em}
+
+%-------------------------
+% Custom commands (matching Jake template names with Mirage styling)
+\newcommand{\resumeItem}[1]{
+  \item\small{#1}
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{4pt}
+  \noindent\textbf{#1} \hfill #2 \\
+  \textit{\small#3} \hfill \textit{\small #4}
+  \par
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+  \vspace{1pt}
+  \noindent\small#1 \hfill #2
+  \vspace{2pt}
+}
+
+\newcommand{\resumeSubHeadingListStart}{}
+\newcommand{\resumeSubHeadingListEnd}{}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}}
+
+\begin{document}
+
+% --- HEADER ---
+\begin{center}
+    {\huge \textbf{{{FULL_NAME}}}} \\ [4pt]
+    {{CONTACT_LINE}}
+\end{center}
+
+\vspace{5pt}
+
+% --- EDUCATION ---
+\section*{Education}
+{{EDUCATION_ENTRIES}}
+
+\vspace{5pt}
+
+% --- PROFESSIONAL EXPERIENCE ---
+\section*{Professional Experience}
+{{EXPERIENCE_ENTRIES}}
+
+\vspace{5pt}
+
+% --- PROJECTS ---
+\section*{Projects}
+{{PROJECT_ENTRIES}}
+
+\vspace{5pt}
+
+% --- SKILLS \& INTERESTS ---
+\section*{Skills \& Interests}
+
+\begin{itemize}
+    \item \textbf{Languages:} {{LANGUAGES_LIST}}
+    \item \textbf{Technologies:} {{TECHNOLOGIES_LIST}}
+\end{itemize}
+
+\end{document}
