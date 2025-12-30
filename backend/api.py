@@ -7,6 +7,9 @@ from resumer import Resumer
 from models import Resume
 import tempfile
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Optional Supabase import - gracefully degrade if not configured
 try:
@@ -19,10 +22,11 @@ except ImportError:
 
 app = FastAPI(title="Resumer API", description="Resume tailoring API")
 
-# Enable CORS for local development
+# CORS configuration - use ALLOWED_ORIGINS env var in production (comma-separated)
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -76,6 +80,12 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
 
 
 # --- Endpoints ---
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint for deployment monitoring."""
+    return {"status": "healthy", "service": "resumer-api"}
+
 
 @app.post("/tailor")
 def tailor_resume(request: TailorRequest):

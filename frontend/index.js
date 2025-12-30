@@ -1,10 +1,19 @@
-const API_BASE = 'http://localhost:8000';
+// Configuration - auto-detect environment
+// Development: localhost, 127.0.0.1, or file:// protocol
+const IS_DEV = window.location.hostname === 'localhost' 
+    || window.location.hostname === '127.0.0.1' 
+    || window.location.hostname === ''  // file:// protocol
+    || window.location.protocol === 'file:';
+const API_BASE = IS_DEV 
+    ? 'http://localhost:8000'
+    : (window.RESUMER_CONFIG?.API_BASE || window.location.origin + '/api');
+
 const STORAGE_KEY = 'resumeData';
 const SECTION_STATES_KEY = 'sectionStates';
 
-// Supabase config - Replace with your project values
-const SUPABASE_URL = 'https://yrfedqgzzrhxnozaopvf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZmVkcWd6enJoeG5vemFvcHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDMwMTUsImV4cCI6MjA4MjYxOTAxNX0.w9LoNN2Q-C-_5fUNDhgGgkbhQenQYeT3p14zGafAUEE';
+// Supabase config - loaded from config or defaults
+const SUPABASE_URL = window.RESUMER_CONFIG?.SUPABASE_URL || 'https://yrfedqgzzrhxnozaopvf.supabase.co';
+const SUPABASE_ANON_KEY = window.RESUMER_CONFIG?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZmVkcWd6enJoeG5vemFvcHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDMwMTUsImV4cCI6MjA4MjYxOTAxNX0.w9LoNN2Q-C-_5fUNDhgGgkbhQenQYeT3p14zGafAUEE';
 
 // Initialize Supabase client
 let supabaseClient = null;
