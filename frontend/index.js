@@ -155,12 +155,19 @@ async function loginWithEmail() {
         alert('Please enter email and password');
         return;
     }
+    const btn = document.getElementById('authSubmitBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Logging in...';
     try {
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
         hideLoginModal();
     } catch (e) {
         alert('Login failed: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
     }
 }
 
@@ -179,6 +186,10 @@ async function signupWithEmail() {
         alert('Password must be at least 6 characters');
         return;
     }
+    const btn = document.getElementById('authSubmitBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Signing up...';
     try {
         const { error } = await supabaseClient.auth.signUp({ email, password });
         if (error) throw error;
@@ -186,6 +197,9 @@ async function signupWithEmail() {
         hideLoginModal();
     } catch (e) {
         alert('Signup failed: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
     }
 }
 
@@ -298,6 +312,14 @@ async function saveToCloud() {
         document.getElementById('resumeName').value = name;
     }
     
+    // Find save button and show loading
+    const saveBtn = document.querySelector('[onclick="saveToCloud()"]');
+    const originalText = saveBtn?.textContent;
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+    }
+    
     try {
         const body = {
             name,
@@ -329,12 +351,22 @@ async function saveToCloud() {
         loadResumes();
     } catch (e) {
         alert('Failed to save: ' + e.message);
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
     }
 }
 
 async function loadCloudResume(id) {
     const authHeader = await getAuthHeader();
     if (!authHeader) return;
+    
+    // Show loading in resumes list
+    const container = document.getElementById('resumesList');
+    const originalContent = container.innerHTML;
+    container.innerHTML = 'Loading resume...';
     
     try {
         const res = await fetch(`${API_BASE}/resumes/${id}`, { headers: authHeader });
@@ -363,8 +395,11 @@ async function loadCloudResume(id) {
             document.getElementById('btnPdf').disabled = false;
             document.getElementById('btnLatex').disabled = false;
         }
+        // Restore list
+        container.innerHTML = originalContent;
     } catch (e) {
         alert('Failed to load resume: ' + e.message);
+        container.innerHTML = originalContent;
     }
 }
 
@@ -697,6 +732,10 @@ function renderPreview(r) {
 async function downloadPDF() {
     syncFromForm();
     const apiData = prepareApiData();
+    const btn = document.getElementById('btnPdf');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing...';
     try {
         const res = await fetch(`${API_BASE}/export/pdf`, {
             method: 'POST',
@@ -706,11 +745,19 @@ async function downloadPDF() {
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         download(await res.blob(), 'resume.pdf');
     } catch (e) { alert('Error: ' + e.message); }
+    finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 
 async function downloadLatex() {
     syncFromForm();
     const apiData = prepareApiData();
+    const btn = document.getElementById('btnLatex');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing...';
     try {
         const res = await fetch(`${API_BASE}/export/latex`, {
             method: 'POST',
@@ -720,6 +767,10 @@ async function downloadLatex() {
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         download(new Blob([await res.text()], { type: 'text/plain' }), 'resume.tex');
     } catch (e) { alert('Error: ' + e.message); }
+    finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 
 // Prepare data for API (convert formats)
