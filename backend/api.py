@@ -1,18 +1,32 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel
+from typing import Optional
 from resumer import Resumer
 from models import Resume
 import tempfile
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Optional Supabase import - gracefully degrade if not configured
+try:
+    from supabase_client import get_supabase, verify_jwt
+    SUPABASE_ENABLED = True
+except ImportError:
+    SUPABASE_ENABLED = False
+    get_supabase = None
+    verify_jwt = None
 
 app = FastAPI(title="Resumer API", description="Resume tailoring API")
 
-# Enable CORS for local development
+# CORS configuration - use ALLOWED_ORIGINS env var in production (comma-separated)
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,7 +52,40 @@ class ExportRequest(BaseModel):
     template: str = "jake"  # "jake" or "mirage"
 
 
+class SaveResumeRequest(BaseModel):
+    name: str = "Untitled Resume"
+    full_resume: dict
+    tailored_resume: Optional[dict] = None
+
+
+class UpdateResumeRequest(BaseModel):
+    name: Optional[str] = None
+    full_resume: Optional[dict] = None
+    tailored_resume: Optional[dict] = None
+
+
+# --- Auth Dependency ---
+
+async def get_current_user(authorization: str = Header(None)) -> dict:
+    """Extract and verify user from Authorization header."""
+    if not SUPABASE_ENABLED:
+        raise HTTPException(status_code=503, detail="Supabase not configured. Install supabase package and set credentials.")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+    token = authorization.replace("Bearer ", "")
+    user = verify_jwt(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return user
+
+
 # --- Endpoints ---
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint for deployment monitoring."""
+    return {"status": "healthy", "service": "resumer-api"}
+
 
 @app.post("/tailor")
 def tailor_resume(request: TailorRequest):
@@ -115,6 +162,84 @@ def export_latex(request: ExportRequest):
 def list_templates():
     """List available templates."""
     return {"templates": ["jake", "mirage"]}
+
+
+# --- Resume CRUD Endpoints (Auth Required) ---
+
+@app.get("/resumes")
+async def list_resumes(user: dict = Depends(get_current_user)):
+    """List all resumes for the authenticated user."""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("resumes").select("id, name, created_at, updated_at").eq("user_id", user["id"]).order("updated_at", desc=True).execute()
+        return {"resumes": result.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/resumes")
+async def save_resume(request: SaveResumeRequest, user: dict = Depends(get_current_user)):
+    """Save a new resume."""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("resumes").insert({
+            "user_id": user["id"],
+            "name": request.name,
+            "full_resume": request.full_resume,
+            "tailored_resume": request.tailored_resume
+        }).execute()
+        return {"resume": result.data[0] if result.data else None}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/resumes/{resume_id}")
+async def get_resume(resume_id: str, user: dict = Depends(get_current_user)):
+    """Get a specific resume by ID."""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("resumes").select("*").eq("id", resume_id).eq("user_id", user["id"]).execute()
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        return {"resume": result.data[0]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/resumes/{resume_id}")
+async def update_resume(resume_id: str, request: UpdateResumeRequest, user: dict = Depends(get_current_user)):
+    """Update an existing resume."""
+    try:
+        supabase = get_supabase()
+        update_data = {k: v for k, v in request.model_dump().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        update_data["updated_at"] = "now()"
+        result = supabase.table("resumes").update(update_data).eq("id", resume_id).eq("user_id", user["id"]).execute()
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        return {"resume": result.data[0]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/resumes/{resume_id}")
+async def delete_resume(resume_id: str, user: dict = Depends(get_current_user)):
+    """Delete a resume."""
+    try:
+        supabase = get_supabase()
+        result = supabase.table("resumes").delete().eq("id", resume_id).eq("user_id", user["id"]).execute()
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Resume not found")
+        return {"deleted": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # --- Helpers ---

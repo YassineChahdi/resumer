@@ -1,4 +1,24 @@
-const API_BASE = 'http://localhost:8000';
+// Configuration - auto-detect environment
+// Development: localhost, 127.0.0.1, or file:// protocol
+const IS_DEV = window.location.hostname === 'localhost' 
+    || window.location.hostname === '127.0.0.1' 
+    || window.location.hostname === ''  // file:// protocol
+    || window.location.protocol === 'file:';
+const API_BASE = IS_DEV 
+    ? 'http://localhost:8000'
+    : (window.RESUMER_CONFIG?.API_BASE || window.location.origin + '/api');
+
+const STORAGE_KEY = 'resumeData';
+const SECTION_STATES_KEY = 'sectionStates';
+
+// Supabase config - loaded from config or defaults
+const SUPABASE_URL = window.RESUMER_CONFIG?.SUPABASE_URL || 'https://yrfedqgzzrhxnozaopvf.supabase.co';
+const SUPABASE_ANON_KEY = window.RESUMER_CONFIG?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyZmVkcWd6enJoeG5vemFvcHZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwNDMwMTUsImV4cCI6MjA4MjYxOTAxNX0.w9LoNN2Q-C-_5fUNDhgGgkbhQenQYeT3p14zGafAUEE';
+
+// Initialize Supabase client
+let supabaseClient = null;
+let currentUser = null;
+let currentResumeId = null; // Track which resume we're editing
 
 // Single source of truth
 let resumeData = {
@@ -12,9 +32,403 @@ let resumeData = {
 };
 
 let tailoredResume = null;
+let sectionStates = { edu: true, exp: true, proj: true }; // true = expanded
+
+// === Debounce utility ===
+function debounce(fn, delay) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+// === LocalStorage persistence ===
+function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
+}
+
+function loadFromStorage() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        try {
+            const data = JSON.parse(stored);
+            Object.assign(resumeData, data);
+        } catch (e) { console.warn('Failed to load from localStorage'); }
+    }
+    const states = localStorage.getItem(SECTION_STATES_KEY);
+    if (states) {
+        try { sectionStates = JSON.parse(states); } catch (e) {}
+    }
+}
+
+function saveSectionStates() {
+    localStorage.setItem(SECTION_STATES_KEY, JSON.stringify(sectionStates));
+}
+
+const debouncedSave = debounce(saveToStorage, 300);
 
 // === Init ===
-document.addEventListener('DOMContentLoaded', () => renderForm());
+document.addEventListener('DOMContentLoaded', async () => {
+    loadFromStorage();
+    renderForm();
+    await initSupabase();
+});
+
+// === Supabase Auth ===
+async function initSupabase() {
+    if (typeof supabase === 'undefined') {
+        console.warn('Supabase not loaded');
+        return;
+    }
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+        console.warn('Supabase not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY in index.js');
+        return;
+    }
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Listen for auth changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (session?.user) {
+            currentUser = session.user;
+            updateAuthUI(true);
+            loadResumes();
+        } else {
+            currentUser = null;
+            updateAuthUI(false);
+        }
+    });
+    
+    // Check current session
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.user) {
+        currentUser = session.user;
+        updateAuthUI(true);
+        loadResumes();
+    }
+}
+
+function updateAuthUI(loggedIn) {
+    document.getElementById('btnLogin').style.display = loggedIn ? 'none' : '';
+    document.getElementById('userInfo').style.display = loggedIn ? '' : 'none';
+    document.getElementById('myResumesSection').style.display = loggedIn ? '' : 'none';
+    if (loggedIn && currentUser) {
+        document.getElementById('userEmail').textContent = currentUser.email || 'Logged in';
+    }
+}
+
+// Modal controls
+let isSignupMode = false;
+
+function showLoginModal() {
+    isSignupMode = false;
+    updateAuthModalUI();
+    document.getElementById('loginModal').style.display = 'flex';
+}
+
+function hideLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+}
+
+function toggleAuthMode() {
+    isSignupMode = !isSignupMode;
+    updateAuthModalUI();
+}
+
+function updateAuthModalUI() {
+    document.getElementById('authModalTitle').textContent = isSignupMode ? 'Sign Up' : 'Log In';
+    document.getElementById('authSubmitBtn').textContent = isSignupMode ? 'Sign Up' : 'Log In';
+    document.getElementById('authToggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    document.getElementById('authToggleLink').textContent = isSignupMode ? 'Log in' : 'Sign up';
+}
+
+async function submitAuth() {
+    if (isSignupMode) {
+        await signupWithEmail();
+    } else {
+        await loginWithEmail();
+    }
+}
+
+// Email/Password Auth
+async function loginWithEmail() {
+    if (!supabaseClient) {
+        alert('Supabase not configured');
+        return;
+    }
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    const btn = document.getElementById('authSubmitBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Logging in...';
+    try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        hideLoginModal();
+    } catch (e) {
+        alert('Login failed: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+async function signupWithEmail() {
+    if (!supabaseClient) {
+        alert('Supabase not configured');
+        return;
+    }
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if (!email || !password) {
+        alert('Please enter email and password');
+        return;
+    }
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+    }
+    const btn = document.getElementById('authSubmitBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Signing up...';
+    try {
+        const { error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) throw error;
+        alert('Check your email for a confirmation link!');
+        hideLoginModal();
+    } catch (e) {
+        alert('Signup failed: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+// Google OAuth
+async function loginWithGoogle() {
+    if (!supabaseClient) {
+        alert('Supabase not configured');
+        return;
+    }
+    await supabaseClient.auth.signInWithOAuth({ 
+        provider: 'google',
+        options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+}
+
+async function logout() {
+    if (!supabaseClient) return;
+    await supabaseClient.auth.signOut();
+    currentUser = null;
+    currentResumeId = null;
+    cachedResumes = [];
+    updateAuthUI(false);
+    
+    // Clear all fields
+    resumeData = {
+        full_name: '',
+        contacts: { phone: '', email: '', github: '', linkedin: '' },
+        education: [],
+        experience: [],
+        projects: [],
+        languages: [],
+        technologies: []
+    };
+    tailoredResume = null;
+    localStorage.removeItem(STORAGE_KEY);
+    renderForm();
+    document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
+    document.getElementById('btnPdf').disabled = true;
+    document.getElementById('btnLatex').disabled = true;
+}
+
+// === Cloud Resume Management ===
+async function getAuthHeader() {
+    if (!supabaseClient) return null;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    return session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : null;
+}
+
+async function loadResumes() {
+    const authHeader = await getAuthHeader();
+    if (!authHeader) return;
+    
+    // Show loading state
+    document.getElementById('resumesList').innerHTML = 'Loading...';
+    
+    try {
+        const res = await fetch(`${API_BASE}/resumes`, { headers: authHeader });
+        if (!res.ok) throw new Error('Failed to load resumes');
+        const data = await res.json();
+        cachedResumes = data.resumes || [];
+        renderResumesList(cachedResumes);
+    } catch (e) {
+        console.error('Failed to load resumes:', e);
+        document.getElementById('resumesList').innerHTML = 'Failed to load resumes.';
+    }
+}
+
+// Cache resumes list for duplicate name check
+let cachedResumes = [];
+
+function getUniqueName(baseName) {
+    const existingNames = cachedResumes.map(r => r.name);
+    if (!existingNames.includes(baseName)) return baseName;
+    
+    let counter = 1;
+    let uniqueName = `${baseName} (${counter})`;
+    while (existingNames.includes(uniqueName)) {
+        counter++;
+        uniqueName = `${baseName} (${counter})`;
+    }
+    return uniqueName;
+}
+
+function renderResumesList(resumes) {
+    const container = document.getElementById('resumesList');
+    if (!resumes.length) {
+        container.innerHTML = 'No saved resumes. Save your first resume!';
+        return;
+    }
+    container.innerHTML = resumes.map(r => `
+        <div class="resume-item" data-id="${r.id}">
+            <span onclick="loadCloudResume('${r.id}')">${r.name}</span>
+            <button class="btn-remove" onclick="deleteCloudResume('${r.id}')">×</button>
+        </div>
+    `).join('');
+}
+
+async function saveToCloud() {
+    syncFromForm();
+    let name = document.getElementById('resumeName').value.trim() || 'Untitled Resume';
+    const authHeader = await getAuthHeader();
+    if (!authHeader) {
+        alert('Please login first');
+        return;
+    }
+    
+    // For new resumes, ensure unique name
+    if (!currentResumeId) {
+        name = getUniqueName(name);
+        document.getElementById('resumeName').value = name;
+    }
+    
+    // Find save button and show loading
+    const saveBtn = document.querySelector('[onclick="saveToCloud()"]');
+    const originalText = saveBtn?.textContent;
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+    }
+    
+    try {
+        const body = {
+            name,
+            full_resume: prepareApiData(),
+            tailored_resume: tailoredResume
+        };
+        
+        let res;
+        if (currentResumeId) {
+            // Update existing
+            res = await fetch(`${API_BASE}/resumes/${currentResumeId}`, {
+                method: 'PUT',
+                headers: { ...authHeader, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+        } else {
+            // Create new
+            res = await fetch(`${API_BASE}/resumes`, {
+                method: 'POST',
+                headers: { ...authHeader, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+        }
+        
+        if (!res.ok) throw new Error('Failed to save');
+        const data = await res.json();
+        if (data.resume?.id) currentResumeId = data.resume.id;
+        alert('Resume saved!');
+        loadResumes();
+    } catch (e) {
+        alert('Failed to save: ' + e.message);
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
+    }
+}
+
+async function loadCloudResume(id) {
+    const authHeader = await getAuthHeader();
+    if (!authHeader) return;
+    
+    // Show loading in resumes list
+    const container = document.getElementById('resumesList');
+    const originalContent = container.innerHTML;
+    container.innerHTML = 'Loading resume...';
+    
+    try {
+        const res = await fetch(`${API_BASE}/resumes/${id}`, { headers: authHeader });
+        if (!res.ok) throw new Error('Failed to load');
+        const data = await res.json();
+        const resume = data.resume;
+        
+        currentResumeId = resume.id;
+        
+        // Load full_resume into form (don't populate save name field)
+        if (resume.full_resume) {
+            const fr = resume.full_resume;
+            resumeData = {
+                ...resumeData,
+                ...fr,
+                // Extract .text from skill objects if needed
+                languages: (fr.languages || []).map(l => typeof l === 'string' ? l : l.text || ''),
+                technologies: (fr.technologies || []).map(t => typeof t === 'string' ? t : t.text || '')
+            };
+            renderForm();
+            saveToStorage();
+        }
+        if (resume.tailored_resume) {
+            tailoredResume = resume.tailored_resume;
+            renderPreview(tailoredResume);
+            document.getElementById('btnPdf').disabled = false;
+            document.getElementById('btnLatex').disabled = false;
+        }
+        // Restore list
+        container.innerHTML = originalContent;
+    } catch (e) {
+        alert('Failed to load resume: ' + e.message);
+        container.innerHTML = originalContent;
+    }
+}
+
+async function deleteCloudResume(id) {
+    if (!confirm('Delete this resume from the cloud?')) return;
+    const authHeader = await getAuthHeader();
+    if (!authHeader) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/resumes/${id}`, { 
+            method: 'DELETE', 
+            headers: authHeader 
+        });
+        if (!res.ok) throw new Error('Failed to delete');
+        if (currentResumeId === id) currentResumeId = null;
+        loadResumes();
+    } catch (e) {
+        alert('Failed to delete: ' + e.message);
+    }
+}
 
 // === Load JSON ===
 function loadFromJson(event) {
@@ -77,6 +491,9 @@ function renderForm() {
     // Skills
     document.getElementById('languages').value = resumeData.languages.join(', ');
     document.getElementById('technologies').value = resumeData.technologies.join(', ');
+    
+    // Apply section toggle states
+    applyAllToggleStates();
 }
 
 // === HTML Generators ===
@@ -102,9 +519,16 @@ function fieldInput(f) {
 function bulletHtml(type, idx, bi, b = {}) {
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
-        <input type="number" step="0.1" min="0" max="1" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}"/>
+        <input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)"/>
         <button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>
     </div>`;
+}
+
+function clampImpressiveness(input) {
+    let val = parseFloat(input.value);
+    if (isNaN(val)) val = 0.7;
+    input.value = Math.min(1, Math.max(0, val));
+    syncFromForm();
 }
 
 function eduFields(e = {}) {
@@ -165,6 +589,65 @@ function removeBullet(type, idx, bi) {
     renderForm();
 }
 
+// === Clear Functions ===
+function clearSection(type) {
+    const labels = { edu: 'Education', exp: 'Experience', proj: 'Projects' };
+    if (!confirm(`Clear all ${labels[type]} entries?`)) return;
+    syncFromForm();
+    if (type === 'edu') resumeData.education = [];
+    else if (type === 'exp') resumeData.experience = [];
+    else resumeData.projects = [];
+    saveToStorage();
+    renderForm();
+}
+
+function clearBullets(type, idx) {
+    if (!confirm('Clear all bullets for this item?')) return;
+    syncFromForm();
+    const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
+    arr[idx].bullets = [{ text: '', impressiveness: 0.7 }];
+    saveToStorage();
+    renderForm();
+}
+
+function clearAll() {
+    if (!confirm('Clear entire resume? This cannot be undone.')) return;
+    resumeData = {
+        full_name: '',
+        contacts: { phone: '', email: '', github: '', linkedin: '' },
+        education: [],
+        experience: [],
+        projects: [],
+        languages: [],
+        technologies: []
+    };
+    tailoredResume = null;
+    saveToStorage();
+    renderForm();
+    document.getElementById('btnPdf').disabled = true;
+    document.getElementById('btnLatex').disabled = true;
+    document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
+}
+
+// === Section Toggles ===
+function toggleSection(type) {
+    sectionStates[type] = !sectionStates[type];
+    saveSectionStates();
+    applyToggleState(type);
+}
+
+function applyToggleState(type) {
+    const listId = { edu: 'educationList', exp: 'experienceList', proj: 'projectList' }[type];
+    const list = document.getElementById(listId);
+    const btn = document.querySelector(`[data-toggle="${type}"]`);
+    if (list) list.style.display = sectionStates[type] ? '' : 'none';
+    if (btn) btn.textContent = sectionStates[type] ? '▼' : '▶';
+}
+
+function applyAllToggleStates() {
+    ['edu', 'exp', 'proj'].forEach(applyToggleState);
+}
+
 // === Sync Form → resumeData ===
 function syncFromForm() {
     resumeData.full_name = document.getElementById('fullName').value;
@@ -189,7 +672,7 @@ function syncFromForm() {
         duration: el.querySelector('[data-field="duration"]').value,
         bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
             text: b.querySelector('[data-field="text"]').value,
-            impressiveness: parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7
+            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
         })).filter(b => b.text)
     })).filter(e => e.employer || e.title);
 
@@ -198,12 +681,13 @@ function syncFromForm() {
         languages: el.querySelector('[data-field="languages"]').value,
         bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
             text: b.querySelector('[data-field="text"]').value,
-            impressiveness: parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7
+            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
         })).filter(b => b.text)
     })).filter(p => p.title);
 
     resumeData.languages = document.getElementById('languages').value.split(',').map(s => s.trim()).filter(Boolean);
     resumeData.technologies = document.getElementById('technologies').value.split(',').map(s => s.trim()).filter(Boolean);
+    debouncedSave();
 }
 
 // === API Calls ===
@@ -264,6 +748,10 @@ function renderPreview(r) {
 async function downloadPDF() {
     syncFromForm();
     const apiData = prepareApiData();
+    const btn = document.getElementById('btnPdf');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing...';
     try {
         const res = await fetch(`${API_BASE}/export/pdf`, {
             method: 'POST',
@@ -271,13 +759,22 @@ async function downloadPDF() {
             body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        download(await res.blob(), 'resume.pdf');
+        const fileName = getDownloadFileName('pdf');
+        download(await res.blob(), fileName);
     } catch (e) { alert('Error: ' + e.message); }
+    finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 
 async function downloadLatex() {
     syncFromForm();
     const apiData = prepareApiData();
+    const btn = document.getElementById('btnLatex');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing...';
     try {
         const res = await fetch(`${API_BASE}/export/latex`, {
             method: 'POST',
@@ -285,8 +782,21 @@ async function downloadLatex() {
             body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        download(new Blob([await res.text()], { type: 'text/plain' }), 'resume.tex');
+        const fileName = getDownloadFileName('tex');
+        download(new Blob([await res.text()], { type: 'text/plain' }), fileName);
     } catch (e) { alert('Error: ' + e.message); }
+    finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+function getDownloadFileName(ext) {
+    if (currentResumeId && cachedResumes.length) {
+        const saved = cachedResumes.find(r => r.id === currentResumeId);
+        if (saved?.name) return `${saved.name}.${ext}`;
+    }
+    return `resume.${ext}`;
 }
 
 // Prepare data for API (convert formats)
