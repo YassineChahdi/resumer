@@ -6,7 +6,7 @@ Resume building sandbox with AI-powered tailoring to job descriptions.
 **Requirements:** Python 3.10+, pdflatex
 
 ```bash
-./setup_tex.sh          # Install LaTeX (macOS)
+./setup_tex.sh # Install LaTeX
 pip install -r backend/requirements.txt
 ```
 
