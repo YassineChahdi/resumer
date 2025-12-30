@@ -81,7 +81,7 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
 
 # --- Endpoints ---
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check():
     """Health check endpoint for deployment monitoring."""
     return {"status": "healthy", "service": "resumer-api"}
