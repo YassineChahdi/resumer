@@ -4,9 +4,10 @@ const IS_DEV = window.location.hostname === 'localhost'
     || window.location.hostname === '127.0.0.1' 
     || window.location.hostname === ''  // file:// protocol
     || window.location.protocol === 'file:';
+// Production: Update this URL after deploying backend to HuggingFace Spaces
 const API_BASE = IS_DEV 
     ? 'http://localhost:8000'
-    : (window.RESUMER_CONFIG?.API_BASE || window.location.origin + '/api');
+    : 'https://jasonwastaken-resumer-api.hf.space';  // TODO: Replace with your HF Spaces URL
 
 const STORAGE_KEY = 'resumeData';
 const SECTION_STATES_KEY = 'sectionStates';
