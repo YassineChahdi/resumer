@@ -519,6 +519,7 @@ function clampImpressiveness(input) {
     let val = parseFloat(input.value);
     if (isNaN(val)) val = 0.7;
     input.value = Math.min(1, Math.max(0, val));
+    syncFromForm();
 }
 
 function eduFields(e = {}) {
