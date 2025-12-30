@@ -749,7 +749,8 @@ async function downloadPDF() {
             body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        download(await res.blob(), 'resume.pdf');
+        const fileName = getDownloadFileName('pdf');
+        download(await res.blob(), fileName);
     } catch (e) { alert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
@@ -771,12 +772,21 @@ async function downloadLatex() {
             body: JSON.stringify({ resume: tailoredResume || apiData, template: document.getElementById('template').value })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        download(new Blob([await res.text()], { type: 'text/plain' }), 'resume.tex');
+        const fileName = getDownloadFileName('tex');
+        download(new Blob([await res.text()], { type: 'text/plain' }), fileName);
     } catch (e) { alert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
         btn.textContent = originalText;
     }
+}
+
+function getDownloadFileName(ext) {
+    if (currentResumeId && cachedResumes.length) {
+        const saved = cachedResumes.find(r => r.id === currentResumeId);
+        if (saved?.name) return `${saved.name}.${ext}`;
+    }
+    return `resume.${ext}`;
 }
 
 // Prepare data for API (convert formats)
