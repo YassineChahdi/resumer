@@ -510,9 +510,15 @@ function fieldInput(f) {
 function bulletHtml(type, idx, bi, b = {}) {
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
-        <input type="number" step="0.1" min="0" max="1" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}"/>
+        <input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)"/>
         <button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>
     </div>`;
+}
+
+function clampImpressiveness(input) {
+    let val = parseFloat(input.value);
+    if (isNaN(val)) val = 0.7;
+    input.value = Math.min(1, Math.max(0, val));
 }
 
 function eduFields(e = {}) {
@@ -656,7 +662,7 @@ function syncFromForm() {
         duration: el.querySelector('[data-field="duration"]').value,
         bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
             text: b.querySelector('[data-field="text"]').value,
-            impressiveness: parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7
+            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
         })).filter(b => b.text)
     })).filter(e => e.employer || e.title);
 
@@ -665,7 +671,7 @@ function syncFromForm() {
         languages: el.querySelector('[data-field="languages"]').value,
         bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
             text: b.querySelector('[data-field="text"]').value,
-            impressiveness: parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7
+            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
         })).filter(b => b.text)
     })).filter(p => p.title);
 
