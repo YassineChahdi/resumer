@@ -221,7 +221,7 @@ input, textarea, select {
 }
 
 textarea {
-    resize: vertical;
+    resize: none;
 }
 
 button {
