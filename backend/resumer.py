@@ -54,14 +54,18 @@ class Resumer:
         with open(template_path, 'r') as f:
             content = f.read()
         
+        # Detect template type for section formatting
+        is_mirage = "mirage" in template_path.lower()
+        section_cmd = "\\section*" if is_mirage else "\\section"
+        
         content = content.replace("{{FULL_NAME}}", self._escape_latex(resume.full_name or ""))
         content = content.replace("{{CONTACT_LINE}}", self._generate_contact_line(resume))
         
-        content = content.replace("{{EDUCATION_ENTRIES}}", self._generate_education_latex(resume))
-        content = content.replace("{{EXPERIENCE_ENTRIES}}", self._generate_experience_latex(resume))
-        content = content.replace("{{PROJECT_ENTRIES}}", self._generate_projects_latex(resume))
-        content = content.replace("{{LANGUAGES_LIST}}", self._generate_languages_list(resume))
-        content = content.replace("{{TECHNOLOGIES_LIST}}", self._generate_technologies_list(resume))
+        # Each section is now self-contained (includes header) and returns "" if empty
+        content = content.replace("{{EDUCATION_SECTION}}", self._generate_education_latex(resume, section_cmd))
+        content = content.replace("{{EXPERIENCE_SECTION}}", self._generate_experience_latex(resume, section_cmd, is_mirage))
+        content = content.replace("{{PROJECTS_SECTION}}", self._generate_projects_latex(resume, section_cmd))
+        content = content.replace("{{SKILLS_SECTION}}", self._generate_skills_latex(resume, section_cmd, is_mirage))
 
         return content
 
@@ -102,7 +106,9 @@ class Resumer:
             text = text.replace(char, escape)
         return text
     
-    def _generate_education_latex(self, resume: Resume) -> str:
+    def _generate_education_latex(self, resume: Resume, section_cmd: str = "\\section") -> str:
+        if not resume.education:
+            return ""
         entries = []
         for edu in resume.education:
             est_name = self._escape_latex(edu.est_name or "")
@@ -113,9 +119,16 @@ class Resumer:
             
             entry = f"    \\resumeSubheading\n      {{{est_name}}}{{{location}}}\n      {{{degree}{gpa_str}}}{{{year}}}"
             entries.append(entry)
-        return "\n".join(entries)
+        
+        content = "\n".join(entries)
+        return f"""{section_cmd}{{Education}}
+  \\resumeSubHeadingListStart
+{content}
+  \\resumeSubHeadingListEnd"""
     
-    def _generate_experience_latex(self, resume: Resume) -> str:
+    def _generate_experience_latex(self, resume: Resume, section_cmd: str = "\\section", is_mirage: bool = False) -> str:
+        if not resume.experience:
+            return ""
         entries = []
         for exp in resume.experience:
             employer = self._escape_latex(exp.employer or "")
@@ -134,9 +147,17 @@ class Resumer:
                 entry_lines.append(f"        \\resumeItem{{{bullet_text}}}")
             entry_lines.append("      \\resumeItemListEnd")
             entries.append("\n".join(entry_lines))
-        return "\n".join(entries)
+        
+        content = "\n".join(entries)
+        title = "Professional Experience" if is_mirage else "Experience"
+        return f"""{section_cmd}{{{title}}}
+  \\resumeSubHeadingListStart
+{content}
+  \\resumeSubHeadingListEnd"""
     
-    def _generate_projects_latex(self, resume: Resume) -> str:
+    def _generate_projects_latex(self, resume: Resume, section_cmd: str = "\\section") -> str:
+        if not resume.projects:
+            return ""
         entries = []
         for proj in resume.projects:
             title = self._escape_latex(proj.title or "")
@@ -152,13 +173,48 @@ class Resumer:
                 entry_lines.append(f"            \\resumeItem{{{bullet_text}}}")
             entry_lines.append("        \\resumeItemListEnd")
             entries.append("\n".join(entry_lines))
-        return "\n".join(entries)
+        
+        content = "\n".join(entries)
+        return f"""{section_cmd}{{Projects}}
+    \\resumeSubHeadingListStart
+{content}
+    \\resumeSubHeadingListEnd"""
     
-    def _generate_languages_list(self, resume: Resume) -> str:
-        return ", ".join(self._escape_latex(lang.text or "") for lang in resume.languages)
-    
-    def _generate_technologies_list(self, resume: Resume) -> str:
-        return ", ".join(self._escape_latex(tech.text or "") for tech in resume.techs)
+    def _generate_skills_latex(self, resume: Resume, section_cmd: str = "\\section", is_mirage: bool = False) -> str:
+        langs = ", ".join(self._escape_latex(lang.text or "") for lang in resume.languages)
+        techs = ", ".join(self._escape_latex(tech.text or "") for tech in resume.techs)
+        
+        if not langs and not techs:
+            return ""
+        
+        title = "Skills \\& Interests" if is_mirage else "Skills"
+        
+        if is_mirage:
+            # Mirage uses itemize list format
+            items = []
+            if langs:
+                items.append(f"    \\item \\textbf{{Languages:}} {langs}")
+            if techs:
+                items.append(f"    \\item \\textbf{{Technologies:}} {techs}")
+            content = "\n".join(items)
+            return f"""{section_cmd}{{{title}}}
+\\begin{{itemize}}
+{content}
+\\end{{itemize}}"""
+        else:
+            # Jake template format
+            items = []
+            if langs:
+                items.append(f"    \\textbf{{Languages}}{{: {langs}}}")
+            if techs:
+                items.append(f"    \\textbf{{Technologies}}{{: {techs}}}")
+            content = " \\\\ \n".join(items)
+            return f"""{section_cmd}{{{title}}}
+ \\begin{{itemize}}[leftmargin=0.15in, label={{}}]
+    \\small{{\\item{{
+{content}
+    }}}}
+ \\end{{itemize}}"""
 
     def tailor_resume(self, resume: Resume, job_description: str, exp_bullet_count: int = 7, proj_bullet_count: int = 5, tech_count: int = 5, lang_count: int = 5) -> Resume:
         self._populate_resume_metrics(resume, job_description)

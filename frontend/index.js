@@ -758,8 +758,14 @@ function renderPreview(r) {
     if (r.isPlaceholder) {
         html += '<div class="placeholder-banner">📋 Sample Resume</div>';
     }
-    html += `<div class="preview-header"><h2>${r.full_name || 'Name'}</h2>
-        <div>${[r.contacts?.phone, r.contacts?.email, r.contacts?.github, r.contacts?.linkedin].filter(Boolean).join(' | ')}</div></div>`;
+    // Header: show name and contacts (skip if both are empty)
+    const contacts = [r.contacts?.phone, r.contacts?.email, r.contacts?.github, r.contacts?.linkedin].filter(Boolean);
+    if (r.full_name || contacts.length) {
+        html += `<div class="preview-header">`;
+        if (r.full_name) html += `<h2>${r.full_name}</h2>`;
+        if (contacts.length) html += `<div>${contacts.join(' | ')}</div>`;
+        html += `</div>`;
+    }
 
     if (r.education?.length) {
         html += '<div class="preview-section-title">Education</div>';
