@@ -691,10 +691,50 @@ function syncFromForm() {
     debouncedSave();
 }
 
+// === Placeholder Resume ===
+const PLACEHOLDER_RESUME = {
+    full_name: 'John Doe',
+    contacts: { phone: '(555) 123-4567', email: 'john.doe@email.com', github: 'github.com/johndoe', linkedin: 'linkedin.com/in/johndoe' },
+    education: [
+        { est_name: 'University of Technology', location: 'San Francisco, CA', degree: 'B.S. in Computer Science', year: '2020-2024', gpa: '3.8' }
+    ],
+    experience: [
+        { employer: 'Tech Company Inc.', location: 'San Francisco, CA', title: 'Software Engineer', duration: 'June 2023 - Present',
+          bullets: [{ text: 'Developed and maintained web applications using React and Node.js.' }, { text: 'Collaborated with cross-functional teams to deliver features on schedule.' }] }
+    ],
+    projects: [
+        { title: 'Portfolio Website', languages: ['JavaScript', 'React', 'CSS'],
+          bullets: [{ text: 'Built a responsive personal portfolio showcasing projects and skills.' }, { text: 'Implemented dynamic content loading and smooth animations.' }] }
+    ],
+    languages: [{ text: 'Python' }, { text: 'JavaScript' }, { text: 'TypeScript' }, { text: 'Java' }],
+    technologies: [{ text: 'React' }, { text: 'Node.js' }, { text: 'PostgreSQL' }, { text: 'Docker' }],
+    isPlaceholder: true
+};
+
+function isResumeEmpty() {
+    return !resumeData.full_name &&
+           !resumeData.contacts.phone && !resumeData.contacts.email && 
+           !resumeData.contacts.github && !resumeData.contacts.linkedin &&
+           resumeData.education.filter(e => e.est_name || e.degree).length === 0 &&
+           resumeData.experience.filter(e => e.employer || e.title).length === 0 &&
+           resumeData.projects.filter(p => p.title).length === 0 &&
+           resumeData.languages.length === 0 && resumeData.technologies.length === 0;
+}
+
 // === API Calls ===
 async function generatePreview() {
     syncFromForm();
     const preview = document.getElementById('preview');
+    
+    // If resume is empty, show placeholder preview
+    if (isResumeEmpty()) {
+        tailoredResume = PLACEHOLDER_RESUME;
+        renderPreview(tailoredResume);
+        document.getElementById('btnPdf').disabled = false;
+        document.getElementById('btnLatex').disabled = false;
+        return;
+    }
+    
     preview.innerHTML = '<span class="loading">Loading...</span>';
 
     try {
@@ -714,7 +754,11 @@ async function generatePreview() {
 }
 
 function renderPreview(r) {
-    let html = `<div class="preview-header"><h2>${r.full_name || 'Name'}</h2>
+    let html = '';
+    if (r.isPlaceholder) {
+        html += '<div class="placeholder-banner">📋 Sample Resume</div>';
+    }
+    html += `<div class="preview-header"><h2>${r.full_name || 'Name'}</h2>
         <div>${[r.contacts?.phone, r.contacts?.email, r.contacts?.github, r.contacts?.linkedin].filter(Boolean).join(' | ')}</div></div>`;
 
     if (r.education?.length) {
