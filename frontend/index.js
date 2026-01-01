@@ -824,6 +824,9 @@ function isResumeEmpty() {
 
 // === API Calls ===
 async function generatePreview() {
+    // Scroll to top for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     syncFromForm();
     const preview = document.getElementById('preview');
     
