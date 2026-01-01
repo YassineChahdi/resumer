@@ -1,3 +1,45 @@
+:root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --bg-tertiary: #252525;
+    --bg-hover: #3a3a3a;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888;
+    --text-muted: #666;
+    --border-color: #444;
+    --border-light: #555;
+    --accent-link: #8cf;
+    --accent-success: #8f8;
+    --accent-danger: #ff6b6b;
+    --accent-clear: #ff8c8c;
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --tooltip-bg: #333;
+    --placeholder-bg: linear-gradient(135deg, #2d4a3e 0%, #1a3a2a 100%);
+    --placeholder-border: #4a7c59;
+    --placeholder-text: #8fbc8f;
+}
+
+body.light-mode {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #fafafa;
+    --bg-hover: #e8e8e8;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555;
+    --text-muted: #777;
+    --border-color: #999;
+    --border-light: #888;
+    --accent-link: #0066cc;
+    --accent-success: #2e8b57;
+    --accent-danger: #dc3545;
+    --accent-clear: #e74c3c;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
+    --tooltip-bg: #333;
+    --placeholder-bg: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    --placeholder-border: #4caf50;
+    --placeholder-text: #2e7d32;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,10 +48,11 @@
 
 body {
     font-family: monospace;
-    background: #1a1a1a;
-    color: #e0e0e0;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     font-size: 14px;
     line-height: 1.4;
+    transition: background 0.3s, color 0.3s;
 }
 
 .container {
@@ -22,7 +65,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #444;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
 }
@@ -43,7 +86,7 @@ header h1 {
 }
 
 #userEmail {
-    color: #8f8;
+    color: var(--accent-success);
     font-size: 0.85em;
 }
 
@@ -54,13 +97,13 @@ header h1 {
     align-items: center;
     padding: 0.35rem 0.5rem;
     margin-bottom: 0.25rem;
-    background: #2a2a2a;
-    border: 1px solid #444;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     cursor: pointer;
 }
 
 .resume-item:hover {
-    background: #3a3a3a;
+    background: var(--bg-hover);
 }
 
 .resume-item span {
@@ -85,7 +128,7 @@ header h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--modal-overlay);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -93,8 +136,8 @@ header h1 {
 }
 
 .modal-content {
-    background: #2a2a2a;
-    border: 1px solid #444;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     padding: 1.5rem;
     width: 100%;
     max-width: 350px;
@@ -107,11 +150,11 @@ header h1 {
     right: 0.75rem;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #888;
+    color: var(--text-secondary);
 }
 
 .modal-close:hover {
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .modal-content h2 {
@@ -131,18 +174,18 @@ header h1 {
 
 .auth-divider {
     text-align: center;
-    color: #666;
+    color: var(--text-muted);
     margin: 0.5rem 0;
 }
 
 .auth-toggle {
     text-align: center;
     font-size: 0.9em;
-    color: #888;
+    color: var(--text-secondary);
 }
 
 .auth-toggle a {
-    color: #8cf;
+    color: var(--accent-link);
     text-decoration: none;
 }
 
@@ -171,7 +214,7 @@ header h1 {
 }
 
 .btn-cancel {
-    background: #444;
+    background: var(--border-color);
 }
 
 .btn-confirm {
@@ -194,7 +237,7 @@ main {
 }
 
 fieldset {
-    border: 1px solid #444;
+    border: 1px solid var(--border-color);
     padding: 0.75rem;
     margin-bottom: 0.75rem;
 }
@@ -211,21 +254,21 @@ legend button {
 .btn-toggle {
     background: none;
     border: none;
-    color: #888;
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 0 0.25rem;
     font-size: 0.85em;
 }
 
 .btn-toggle:hover {
-    color: #e0e0e0;
+    color: var(--text-primary);
 }
 
 .btn-clear {
     font-size: 0.85em;
-    color: #ff8c8c;
+    color: var(--accent-clear);
     background: none;
-    border: 1px solid #ff8c8c;
+    border: 1px solid var(--accent-clear);
     padding: 0.15rem 0.35rem;
 }
 
@@ -234,8 +277,8 @@ legend button {
 }
 
 .btn-danger {
-    color: #ff6b6b;
-    border-color: #ff6b6b;
+    color: var(--accent-danger);
+    border-color: var(--accent-danger);
 }
 
 .btn-danger:hover {
@@ -245,9 +288,9 @@ legend button {
 input, textarea, select {
     width: 100%;
     padding: 0.4rem;
-    border: 1px solid #444;
-    background: #2a2a2a;
-    color: #e0e0e0;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     font-family: inherit;
     font-size: inherit;
     margin-bottom: 0.5rem;
@@ -259,16 +302,16 @@ textarea {
 
 button {
     padding: 0.4rem 0.75rem;
-    border: 1px solid #444;
-    background: #2a2a2a;
-    color: #e0e0e0;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     cursor: pointer;
     font-family: inherit;
     font-size: inherit;
 }
 
 button:hover {
-    background: #3a3a3a;
+    background: var(--bg-hover);
 }
 
 button:disabled {
@@ -296,10 +339,10 @@ button:disabled {
 
 /* Dynamic list items */
 .list-item {
-    border: 1px solid #444;
+    border: 1px solid var(--border-color);
     padding: 0.5rem;
     margin-bottom: 0.5rem;
-    background: #252525;
+    background: var(--bg-tertiary);
 }
 
 .list-item-header {
@@ -357,7 +400,7 @@ button:disabled {
 
 .preview-header {
     text-align: center;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
     margin-bottom: 0.75rem;
 }
@@ -369,7 +412,7 @@ button:disabled {
 
 .preview-section-title {
     font-weight: bold;
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid var(--border-light);
     margin: 0.75rem 0 0.5rem 0;
     padding-bottom: 0.25rem;
 }
@@ -401,17 +444,17 @@ button:disabled {
 }
 
 .loading {
-    color: #888;
+    color: var(--text-secondary);
 }
 
 .error {
-    color: #ff6b6b;
+    color: var(--accent-danger);
 }
 
 .placeholder-banner {
-    background: linear-gradient(135deg, #2d4a3e 0%, #1a3a2a 100%);
-    border: 1px dashed #4a7c59;
-    color: #8fbc8f;
+    background: var(--placeholder-bg);
+    border: 1px dashed var(--placeholder-border);
+    color: var(--placeholder-text);
     padding: 0.5rem 0.75rem;
     margin-bottom: 0.75rem;
     text-align: center;
@@ -435,16 +478,16 @@ button:disabled {
     height: 1rem;
     font-size: 0.7rem;
     font-style: normal;
-    color: #888;
-    border: 1px solid #555;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
     border-radius: 50%;
     cursor: default;
     transition: color 0.15s, border-color 0.15s;
 }
 
 .tooltip-icon:hover {
-    color: #8cf;
-    border-color: #8cf;
+    color: var(--accent-link);
+    border-color: var(--accent-link);
 }
 
 .tooltip-text {
@@ -454,7 +497,7 @@ button:disabled {
     bottom: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
-    background: #333;
+    background: var(--tooltip-bg);
     color: #e0e0e0;
     padding: 0.4rem 0.6rem;
     border-radius: 4px;
@@ -474,7 +517,7 @@ button:disabled {
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: #333;
+    border-top-color: var(--tooltip-bg);
 }
 
 .tooltip:hover .tooltip-text {
@@ -496,5 +539,27 @@ button:disabled {
     left: -10px;
     transform: translateY(-50%);
     border: 5px solid transparent;
-    border-right-color: #333;
+    border-right-color: var(--tooltip-bg);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-light);
+}
+
+/* Logo in light mode */
+body.light-mode .logo {
+    filter: invert(1) brightness(0.2);
 }

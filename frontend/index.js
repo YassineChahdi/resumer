@@ -69,8 +69,33 @@ function saveSectionStates() {
 
 const debouncedSave = debounce(saveToStorage, 300);
 
+// === Theme Toggle ===
+const THEME_KEY = 'themeMode';
+
+function initTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const isLight = savedTheme === 'light';
+    if (isLight) {
+        document.body.classList.add('light-mode');
+    }
+    updateThemeIcon(isLight);
+}
+
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+    updateThemeIcon(isLight);
+}
+
+function updateThemeIcon(isLight) {
+    const btn = document.getElementById('themeToggle');
+    // Show sun in dark mode (to switch to light), moon in light mode (to switch to dark)
+    if (btn) btn.textContent = isLight ? '🌙' : '☀️';
+}
+
 // === Init ===
 document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
     loadFromStorage();
     renderForm();
     await initSupabase();

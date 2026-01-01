@@ -61,7 +61,7 @@
     <div class="container">
         <header>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <img src="logo.svg" alt="resumer Logo" style="height: 2rem; width: auto;">
+                <img src="logo.svg" alt="resumer Logo" class="logo" style="height: 2rem; width: auto;">
                 <h1>resumer</h1>
             </div>
             <div id="authSection">
@@ -70,6 +70,7 @@
                     <span id="userEmail"></span>
                     <button onclick="logout()">Logout</button>
                 </div>
+                <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
             </div>
         </header>
 
