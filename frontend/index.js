@@ -567,8 +567,8 @@ function projFields(p = {}) {
 
 // === Add/Remove ===
 function addItem(type) {
-    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects }[type];
     syncFromForm();
+    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects }[type];
     if (type === 'edu') arr.push({ est_name: '', location: '', degree: '', year: '', gpa: '' });
     else if (type === 'exp') arr.push({ employer: '', location: '', title: '', duration: '', bullets: [{ text: '', impressiveness: 0.7 }] });
     else arr.push({ title: '', languages: '', bullets: [{ text: '', impressiveness: 0.7 }] });
