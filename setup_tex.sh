@@ -1,17 +1,13 @@
 #!/bin/bash
-# Install LaTeX packages for resume templates
-# Usage: sudo ./setup_latex.sh
-
+# Install Tectonic (LaTeX engine used by this project)
 set -e
 
-command -v tlmgr &>/dev/null || {
-    echo "Error: tlmgr not found. Install TeX Live first:"
-    echo "  macOS:   brew install --cask mactex-no-gui"
-    echo "  Ubuntu:  sudo apt install texlive texlive-latex-extra"
-    echo "  Windows: https://tug.org/texlive/windows.html"
-    exit 1
-}
+command -v tectonic &>/dev/null && { echo "✓ Tectonic installed"; exit 0; }
 
-tlmgr install \
-    mathptmx geometry enumitem titlesec nopageno hyperref rsfs \
-    latexsym fullpage marvosym xcolor fancyhdr babel tabularx
+case "$(uname -s)" in
+    Darwin)  brew install tectonic ;;
+    Linux)   curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh && sudo mv tectonic /usr/local/bin/ ;;
+    *)       echo "Download from: https://github.com/tectonic-typesetting/tectonic/releases"; exit 1 ;;
+esac
+
+echo "✓ Tectonic installed"
