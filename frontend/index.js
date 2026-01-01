@@ -127,10 +127,16 @@ function showLoginModal() {
     document.getElementById('loginModal').style.display = 'flex';
 }
 
-// Close modal when clicking outside the modal content
+// Close modals when clicking outside the modal content
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginModal').addEventListener('click', (e) => {
         if (e.target.id === 'loginModal') hideLoginModal();
+    });
+    document.getElementById('alertModal').addEventListener('click', (e) => {
+        if (e.target.id === 'alertModal') hideAlert();
+    });
+    document.getElementById('confirmModal').addEventListener('click', (e) => {
+        if (e.target.id === 'confirmModal') resolveConfirm(false);
     });
 });
 
@@ -138,6 +144,35 @@ function hideLoginModal() {
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('authEmail').value = '';
     document.getElementById('authPassword').value = '';
+}
+
+// Alert Modal functions
+function showAlert(message) {
+    document.getElementById('alertMessage').textContent = message;
+    document.getElementById('alertModal').style.display = 'flex';
+}
+
+function hideAlert() {
+    document.getElementById('alertModal').style.display = 'none';
+}
+
+// Confirm Modal functions
+let confirmResolve = null;
+
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        confirmResolve = resolve;
+        document.getElementById('confirmMessage').textContent = message;
+        document.getElementById('confirmModal').style.display = 'flex';
+    });
+}
+
+function resolveConfirm(result) {
+    document.getElementById('confirmModal').style.display = 'none';
+    if (confirmResolve) {
+        confirmResolve(result);
+        confirmResolve = null;
+    }
 }
 
 function toggleAuthMode() {
@@ -163,13 +198,13 @@ async function submitAuth() {
 // Email/Password Auth
 async function loginWithEmail() {
     if (!supabaseClient) {
-        alert('Supabase not configured');
+        showAlert('Supabase not configured');
         return;
     }
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value;
     if (!email || !password) {
-        alert('Please enter email and password');
+        showAlert('Please enter email and password');
         return;
     }
     const btn = document.getElementById('authSubmitBtn');
@@ -181,7 +216,7 @@ async function loginWithEmail() {
         if (error) throw error;
         hideLoginModal();
     } catch (e) {
-        alert('Login failed: ' + e.message);
+        showAlert('Login failed: ' + e.message);
     } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -190,17 +225,17 @@ async function loginWithEmail() {
 
 async function signupWithEmail() {
     if (!supabaseClient) {
-        alert('Supabase not configured');
+        showAlert('Supabase not configured');
         return;
     }
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value;
     if (!email || !password) {
-        alert('Please enter email and password');
+        showAlert('Please enter email and password');
         return;
     }
     if (password.length < 6) {
-        alert('Password must be at least 6 characters');
+        showAlert('Password must be at least 6 characters');
         return;
     }
     const btn = document.getElementById('authSubmitBtn');
@@ -210,10 +245,10 @@ async function signupWithEmail() {
     try {
         const { error } = await supabaseClient.auth.signUp({ email, password });
         if (error) throw error;
-        alert('Check your email for a confirmation link!');
+        showAlert('Check your email for a confirmation link!');
         hideLoginModal();
     } catch (e) {
-        alert('Signup failed: ' + e.message);
+        showAlert('Signup failed: ' + e.message);
     } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -223,7 +258,7 @@ async function signupWithEmail() {
 // Google OAuth
 async function loginWithGoogle() {
     if (!supabaseClient) {
-        alert('Supabase not configured');
+        showAlert('Supabase not configured');
         return;
     }
     await supabaseClient.auth.signInWithOAuth({ 
@@ -319,7 +354,7 @@ async function saveToCloud() {
     let name = document.getElementById('resumeName').value.trim() || 'Untitled Resume';
     const authHeader = await getAuthHeader();
     if (!authHeader) {
-        alert('Please login first');
+        showAlert('Please login first');
         return;
     }
     
@@ -364,10 +399,10 @@ async function saveToCloud() {
         if (!res.ok) throw new Error('Failed to save');
         const data = await res.json();
         if (data.resume?.id) currentResumeId = data.resume.id;
-        alert('Resume saved!');
+        showAlert('Resume saved!');
         loadResumes();
     } catch (e) {
-        alert('Failed to save: ' + e.message);
+        showAlert('Failed to save: ' + e.message);
     } finally {
         if (saveBtn) {
             saveBtn.disabled = false;
@@ -415,13 +450,13 @@ async function loadCloudResume(id) {
         // Restore list
         container.innerHTML = originalContent;
     } catch (e) {
-        alert('Failed to load resume: ' + e.message);
+        showAlert('Failed to load resume: ' + e.message);
         container.innerHTML = originalContent;
     }
 }
 
 async function deleteCloudResume(id) {
-    if (!confirm('Delete this resume from the cloud?')) return;
+    if (!await showConfirm('Delete this resume from the cloud?')) return;
     const authHeader = await getAuthHeader();
     if (!authHeader) return;
     
@@ -434,7 +469,7 @@ async function deleteCloudResume(id) {
         if (currentResumeId === id) currentResumeId = null;
         loadResumes();
     } catch (e) {
-        alert('Failed to delete: ' + e.message);
+        showAlert('Failed to delete: ' + e.message);
     }
 }
 
@@ -466,7 +501,7 @@ function loadFromJson(event) {
             resumeData.languages = (data.languages || []).map(l => typeof l === 'string' ? l : l.text || '');
             resumeData.technologies = (data.technologies || []).map(t => typeof t === 'string' ? t : t.text || '');
             renderForm();
-        } catch (err) { alert('Invalid JSON'); }
+        } catch (err) { showAlert('Invalid JSON'); }
     };
     reader.readAsText(file);
     event.target.value = '';
@@ -598,9 +633,9 @@ function removeBullet(type, idx, bi) {
 }
 
 // === Clear Functions ===
-function clearSection(type) {
+async function clearSection(type) {
     const labels = { edu: 'Education', exp: 'Experience', proj: 'Projects' };
-    if (!confirm(`Clear all ${labels[type]} entries?`)) return;
+    if (!await showConfirm(`Clear all ${labels[type]} entries?`)) return;
     syncFromForm();
     if (type === 'edu') resumeData.education = [];
     else if (type === 'exp') resumeData.experience = [];
@@ -609,8 +644,8 @@ function clearSection(type) {
     renderForm();
 }
 
-function clearBullets(type, idx) {
-    if (!confirm('Clear all bullets for this item?')) return;
+async function clearBullets(type, idx) {
+    if (!await showConfirm('Clear all bullets for this item?')) return;
     syncFromForm();
     const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
     arr[idx].bullets = [{ text: '', impressiveness: 0.7 }];
@@ -618,8 +653,8 @@ function clearBullets(type, idx) {
     renderForm();
 }
 
-function clearAll() {
-    if (!confirm('Clear entire resume? This cannot be undone.')) return;
+async function clearAll() {
+    if (!await showConfirm('Clear entire resume? This cannot be undone.')) return;
     resumeData = {
         full_name: '',
         contacts: { phone: '', email: '', github: '', linkedin: '' },
@@ -819,7 +854,7 @@ async function downloadPDF() {
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         const fileName = getDownloadFileName('pdf');
         download(await res.blob(), fileName);
-    } catch (e) { alert('Error: ' + e.message); }
+    } catch (e) { showAlert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -842,7 +877,7 @@ async function downloadLatex() {
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
         const fileName = getDownloadFileName('tex');
         download(new Blob([await res.text()], { type: 'text/plain' }), fileName);
-    } catch (e) { alert('Error: ' + e.message); }
+    } catch (e) { showAlert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
         btn.textContent = originalText;

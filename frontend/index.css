@@ -150,6 +150,39 @@ header h1 {
     text-decoration: underline;
 }
 
+/* Alert Modal */
+.alert-modal-content {
+    text-align: center;
+}
+
+.alert-modal-content p {
+    margin: 0.5rem 0 1rem 0;
+    font-size: 1rem;
+}
+
+.alert-modal-content button {
+    min-width: 80px;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-cancel {
+    background: #444;
+}
+
+.btn-confirm {
+    background: #4a7c59;
+    border-color: #4a7c59;
+}
+
+.btn-confirm:hover {
+    background: #5a8c69;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;

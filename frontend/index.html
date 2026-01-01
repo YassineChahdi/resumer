@@ -92,6 +92,27 @@
             </div>
         </div>
 
+        <!-- Alert Modal -->
+        <div id="alertModal" class="modal" style="display:none;">
+            <div class="modal-content alert-modal-content">
+                <span class="modal-close" onclick="hideAlert()">&times;</span>
+                <p id="alertMessage"></p>
+                <button onclick="hideAlert()">OK</button>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div id="confirmModal" class="modal" style="display:none;">
+            <div class="modal-content alert-modal-content">
+                <span class="modal-close" onclick="resolveConfirm(false)">&times;</span>
+                <p id="confirmMessage"></p>
+                <div class="confirm-buttons">
+                    <button class="btn-cancel" onclick="resolveConfirm(false)">Cancel</button>
+                    <button class="btn-confirm" onclick="resolveConfirm(true)">Confirm</button>
+                </div>
+            </div>
+        </div>
+
         <main>
             <section class="form-section">
                 <!-- Personal Info -->
