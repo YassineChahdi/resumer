@@ -957,6 +957,8 @@ function getDownloadFileName(ext) {
 // Prepare data for API (convert formats)
 function prepareApiData() {
     return {
+        full_name: resumeData.full_name,
+        contacts: resumeData.contacts,
         education: resumeData.education.filter(e => e.est_name || e.degree),
         experience: resumeData.experience.filter(e => e.employer || e.title).map(e => ({
             ...e,
