@@ -132,8 +132,8 @@
                         <button type="button" class="btn-toggle" data-toggle="edu" onclick="toggleSection('edu')">▼</button>
                         Education
                         <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Add degrees, certifications, or coursework</span></span>
-                        <button type="button" onclick="addItem('edu')">+ Add</button>
-                        <button type="button" class="btn-clear" onclick="clearSection('edu')">Clear</button>
+                        <button type="button" class="legend-btn" onclick="addItem('edu')">+ Add</button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('edu')">Clear</button>
                     </legend>
                     <div id="educationList"></div>
                 </fieldset>
@@ -144,8 +144,8 @@
                         <button type="button" class="btn-toggle" data-toggle="exp" onclick="toggleSection('exp')">▼</button>
                         Experience
                         <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Work experience with action-driven bullets</span></span>
-                        <button type="button" onclick="addItem('exp')">+ Add</button>
-                        <button type="button" class="btn-clear" onclick="clearSection('exp')">Clear</button>
+                        <button type="button" class="legend-btn" onclick="addItem('exp')">+ Add</button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('exp')">Clear</button>
                     </legend>
                     <div id="experienceList"></div>
                 </fieldset>
@@ -156,8 +156,8 @@
                         <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')">▼</button>
                         Projects
                         <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Side projects that showcase your skills</span></span>
-                        <button type="button" onclick="addItem('proj')">+ Add</button>
-                        <button type="button" class="btn-clear" onclick="clearSection('proj')">Clear</button>
+                        <button type="button" class="legend-btn" onclick="addItem('proj')">+ Add</button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('proj')">Clear</button>
                     </legend>
                     <div id="projectList"></div>
                 </fieldset>
@@ -185,24 +185,30 @@
                     </div>
                 </fieldset>
 
-                <!-- Actions -->
-                <fieldset class="actions">
-                    <legend>Actions</legend>
+                <!-- Toolbar -->
+                <div class="toolbar">
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
-                    <span class="tooltip tooltip-right"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
-                    <span class="tooltip tooltip-right"><button type="button" onclick="downloadJson()">Save JSON</button><span class="tooltip-text">Export resume for backup</span></span>
+                    <div class="toolbar-group">
+                        <span class="tooltip tooltip-right"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
+                        <span class="tooltip tooltip-right"><button type="button" onclick="downloadJson()">Save JSON</button><span class="tooltip-text">Export resume for backup</span></span>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="toolbar-group">
+                        <label>Template:
+                            <select id="template">
+                                <option value="jake">Jake</option>
+                                <option value="mirage">Mirage</option>
+                            </select>
+                        </label>
+                        <button type="button" class="btn-primary" onclick="generatePreview()">Generate</button>
+                    </div>
+                    <div class="toolbar-divider"></div>
+                    <div class="toolbar-group">
+                        <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
+                        <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
+                    </div>
                     <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
-                    <label>
-                        Template:
-                        <select id="template">
-                            <option value="jake">Jake</option>
-                            <option value="mirage">Mirage</option>
-                        </select>
-                    </label>
-                    <button type="button" onclick="generatePreview()">Preview</button>
-                    <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
-                    <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
-                </fieldset>
+                </div>
             </section>
 
             <section class="preview-section">

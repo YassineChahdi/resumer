@@ -264,15 +264,20 @@ legend button {
     color: var(--text-primary);
 }
 
-.btn-clear {
-    font-size: 0.85em;
+/* Uniform legend buttons (+ Add, Clear) */
+.legend-btn {
+    font-size: 0.8em;
+    padding: 0.2rem 0.5rem;
+    vertical-align: middle;
+}
+
+.legend-btn.btn-clear {
     color: var(--accent-clear);
     background: none;
     border: 1px solid var(--accent-clear);
-    padding: 0.15rem 0.35rem;
 }
 
-.btn-clear:hover {
+.legend-btn.btn-clear:hover {
     background: rgba(255, 100, 100, 0.15);
 }
 
@@ -319,22 +324,55 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.actions {
+/* Toolbar */
+.toolbar {
+    position: sticky;
+    bottom: 1rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
     align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    z-index: 100;
 }
 
-.actions label {
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 1.5rem;
+    background: var(--border-color);
+}
+
+.toolbar label {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    font-size: 0.9em;
 }
 
-.actions select {
+.toolbar select {
     width: auto;
     margin-bottom: 0;
+}
+
+.toolbar .btn-primary {
+    background: #4a7c59;
+    border-color: #4a7c59;
+}
+
+.toolbar .btn-primary:hover {
+    background: #5a8c69;
+}
+
+.toolbar .btn-danger {
+    margin-left: auto;
 }
 
 /* Dynamic list items */
