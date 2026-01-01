@@ -261,6 +261,30 @@ main {
         margin: 0;
     }
     
+    header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    #authSection {
+        width: 100%;
+    }
+    
+    #userInfo {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    #userEmail {
+        margin-right: auto;
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
     main { 
         grid-template-columns: 1fr; 
     }
