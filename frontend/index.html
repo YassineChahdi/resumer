@@ -195,26 +195,29 @@
                 <!-- Toolbar -->
                 <div class="toolbar">
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
-                    <div class="toolbar-group">
-                        <span class="tooltip tooltip-right"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
-                        <span class="tooltip tooltip-right"><button type="button" onclick="downloadJson()">Save JSON</button><span class="tooltip-text">Export resume for backup</span></span>
+                    <div class="toolbar-row">
+                        <div class="toolbar-group">
+                            <span class="tooltip tooltip-right"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
+                            <span class="tooltip tooltip-right"><button type="button" onclick="downloadJson()">Save JSON</button><span class="tooltip-text">Export resume for backup</span></span>
+                        </div>
+                        <div class="toolbar-divider"></div>
+                        <div class="toolbar-group">
+                            <label>Template:
+                                <select id="template">
+                                    <option value="jake">Jake</option>
+                                    <option value="mirage">Mirage</option>
+                                </select>
+                            </label>
+                            <button type="button" class="btn-primary" onclick="generatePreview()">Generate</button>
+                        </div>
                     </div>
-                    <div class="toolbar-divider"></div>
-                    <div class="toolbar-group">
-                        <label>Template:
-                            <select id="template">
-                                <option value="jake">Jake</option>
-                                <option value="mirage">Mirage</option>
-                            </select>
-                        </label>
-                        <button type="button" class="btn-primary" onclick="generatePreview()">Generate</button>
+                    <div class="toolbar-row">
+                        <div class="toolbar-group">
+                            <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
+                            <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
+                        </div>
+                        <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                     </div>
-                    <div class="toolbar-divider"></div>
-                    <div class="toolbar-group">
-                        <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
-                        <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
-                    </div>
-                    <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                 </div>
             </section>
         </main>
