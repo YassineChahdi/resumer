@@ -466,8 +466,11 @@ async function loadCloudResume(id) {
         if (resume.full_resume) {
             const fr = resume.full_resume;
             resumeData = {
-                ...resumeData,
-                ...fr,
+                full_name: fr.full_name || resumeData.full_name,
+                contacts: { ...resumeData.contacts, ...(fr.contacts || {}) },
+                education: fr.education || [],
+                experience: fr.experience || [],
+                projects: fr.projects || [],
                 // Extract .text from skill objects if needed
                 languages: (fr.languages || []).map(l => typeof l === 'string' ? l : l.text || ''),
                 technologies: (fr.technologies || []).map(t => typeof t === 'string' ? t : t.text || '')
