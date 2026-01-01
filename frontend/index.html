@@ -50,15 +50,16 @@
                     <input type="text" id="fullName" placeholder="Full Name" />
                     <input type="text" id="phone" placeholder="Phone" />
                     <input type="email" id="email" placeholder="Email" />
-                    <input type="text" id="github" placeholder="GitHub URL" />
-                    <input type="text" id="linkedin" placeholder="LinkedIn URL" />
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="github" placeholder="GitHub URL" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">e.g. github.com/yourname</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="linkedin" placeholder="LinkedIn URL" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">e.g. linkedin.com/in/yourname</span></span></div>
                 </fieldset>
 
                 <!-- Education -->
                 <fieldset>
                     <legend>
                         <button type="button" class="btn-toggle" data-toggle="edu" onclick="toggleSection('edu')">▼</button>
-                        Education 
+                        Education
+                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Add degrees, certifications, or coursework</span></span>
                         <button type="button" onclick="addItem('edu')">+ Add</button>
                         <button type="button" class="btn-clear" onclick="clearSection('edu')">Clear</button>
                     </legend>
@@ -69,7 +70,8 @@
                 <fieldset>
                     <legend>
                         <button type="button" class="btn-toggle" data-toggle="exp" onclick="toggleSection('exp')">▼</button>
-                        Experience 
+                        Experience
+                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Work experience with action-driven bullets</span></span>
                         <button type="button" onclick="addItem('exp')">+ Add</button>
                         <button type="button" class="btn-clear" onclick="clearSection('exp')">Clear</button>
                     </legend>
@@ -80,7 +82,8 @@
                 <fieldset>
                     <legend>
                         <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')">▼</button>
-                        Projects 
+                        Projects
+                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Side projects that showcase your skills</span></span>
                         <button type="button" onclick="addItem('proj')">+ Add</button>
                         <button type="button" class="btn-clear" onclick="clearSection('proj')">Clear</button>
                     </legend>
@@ -90,19 +93,19 @@
                 <!-- Skills -->
                 <fieldset>
                     <legend>Skills</legend>
-                    <input type="text" id="languages" placeholder="Languages (comma-separated)" />
-                    <input type="text" id="technologies" placeholder="Technologies (comma-separated)" />
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="languages" placeholder="Languages" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Programming languages: Python, JS, etc.</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technologies" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Tools & frameworks: React, Docker, etc.</span></span></div>
                 </fieldset>
 
                 <!-- Job Description -->
                 <fieldset>
-                    <legend>Job Description</legend>
+                    <legend>Job Description <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Paste the job posting – AI uses this to tailor your resume</span></span></legend>
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
                 <!-- My Resumes (Auth Required) -->
                 <fieldset id="myResumesSection" style="display:none;">
-                    <legend>My Resumes</legend>
+                    <legend>My Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Cloud-synced resumes tied to your account</span></span></legend>
                     <div id="resumesList">No saved resumes. Save your first resume!</div>
                     <div class="resume-save-row">
                         <input type="text" id="resumeName" placeholder="Resume name" />
@@ -114,8 +117,8 @@
                 <fieldset class="actions">
                     <legend>Actions</legend>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadFromJson(event)" />
-                    <button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button>
-                    <button type="button" onclick="downloadJson()">Save JSON</button>
+                    <span class="tooltip tooltip-right"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
+                    <span class="tooltip tooltip-right"><button type="button" onclick="downloadJson()">Save JSON</button><span class="tooltip-text">Export resume for backup</span></span>
                     <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                     <label>
                         Template:

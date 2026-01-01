@@ -520,7 +520,7 @@ function fieldInput(f) {
 function bulletHtml(type, idx, bi, b = {}) {
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
-        <input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)"/>
+        <span class="tooltip tooltip-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness in [0, 1]</span></span>
         <button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>
     </div>`;
 }
