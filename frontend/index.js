@@ -269,7 +269,16 @@ async function loginWithGoogle() {
 
 async function logout() {
     if (!supabaseClient) return;
-    await supabaseClient.auth.signOut();
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) console.error('Logout error:', error);
+    } catch (e) {
+        console.error('Logout failed:', e);
+    }
+    // Clear Supabase session from localStorage
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-')) localStorage.removeItem(key);
+    });
     currentUser = null;
     currentResumeId = null;
     cachedResumes = [];
@@ -518,18 +527,18 @@ function renderForm() {
 
     // Education
     const eduList = document.getElementById('educationList');
-    eduList.innerHTML = resumeData.education.length ? '' : itemHtml('edu', 0, eduFields());
-    resumeData.education.forEach((e, i) => eduList.innerHTML += itemHtml('edu', i, eduFields(e)));
+    eduList.innerHTML = resumeData.education.length ? '' : itemHtml('edu', 0, eduFields(), false, [], false);
+    resumeData.education.forEach((e, i) => eduList.innerHTML += itemHtml('edu', i, eduFields(e), false, [], resumeData.education.length > 1));
 
     // Experience
     const expList = document.getElementById('experienceList');
-    expList.innerHTML = resumeData.experience.length ? '' : itemHtml('exp', 0, expFields(), true);
-    resumeData.experience.forEach((e, i) => expList.innerHTML += itemHtml('exp', i, expFields(e), true, e.bullets));
+    expList.innerHTML = resumeData.experience.length ? '' : itemHtml('exp', 0, expFields(), true, [], false);
+    resumeData.experience.forEach((e, i) => expList.innerHTML += itemHtml('exp', i, expFields(e), true, e.bullets, resumeData.experience.length > 1));
 
     // Projects
     const projList = document.getElementById('projectList');
-    projList.innerHTML = resumeData.projects.length ? '' : itemHtml('proj', 0, projFields(), true);
-    resumeData.projects.forEach((p, i) => projList.innerHTML += itemHtml('proj', i, projFields(p), true, p.bullets));
+    projList.innerHTML = resumeData.projects.length ? '' : itemHtml('proj', 0, projFields(), true, [], false);
+    resumeData.projects.forEach((p, i) => projList.innerHTML += itemHtml('proj', i, projFields(p), true, p.bullets, resumeData.projects.length > 1));
 
     // Skills
     document.getElementById('languages').value = resumeData.languages.join(', ');
@@ -540,16 +549,18 @@ function renderForm() {
 }
 
 // === HTML Generators ===
-function itemHtml(type, idx, fields, hasBullets = false, bullets = []) {
+function itemHtml(type, idx, fields, hasBullets = false, bullets = [], canDelete = true) {
     const label = { edu: 'Education', exp: 'Experience', proj: 'Project' }[type];
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('${type}',${idx})">×</button>` : '';
     let html = `<div class="list-item" data-type="${type}" data-idx="${idx}">
-        <div class="list-item-header"><span>${label} #${idx + 1}</span><button class="btn-remove" onclick="removeItem('${type}',${idx})">×</button></div>
+        <div class="list-item-header"><span>${label} #${idx + 1}</span>${removeBtn}</div>
         <div class="row">${fields.slice(0, 2).map(f => fieldInput(f)).join('')}</div>
         <div class="row">${fields.slice(2, 4).map(f => fieldInput(f)).join('')}</div>
         ${fields[4] ? fieldInput(fields[4]) : ''}`;
     if (hasBullets) {
+        const bulletCount = bullets.length || 1;
         html += `<div class="bullets" data-type="${type}" data-idx="${idx}">
-            ${bullets.length ? bullets.map((b, bi) => bulletHtml(type, idx, bi, b)).join('') : bulletHtml(type, idx, 0)}
+            ${bullets.length ? bullets.map((b, bi) => bulletHtml(type, idx, bi, b, bulletCount > 1)).join('') : bulletHtml(type, idx, 0, {}, false)}
         </div><button class="btn-add-bullet" onclick="addBullet('${type}',${idx})">+ Bullet</button>`;
     }
     return html + '</div>';
@@ -559,11 +570,12 @@ function fieldInput(f) {
     return `<input type="${f.type || 'text'}" placeholder="${f.ph}" data-field="${f.field}" value="${f.val || ''}" ${f.step ? 'step="' + f.step + '"' : ''}/>`;
 }
 
-function bulletHtml(type, idx, bi, b = {}) {
+function bulletHtml(type, idx, bi, b = {}, canDelete = true) {
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>` : '';
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
         <span class="tooltip tooltip-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
-        <button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>
+        ${removeBtn}
     </div>`;
 }
 

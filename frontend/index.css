@@ -331,7 +331,16 @@ button:disabled {
     border: none;
     color: #c00;
     cursor: pointer;
-    padding: 0;
+    padding: 0.25rem 0.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove:hover {
+    background: none;
 }
 
 .btn-add-bullet {
