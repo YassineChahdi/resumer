@@ -759,7 +759,7 @@ function syncFromForm() {
         degree: el.querySelector('[data-field="degree"]').value,
         year: el.querySelector('[data-field="year"]').value,
         gpa: el.querySelector('[data-field="gpa"]').value
-    })).filter(e => e.est_name || e.degree);
+    }));//.filter(e => e.est_name || e.degree);
 
     resumeData.experience = [...document.querySelectorAll('#experienceList .list-item')].map(el => ({
         employer: el.querySelector('[data-field="employer"]').value,
@@ -772,8 +772,8 @@ function syncFromForm() {
                 text: b.querySelector('[data-field="text"]').value,
                 impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
             };
-        }).filter(b => b.text)
-    })).filter(e => e.employer || e.title);
+        }).filter(b => b.text || b.impressiveness != null)
+    }));//.filter(e => e.employer || e.title);
 
     resumeData.projects = [...document.querySelectorAll('#projectList .list-item')].map(el => ({
         title: el.querySelector('[data-field="title"]').value,
@@ -784,8 +784,8 @@ function syncFromForm() {
                 text: b.querySelector('[data-field="text"]').value,
                 impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
             };
-        }).filter(b => b.text)
-    })).filter(p => p.title);
+        }).filter(b => b.text || b.impressiveness != null)
+    }));//.filter(p => p.title);
 
     resumeData.languages = document.getElementById('languages').value.split(',').map(s => s.trim()).filter(Boolean);
     resumeData.technologies = document.getElementById('technologies').value.split(',').map(s => s.trim()).filter(Boolean);
@@ -954,8 +954,16 @@ function getDownloadFileName(ext) {
 // Prepare data for API (convert formats)
 function prepareApiData() {
     return {
-        ...resumeData,
-        projects: resumeData.projects.map(p => ({ ...p, languages: p.languages.split(',').map(s => s.trim()).filter(Boolean) })),
+        education: resumeData.education.filter(e => e.est_name || e.degree),
+        experience: resumeData.experience.filter(e => e.employer || e.title).map(e => ({
+            ...e,
+            bullets: (e.bullets || []).filter(b => b.text)
+        })),
+        projects: resumeData.projects.filter(p => p.title).map(p => ({ 
+            ...p, 
+            languages: p.languages.split(',').map(s => s.trim()).filter(Boolean),
+            bullets: (p.bullets || []).filter(b => b.text)
+        })),
         languages: resumeData.languages.map(l => ({ text: l })),
         technologies: resumeData.technologies.map(t => ({ text: t }))
     };
