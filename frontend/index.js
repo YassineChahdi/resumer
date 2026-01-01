@@ -127,6 +127,13 @@ function showLoginModal() {
     document.getElementById('loginModal').style.display = 'flex';
 }
 
+// Close modal when clicking outside the modal content
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('loginModal').addEventListener('click', (e) => {
+        if (e.target.id === 'loginModal') hideLoginModal();
+    });
+});
+
 function hideLoginModal() {
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('authEmail').value = '';
