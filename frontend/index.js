@@ -20,6 +20,7 @@ const SUPABASE_ANON_KEY = window.RESUMER_CONFIG?.SUPABASE_ANON_KEY || 'eyJhbGciO
 let supabaseClient = null;
 let currentUser = null;
 let currentResumeId = null; // Track which resume we're editing
+let currentResumeName = null; // Track original name for "Save As" detection
 
 // Single source of truth
 let resumeData = {
@@ -333,6 +334,7 @@ async function logout() {
     });
     currentUser = null;
     currentResumeId = null;
+    currentResumeName = null;
     cachedResumes = [];
     updateAuthUI(false);
     
@@ -419,6 +421,11 @@ async function saveToCloud() {
         return;
     }
     
+    // If name changed from the loaded resume, treat as "Save As" (create new)
+    if (currentResumeId && currentResumeName && name !== currentResumeName) {
+        currentResumeId = null;
+    }
+    
     // For new resumes, ensure unique name
     if (!currentResumeId) {
         name = getUniqueName(name);
@@ -488,6 +495,10 @@ async function loadCloudResume(id) {
         const resume = data.resume;
         
         currentResumeId = resume.id;
+        currentResumeName = resume.name;
+        
+        // Populate the save name field with the loaded resume's name
+        document.getElementById('resumeName').value = resume.name || '';
         
         // Load full_resume into form (don't populate save name field)
         if (resume.full_resume) {
