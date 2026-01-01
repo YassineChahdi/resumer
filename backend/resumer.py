@@ -77,7 +77,9 @@ class Resumer:
         linkedin = resume.contacts.get("linkedin", "")
         
         if phone:
-            parts.append(self._escape_latex(phone))
+            # Strip non-digit characters for the tel: URI, keep original for display
+            phone_digits = ''.join(c for c in phone if c.isdigit() or c == '+')
+            parts.append(f"\\href{{tel:{phone_digits}}}{{{self._escape_latex(phone)}}}")
         if email:
             parts.append(f"\\href{{mailto:{email}}}{{{email}}}")
         if github:
