@@ -17,6 +17,10 @@
     --placeholder-bg: linear-gradient(135deg, #2d4a3e 0%, #1a3a2a 100%);
     --placeholder-border: #4a7c59;
     --placeholder-text: #8fbc8f;
+    --btn-primary-bg: #4a7c59;
+    --btn-primary-hover: #5a8c69;
+    --btn-cancel-bg: #555;
+    --btn-cancel-hover: #666;
 }
 
 body.light-mode {
@@ -27,17 +31,21 @@ body.light-mode {
     --text-primary: #1a1a1a;
     --text-secondary: #555;
     --text-muted: #777;
-    --border-color: #999;
-    --border-light: #888;
-    --accent-link: #0066cc;
-    --accent-success: #2e8b57;
-    --accent-danger: #dc3545;
-    --accent-clear: #e74c3c;
+    --border-color: #ccc;
+    --border-light: #ddd;
+    --accent-link: #0891b2;
+    --accent-success: #10b981;
+    --accent-danger: #ef4444;
+    --accent-clear: #ef4444;
     --modal-overlay: rgba(0, 0, 0, 0.5);
     --tooltip-bg: #333;
-    --placeholder-bg: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    --placeholder-border: #4caf50;
-    --placeholder-text: #2e7d32;
+    --placeholder-bg: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    --placeholder-border: #10b981;
+    --placeholder-text: #047857;
+    --btn-primary-bg: #10b981;
+    --btn-primary-hover: #059669;
+    --btn-cancel-bg: #e5e7eb;
+    --btn-cancel-hover: #d1d5db;
 }
 
 * {
@@ -214,16 +222,23 @@ header h1 {
 }
 
 .btn-cancel {
-    background: var(--border-color);
+    background: var(--btn-cancel-bg);
+    border-color: var(--btn-cancel-bg);
+    color: var(--text-primary);
+}
+
+.btn-cancel:hover {
+    background: var(--btn-cancel-hover);
 }
 
 .btn-confirm {
-    background: #4a7c59;
-    border-color: #4a7c59;
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: #fff;
 }
 
 .btn-confirm:hover {
-    background: #5a8c69;
+    background: var(--btn-primary-hover);
 }
 
 main {
@@ -363,12 +378,13 @@ button:disabled {
 }
 
 .toolbar .btn-primary {
-    background: #4a7c59;
-    border-color: #4a7c59;
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: #fff;
 }
 
 .toolbar .btn-primary:hover {
-    background: #5a8c69;
+    background: var(--btn-primary-hover);
 }
 
 .toolbar .btn-danger {
