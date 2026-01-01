@@ -99,7 +99,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadFromStorage();
     renderForm();
     await initSupabase();
+    initTooltipTouchHandling();
 });
+
+// === Tooltip Touch Handling (mobile tap-to-show) ===
+function initTooltipTouchHandling() {
+    // Use event delegation for dynamically created tooltips
+    document.addEventListener('click', (e) => {
+        const tooltipIcon = e.target.closest('.tooltip-icon');
+        const tooltip = e.target.closest('.tooltip');
+        
+        if (tooltipIcon && tooltip) {
+            // Clicked on a tooltip icon - toggle its active state
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const wasActive = tooltip.classList.contains('tooltip-active');
+            // Close any other open tooltips
+            document.querySelectorAll('.tooltip-active').forEach(t => t.classList.remove('tooltip-active'));
+            // Toggle this one
+            if (!wasActive) {
+                tooltip.classList.add('tooltip-active');
+            }
+        } else {
+            // Clicked elsewhere - close all tooltips
+            document.querySelectorAll('.tooltip-active').forEach(t => t.classList.remove('tooltip-active'));
+        }
+    });
+}
 
 // === Supabase Auth ===
 async function initSupabase() {

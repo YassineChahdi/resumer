@@ -585,7 +585,8 @@ button:disabled {
     border-top-color: var(--tooltip-bg);
 }
 
-.tooltip:hover .tooltip-text {
+.tooltip:hover .tooltip-text,
+.tooltip.tooltip-active .tooltip-text {
     visibility: visible;
     opacity: 1;
 }
