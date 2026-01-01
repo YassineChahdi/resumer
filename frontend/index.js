@@ -567,6 +567,9 @@ function itemHtml(type, idx, fields, hasBullets = false, bullets = [], canDelete
 }
 
 function fieldInput(f) {
+    if (f.isGpa) {
+        return `<input type="text" inputmode="decimal" placeholder="${f.ph}" data-field="${f.field}" value="${f.val || ''}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampGpa(this)"/>`;
+    }
     return `<input type="${f.type || 'text'}" placeholder="${f.ph}" data-field="${f.field}" value="${f.val || ''}" ${f.step ? 'step="' + f.step + '"' : ''}/>`;
 }
 
@@ -589,13 +592,23 @@ function clampImpressiveness(input) {
     syncFromForm();
 }
 
+function clampGpa(input) {
+    let val = parseFloat(input.value);
+    if (isNaN(val) || input.value.trim() === '') {
+        input.value = '';
+    } else {
+        input.value = Math.max(0, val);
+    }
+    syncFromForm();
+}
+
 function eduFields(e = {}) {
     return [
         { ph: 'Institution', field: 'est_name', val: e.est_name },
         { ph: 'Location', field: 'location', val: e.location },
         { ph: 'Degree', field: 'degree', val: e.degree },
         { ph: 'Year', field: 'year', val: e.year },
-        { ph: 'GPA', field: 'gpa', val: e.gpa, type: 'number', step: '0.1' }
+        { ph: 'GPA', field: 'gpa', val: e.gpa, isGpa: true }
     ];
 }
 
