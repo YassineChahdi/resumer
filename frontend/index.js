@@ -863,6 +863,7 @@ async function generatePreview() {
         renderPreview(tailoredResume);
         document.getElementById('btnPdf').disabled = false;
         document.getElementById('btnLatex').disabled = false;
+        scrollToPreviewOnMobile();
         return;
     }
     
@@ -879,8 +880,15 @@ async function generatePreview() {
         renderPreview(tailoredResume);
         document.getElementById('btnPdf').disabled = false;
         document.getElementById('btnLatex').disabled = false;
+        scrollToPreviewOnMobile();
     } catch (e) {
         preview.innerHTML = `<span class="error">Error: ${e.message}</span>`;
+    }
+}
+
+function scrollToPreviewOnMobile() {
+    if (window.innerWidth <= 900) {
+        document.querySelector('.preview-section')?.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
