@@ -245,6 +245,7 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -444,6 +445,16 @@ button:disabled {
     font-size: 0.85em;
     padding: 0.25rem 0.5rem;
     margin-top: 0.25rem;
+}
+
+/* Preview Section */
+.preview-section {
+    position: sticky;
+    top: 1rem;
+}
+
+.preview-section fieldset {
+    margin-bottom: 0.75rem;
 }
 
 /* Preview */
