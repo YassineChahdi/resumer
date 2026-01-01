@@ -3,7 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
     <title>resumer</title>
+    <meta name="title" content="resumer">
+    <meta name="description" content="Build professional, ATS-friendly resumes tailored to any job description. Use AI to optimize your experience, skills, and projects. Export to PDF or LaTeX.">
+    <meta name="keywords" content="resume builder, AI resume, tailored resume, ATS-friendly, LaTeX resume, PDF resume, job application, career tools">
+    <meta name="author" content="resumer">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resumeer.netlify.app/">
+    <meta property="og:title" content="Resumer - AI-Powered Resume Builder">
+    <meta property="og:description" content="Build professional, ATS-friendly resumes tailored to any job description. Export to PDF or LaTeX.">
+    <meta property="og:image" content="https://resumeer.netlify.app/logo.svg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://resumeer.netlify.app/">
+    <meta name="twitter:title" content="Resumer - AI-Powered Resume Builder">
+    <meta name="twitter:description" content="Build professional, ATS-friendly resumes tailored to any job description. Export to PDF or LaTeX.">
+    <meta name="twitter:image" content="https://resumeer.netlify.app/logo.svg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://resumeer.netlify.app/">
+    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="icons/site.webmanifest">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Resumer",
+        "description": "AI-powered resume builder that creates tailored, ATS-friendly resumes",
+        "url": "https://resumeer.netlify.app/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": ["AI-tailored resumes", "PDF export", "LaTeX export", "Multiple templates", "Cloud sync"]
+    }
+    </script>
+    
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -99,7 +149,7 @@
 
                 <!-- Job Description -->
                 <fieldset>
-                    <legend>Job Description <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Paste the job posting – AI uses this to tailor your resume</span></span></legend>
+                    <legend>Job Description <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Paste the job posting - AI uses this to tailor your resume</span></span></legend>
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
