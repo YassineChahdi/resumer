@@ -500,12 +500,12 @@ function loadFromJson(event) {
             resumeData.experience = (data.experience || []).map(e => ({
                 employer: e.employer || '', location: e.location || '',
                 title: e.title || '', duration: e.duration || '',
-                bullets: (e.bullets || []).map(b => ({ text: b.text || '', impressiveness: b.impressiveness ?? 0.7 }))
+                bullets: (e.bullets || []).map(b => ({ text: b.text || '', impressiveness: b.impressiveness ?? null }))
             }));
             resumeData.projects = (data.projects || []).map(p => ({
                 title: p.title || '',
                 languages: Array.isArray(p.languages) ? p.languages.join(', ') : (p.languages || ''),
-                bullets: (p.bullets || []).map(b => ({ text: b.text || '', impressiveness: b.impressiveness ?? 0.7 }))
+                bullets: (p.bullets || []).map(b => ({ text: b.text || '', impressiveness: b.impressiveness ?? null }))
             }));
             resumeData.languages = (data.languages || []).map(l => typeof l === 'string' ? l : l.text || '');
             resumeData.technologies = (data.technologies || []).map(t => typeof t === 'string' ? t : t.text || '');
@@ -574,15 +574,18 @@ function bulletHtml(type, idx, bi, b = {}, canDelete = true) {
     const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>` : '';
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
-        <span class="tooltip tooltip-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? 0.7}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
+        <span class="tooltip tooltip-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? ''}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
         ${removeBtn}
     </div>`;
 }
 
 function clampImpressiveness(input) {
     let val = parseFloat(input.value);
-    if (isNaN(val)) val = 0.7;
-    input.value = Math.min(1, Math.max(0, val));
+    if (isNaN(val) || input.value.trim() === '') {
+        input.value = '';
+    } else {
+        input.value = Math.min(1, Math.max(0, val));
+    }
     syncFromForm();
 }
 
@@ -617,8 +620,8 @@ function addItem(type) {
     syncFromForm();
     const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects }[type];
     if (type === 'edu') arr.push({ est_name: '', location: '', degree: '', year: '', gpa: '' });
-    else if (type === 'exp') arr.push({ employer: '', location: '', title: '', duration: '', bullets: [{ text: '', impressiveness: 0.7 }] });
-    else arr.push({ title: '', languages: '', bullets: [{ text: '', impressiveness: 0.7 }] });
+    else if (type === 'exp') arr.push({ employer: '', location: '', title: '', duration: '', bullets: [{ text: '', impressiveness: null }] });
+    else arr.push({ title: '', languages: '', bullets: [{ text: '', impressiveness: null }] });
     renderForm();
 }
 
@@ -632,7 +635,7 @@ function removeItem(type, idx) {
 function addBullet(type, idx) {
     syncFromForm();
     const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
-    arr[idx].bullets.push({ text: '', impressiveness: 0.7 });
+    arr[idx].bullets.push({ text: '', impressiveness: null });
     renderForm();
 }
 
@@ -640,7 +643,7 @@ function removeBullet(type, idx, bi) {
     syncFromForm();
     const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
     arr[idx].bullets.splice(bi, 1);
-    if (arr[idx].bullets.length === 0) arr[idx].bullets.push({ text: '', impressiveness: 0.7 });
+    if (arr[idx].bullets.length === 0) arr[idx].bullets.push({ text: '', impressiveness: null });
     renderForm();
 }
 
@@ -660,7 +663,7 @@ async function clearBullets(type, idx) {
     if (!await showConfirm('Clear all bullets for this item?')) return;
     syncFromForm();
     const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
-    arr[idx].bullets = [{ text: '', impressiveness: 0.7 }];
+    arr[idx].bullets = [{ text: '', impressiveness: null }];
     saveToStorage();
     renderForm();
 }
@@ -725,19 +728,25 @@ function syncFromForm() {
         location: el.querySelector('[data-field="location"]').value,
         title: el.querySelector('[data-field="title"]').value,
         duration: el.querySelector('[data-field="duration"]').value,
-        bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
-            text: b.querySelector('[data-field="text"]').value,
-            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
-        })).filter(b => b.text)
+        bullets: [...el.querySelectorAll('.bullet-row')].map(b => {
+            const impVal = b.querySelector('[data-field="impressiveness"]').value.trim();
+            return {
+                text: b.querySelector('[data-field="text"]').value,
+                impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
+            };
+        }).filter(b => b.text)
     })).filter(e => e.employer || e.title);
 
     resumeData.projects = [...document.querySelectorAll('#projectList .list-item')].map(el => ({
         title: el.querySelector('[data-field="title"]').value,
         languages: el.querySelector('[data-field="languages"]').value,
-        bullets: [...el.querySelectorAll('.bullet-row')].map(b => ({
-            text: b.querySelector('[data-field="text"]').value,
-            impressiveness: Math.min(1, Math.max(0, parseFloat(b.querySelector('[data-field="impressiveness"]').value) || 0.7))
-        })).filter(b => b.text)
+        bullets: [...el.querySelectorAll('.bullet-row')].map(b => {
+            const impVal = b.querySelector('[data-field="impressiveness"]').value.trim();
+            return {
+                text: b.querySelector('[data-field="text"]').value,
+                impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
+            };
+        }).filter(b => b.text)
     })).filter(p => p.title);
 
     resumeData.languages = document.getElementById('languages').value.split(',').map(s => s.trim()).filter(Boolean);
