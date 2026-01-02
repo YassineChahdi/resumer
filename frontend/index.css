@@ -707,3 +707,38 @@ button:disabled {
 body.light-mode .logo {
     filter: invert(1) brightness(0.2);
 }
+
+/* Resume Type Toggle */
+.resume-type-fieldset {
+    margin-bottom: 0.75rem;
+}
+
+.toggle-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.toggle-btn:hover {
+    background: var(--bg-hover);
+}
+
+.toggle-btn.active {
+    background: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: #fff;
+}
+
+.toggle-btn.active:hover {
+    background: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+}

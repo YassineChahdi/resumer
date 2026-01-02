@@ -116,6 +116,15 @@
 
         <main>
             <section class="form-section">
+                <!-- Resume Type Toggle -->
+                <fieldset class="resume-type-fieldset">
+                    <legend>Resume Type <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Choose the right resume for your field</span></span></legend>
+                    <div class="toggle-container">
+                        <button type="button" id="btnGeneral" class="toggle-btn active" onclick="setResumeType('general')">General</button>
+                        <button type="button" id="btnTech" class="toggle-btn" onclick="setResumeType('tech')">Tech</button>
+                    </div>
+                </fieldset>
+                
                 <!-- Personal Info -->
                 <fieldset>
                     <legend>Personal Info</legend>
@@ -164,9 +173,9 @@
 
                 <!-- Skills -->
                 <fieldset>
-                    <legend>Skills</legend>
-                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Languages" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Programming languages: Python, JS, etc.</span></span></div>
-                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technologies" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Tools & frameworks: React, Docker, etc.</span></span></div>
+                    <legend id="skillsLegend">Skills</legend>
+                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Programming Languages" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="languagesTooltip">Programming languages: Python, JS, etc.</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technologies" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="technologiesTooltip">Tools & frameworks: React, Docker, etc.</span></span></div>
                 </fieldset>
 
                 <!-- Job Description -->

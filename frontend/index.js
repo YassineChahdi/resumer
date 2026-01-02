@@ -94,9 +94,56 @@ function updateThemeIcon(isLight) {
     if (btn) btn.textContent = isLight ? '🌙' : '☀️';
 }
 
+// === Resume Type Toggle ===
+const RESUME_TYPE_KEY = 'resumeType';
+let currentResumeType = 'general'; // Default to general
+
+function initResumeType() {
+    const savedType = localStorage.getItem(RESUME_TYPE_KEY);
+    if (savedType === 'general' || savedType === 'tech') {
+        currentResumeType = savedType;
+    }
+    applyResumeType();
+}
+
+function setResumeType(type) {
+    currentResumeType = type;
+    localStorage.setItem(RESUME_TYPE_KEY, type);
+    applyResumeType();
+}
+
+function applyResumeType() {
+    const btnGeneral = document.getElementById('btnGeneral');
+    const btnTech = document.getElementById('btnTech');
+    const languagesInput = document.getElementById('languages');
+    const technologiesInput = document.getElementById('technologies');
+    const languagesTooltip = document.getElementById('languagesTooltip');
+    const technologiesTooltip = document.getElementById('technologiesTooltip');
+    
+    // Update button states
+    if (btnGeneral && btnTech) {
+        btnGeneral.classList.toggle('active', currentResumeType === 'general');
+        btnTech.classList.toggle('active', currentResumeType === 'tech');
+    }
+    
+    // Update labels and tooltips based on mode
+    if (currentResumeType === 'general') {
+        if (languagesInput) languagesInput.placeholder = 'Skills';
+        if (technologiesInput) technologiesInput.placeholder = 'Tools & Software';
+        if (languagesTooltip) languagesTooltip.textContent = 'Core skills: communication, leadership, etc.';
+        if (technologiesTooltip) technologiesTooltip.textContent = 'Software and tools you use professionally';
+    } else {
+        if (languagesInput) languagesInput.placeholder = 'Programming Languages';
+        if (technologiesInput) technologiesInput.placeholder = 'Technologies';
+        if (languagesTooltip) languagesTooltip.textContent = 'Programming languages: Python, JS, etc.';
+        if (technologiesTooltip) technologiesTooltip.textContent = 'Tools & frameworks: React, Docker, etc.';
+    }
+}
+
 // === Init ===
 document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
+    initResumeType();
     loadFromStorage();
     renderForm();
     await initSupabase();
