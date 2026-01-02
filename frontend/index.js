@@ -29,12 +29,14 @@ let resumeData = {
     education: [],
     experience: [],
     projects: [],
+    certifications: [],
+    volunteer: [],
     languages: [],
     technologies: []
 };
 
 let tailoredResume = null;
-let sectionStates = { edu: true, exp: true, proj: true }; // true = expanded
+let sectionStates = { edu: true, exp: true, proj: true, cert: true, vol: true }; // true = expanded
 
 // === Debounce utility ===
 function debounce(fn, delay) {
@@ -119,6 +121,10 @@ function applyResumeType() {
     const technologiesInput = document.getElementById('technologies');
     const languagesTooltip = document.getElementById('languagesTooltip');
     const technologiesTooltip = document.getElementById('technologiesTooltip');
+    const skillsLegend = document.getElementById('skillsLegend');
+    const projectsSection = document.getElementById('projectsSection');
+    const certificationsSection = document.getElementById('certificationsSection');
+    const volunteerSection = document.getElementById('volunteerSection');
     
     // Update button states
     if (btnGeneral && btnTech) {
@@ -126,13 +132,20 @@ function applyResumeType() {
         btnTech.classList.toggle('active', currentResumeType === 'tech');
     }
     
+    // Toggle section visibility based on mode
+    if (projectsSection) projectsSection.style.display = currentResumeType === 'tech' ? '' : 'none';
+    if (certificationsSection) certificationsSection.style.display = currentResumeType === 'general' ? '' : 'none';
+    if (volunteerSection) volunteerSection.style.display = currentResumeType === 'general' ? '' : 'none';
+    
     // Update labels and tooltips based on mode
     if (currentResumeType === 'general') {
-        if (languagesInput) languagesInput.placeholder = 'Skills';
-        if (technologiesInput) technologiesInput.placeholder = 'Tools & Software';
-        if (languagesTooltip) languagesTooltip.textContent = 'Core skills: communication, leadership, etc.';
-        if (technologiesTooltip) technologiesTooltip.textContent = 'Software and tools you use professionally';
+        if (skillsLegend) skillsLegend.textContent = 'Additional Information';
+        if (languagesInput) languagesInput.placeholder = 'Spoken Languages';
+        if (technologiesInput) technologiesInput.placeholder = 'Technical Skills';
+        if (languagesTooltip) languagesTooltip.textContent = 'Languages you speak: English, French, etc.';
+        if (technologiesTooltip) technologiesTooltip.textContent = 'Software skills: Excel, PowerPoint, etc.';
     } else {
+        if (skillsLegend) skillsLegend.textContent = 'Skills';
         if (languagesInput) languagesInput.placeholder = 'Programming Languages';
         if (technologiesInput) technologiesInput.placeholder = 'Technologies';
         if (languagesTooltip) languagesTooltip.textContent = 'Programming languages: Python, JS, etc.';
@@ -653,6 +666,16 @@ function renderForm() {
     projList.innerHTML = resumeData.projects.length ? '' : itemHtml('proj', 0, projFields(), true, [], false);
     resumeData.projects.forEach((p, i) => projList.innerHTML += itemHtml('proj', i, projFields(p), true, p.bullets, resumeData.projects.length > 1));
 
+    // Certifications
+    const certList = document.getElementById('certificationList');
+    certList.innerHTML = resumeData.certifications.length ? '' : certItemHtml(0, {}, false);
+    resumeData.certifications.forEach((c, i) => certList.innerHTML += certItemHtml(i, c, resumeData.certifications.length > 1));
+
+    // Volunteer Work
+    const volList = document.getElementById('volunteerList');
+    volList.innerHTML = resumeData.volunteer.length ? '' : volItemHtml(0, {}, false);
+    resumeData.volunteer.forEach((v, i) => volList.innerHTML += volItemHtml(i, v, resumeData.volunteer.length > 1));
+
     // Skills
     document.getElementById('languages').value = resumeData.languages.join(', ');
     document.getElementById('technologies').value = resumeData.technologies.join(', ');
@@ -741,33 +764,69 @@ function projFields(p = {}) {
     ];
 }
 
+// Certification item HTML (simple: name, issuer, date)
+function certItemHtml(idx, c = {}, canDelete = true) {
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('cert',${idx})">×</button>` : '';
+    return `<div class="list-item cert-item" data-type="cert" data-idx="${idx}">
+        <div class="list-item-header"><span>Certification #${idx + 1}</span>${removeBtn}</div>
+        <div class="row">
+            <input type="text" placeholder="Certification Name" data-field="name" value="${c.name || ''}"/>
+            <input type="text" placeholder="Issuer" data-field="issuer" value="${c.issuer || ''}"/>
+        </div>
+        <div class="row">
+            <input type="text" placeholder="Date (e.g. Jan 2024)" data-field="date" value="${c.date || ''}"/>
+            <div></div>
+        </div>
+    </div>`;
+}
+
+// Volunteer item HTML (like Projects but without languages - has title and bullets)
+function volItemHtml(idx, v = {}, canDelete = true) {
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('vol',${idx})">×</button>` : '';
+    const bullets = v.bullets || [];
+    const bulletCount = bullets.length || 1;
+    return `<div class="list-item vol-item" data-type="vol" data-idx="${idx}">
+        <div class="list-item-header"><span>Volunteer #${idx + 1}</span>${removeBtn}</div>
+        <div class="row">
+            <input type="text" placeholder="Organization / Role" data-field="title" value="${v.title || ''}"/>
+            <input type="text" placeholder="Duration" data-field="duration" value="${v.duration || ''}"/>
+        </div>
+        <div class="bullets" data-type="vol" data-idx="${idx}">
+            ${bullets.length ? bullets.map((b, bi) => bulletHtml('vol', idx, bi, b, bulletCount > 1)).join('') : bulletHtml('vol', idx, 0, {}, false)}
+        </div>
+        <button class="btn-add-bullet" onclick="addBullet('vol',${idx})">+ Bullet</button>
+    </div>`;
+}
+
 // === Add/Remove ===
 function addItem(type) {
     syncFromForm();
-    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects }[type];
+    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects, cert: resumeData.certifications, vol: resumeData.volunteer }[type];
     if (type === 'edu') arr.push({ est_name: '', location: '', degree: '', year: '', gpa: '' });
     else if (type === 'exp') arr.push({ employer: '', location: '', title: '', duration: '', bullets: [{ text: '', impressiveness: null }] });
+    else if (type === 'cert') arr.push({ name: '', issuer: '', date: '' });
+    else if (type === 'vol') arr.push({ title: '', duration: '', bullets: [{ text: '', impressiveness: null }] });
     else arr.push({ title: '', languages: '', bullets: [{ text: '', impressiveness: null }] });
     renderForm();
 }
 
 function removeItem(type, idx) {
     syncFromForm();
-    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects }[type];
+    const arr = { edu: resumeData.education, exp: resumeData.experience, proj: resumeData.projects, cert: resumeData.certifications, vol: resumeData.volunteer }[type];
     arr.splice(idx, 1);
     renderForm();
 }
 
 function addBullet(type, idx) {
     syncFromForm();
-    const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
+    const arr = { exp: resumeData.experience, proj: resumeData.projects, vol: resumeData.volunteer }[type];
     arr[idx].bullets.push({ text: '', impressiveness: null });
     renderForm();
 }
 
 function removeBullet(type, idx, bi) {
     syncFromForm();
-    const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
+    const arr = { exp: resumeData.experience, proj: resumeData.projects, vol: resumeData.volunteer }[type];
     arr[idx].bullets.splice(bi, 1);
     if (arr[idx].bullets.length === 0) arr[idx].bullets.push({ text: '', impressiveness: null });
     renderForm();
@@ -775,11 +834,13 @@ function removeBullet(type, idx, bi) {
 
 // === Clear Functions ===
 async function clearSection(type) {
-    const labels = { edu: 'Education', exp: 'Experience', proj: 'Projects' };
+    const labels = { edu: 'Education', exp: 'Experience', proj: 'Projects', cert: 'Certifications', vol: 'Volunteer Work' };
     if (!await showConfirm(`Clear all ${labels[type]} entries?`)) return;
     syncFromForm();
     if (type === 'edu') resumeData.education = [];
     else if (type === 'exp') resumeData.experience = [];
+    else if (type === 'cert') resumeData.certifications = [];
+    else if (type === 'vol') resumeData.volunteer = [];
     else resumeData.projects = [];
     saveToStorage();
     renderForm();
@@ -788,7 +849,7 @@ async function clearSection(type) {
 async function clearBullets(type, idx) {
     if (!await showConfirm('Clear all bullets for this item?')) return;
     syncFromForm();
-    const arr = { exp: resumeData.experience, proj: resumeData.projects }[type];
+    const arr = { exp: resumeData.experience, proj: resumeData.projects, vol: resumeData.volunteer }[type];
     arr[idx].bullets = [{ text: '', impressiveness: null }];
     saveToStorage();
     renderForm();
@@ -802,6 +863,8 @@ async function clearAll() {
         education: [],
         experience: [],
         projects: [],
+        certifications: [],
+        volunteer: [],
         languages: [],
         technologies: []
     };
@@ -821,7 +884,7 @@ function toggleSection(type) {
 }
 
 function applyToggleState(type) {
-    const listId = { edu: 'educationList', exp: 'experienceList', proj: 'projectList' }[type];
+    const listId = { edu: 'educationList', exp: 'experienceList', proj: 'projectList', cert: 'certificationList', vol: 'volunteerList' }[type];
     const list = document.getElementById(listId);
     const btn = document.querySelector(`[data-toggle="${type}"]`);
     if (list) list.style.display = sectionStates[type] ? '' : 'none';
@@ -829,7 +892,7 @@ function applyToggleState(type) {
 }
 
 function applyAllToggleStates() {
-    ['edu', 'exp', 'proj'].forEach(applyToggleState);
+    ['edu', 'exp', 'proj', 'cert', 'vol'].forEach(applyToggleState);
 }
 
 // === Sync Form → resumeData ===
@@ -874,6 +937,24 @@ function syncFromForm() {
             };
         }).filter(b => b.text || b.impressiveness != null)
     }));//.filter(p => p.title);
+
+    resumeData.certifications = [...document.querySelectorAll('#certificationList .list-item')].map(el => ({
+        name: el.querySelector('[data-field="name"]').value,
+        issuer: el.querySelector('[data-field="issuer"]').value,
+        date: el.querySelector('[data-field="date"]').value
+    }));
+
+    resumeData.volunteer = [...document.querySelectorAll('#volunteerList .list-item')].map(el => ({
+        title: el.querySelector('[data-field="title"]').value,
+        duration: el.querySelector('[data-field="duration"]').value,
+        bullets: [...el.querySelectorAll('.bullet-row')].map(b => {
+            const impVal = b.querySelector('[data-field="impressiveness"]').value.trim();
+            return {
+                text: b.querySelector('[data-field="text"]').value,
+                impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
+            };
+        }).filter(b => b.text || b.impressiveness != null)
+    }));
 
     resumeData.languages = document.getElementById('languages').value.split(',').map(s => s.trim()).filter(Boolean);
     resumeData.technologies = document.getElementById('technologies').value.split(',').map(s => s.trim()).filter(Boolean);

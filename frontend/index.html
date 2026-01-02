@@ -159,8 +159,8 @@
                     <div id="experienceList"></div>
                 </fieldset>
 
-                <!-- Projects -->
-                <fieldset>
+                <!-- Projects (Tech mode only) -->
+                <fieldset id="projectsSection">
                     <legend>
                         <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')">▼</button>
                         Projects
@@ -171,11 +171,35 @@
                     <div id="projectList"></div>
                 </fieldset>
 
-                <!-- Skills -->
+                <!-- Volunteer Work (General mode only) -->
+                <fieldset id="volunteerSection" style="display:none;">
+                    <legend>
+                        <button type="button" class="btn-toggle" data-toggle="vol" onclick="toggleSection('vol')">▼</button>
+                        Volunteer Work
+                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Community service and volunteer experience</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('vol')">+ Add</button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('vol')">Clear</button>
+                    </legend>
+                    <div id="volunteerList"></div>
+                </fieldset>
+
+                <!-- Certifications (General mode only) -->
+                <fieldset id="certificationsSection" style="display:none;">
+                    <legend>
+                        <button type="button" class="btn-toggle" data-toggle="cert" onclick="toggleSection('cert')">▼</button>
+                        Certifications
+                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Professional certifications and licenses</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('cert')">+ Add</button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('cert')">Clear</button>
+                    </legend>
+                    <div id="certificationList"></div>
+                </fieldset>
+
+                <!-- Additional Information / Skills -->
                 <fieldset>
-                    <legend id="skillsLegend">Skills</legend>
-                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Programming Languages" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="languagesTooltip">Programming languages: Python, JS, etc.</span></span></div>
-                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technologies" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="technologiesTooltip">Tools & frameworks: React, Docker, etc.</span></span></div>
+                    <legend id="skillsLegend">Additional Information</legend>
+                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Spoken Languages" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="languagesTooltip">Languages you speak: English, French, etc.</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technical Skills" style="margin-bottom:0;" /><span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text" id="technologiesTooltip">Software skills: Excel, PowerPoint, etc.</span></span></div>
                 </fieldset>
 
                 <!-- Job Description -->
