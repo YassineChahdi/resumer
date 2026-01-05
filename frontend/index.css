@@ -445,7 +445,7 @@ main.loading {
     
     .preview-section {
         position: static;
-        margin-bottom: 8rem;
+        margin-bottom: 0;
     }
     
     fieldset {
