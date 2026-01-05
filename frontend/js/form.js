@@ -103,7 +103,7 @@ export function syncFromForm() {
                 text: b.querySelector('[data-field="text"]').value,
                 impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
             };
-        }).filter(b => b.text || b.impressiveness != null)
+        })
     }));
 
     resumeData.projects = [...document.querySelectorAll('#projectList .list-item')].map(el => ({
@@ -115,7 +115,7 @@ export function syncFromForm() {
                 text: b.querySelector('[data-field="text"]').value,
                 impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
             };
-        }).filter(b => b.text || b.impressiveness != null)
+        })
     }));
 
     resumeData.certifications = [...document.querySelectorAll('#certificationList .list-item')].map(el => ({
@@ -135,7 +135,7 @@ export function syncFromForm() {
                 text: b.querySelector('[data-field="text"]').value,
                 impressiveness: impVal === '' ? null : Math.min(1, Math.max(0, parseFloat(impVal) || 0))
             };
-        }).filter(b => b.text || b.impressiveness != null)
+        })
     }));
 
     // Skills
