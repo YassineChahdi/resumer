@@ -210,4 +210,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     // UI Init (listeners)
     UI.initModals();
     UI.initSmartTooltips();
+
+    // Scrollbar "Show on Scroll" Logic
+    const scrollTargets = [window, document.querySelector('.form-section'), document.querySelector('.preview-section')];
+    scrollTargets.forEach(target => {
+        if (!target) return;
+        let scrollTimeout;
+        target.addEventListener('scroll', () => {
+            // Determine element to apply class to
+            const el = target === window ? document.body : target;
+            
+            el.classList.add('is-scrolling');
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                el.classList.remove('is-scrolling');
+            }, 1000); // Hide after 1s of inactivity
+        });
+    });
 });

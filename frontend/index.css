@@ -63,9 +63,34 @@ body {
     font-size: 14px;
     line-height: 1.4;
     transition: background 0.3s, color 0.3s;
-    /* Desktop: Fixed viewport for independent column scrolling */
+/* Desktop: Fixed viewport for independent column scrolling */
     height: 100vh;
     overflow: hidden;
+}
+
+/* Custom Scrollbar for WebKit (Desktop Only) */
+@media (min-width: 901px) {
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 3px;
+    }
+
+    .is-scrolling::-webkit-scrollbar-thumb {
+        background: var(--border-light);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-muted);
+    }
 }
 
 /* Material Symbols Utility */
