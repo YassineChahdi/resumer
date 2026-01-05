@@ -377,6 +377,12 @@ main.loading {
     .container {
         padding-bottom: 5rem;
     }
+
+    /* Mobile: Move toasts to top */
+    #toast-container {
+        top: 1rem;
+        bottom: auto;
+    }
 }
 
 fieldset {
