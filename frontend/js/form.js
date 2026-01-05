@@ -1,6 +1,6 @@
 // Form Rendering & Logic
 
-import { resumeData, sectionStates, currentResumeType } from './state.js';
+import { resumeData, sectionStates, currentResumeType, resetResumeData } from './state.js';
 import { debouncedSave, saveSectionStates, saveToStorage } from './storage.js';
 import { itemHtml, certItemHtml, volItemHtml, eduFields, expFields, projFields } from './components.js';
 import { setResumeType } from './resumeType.js';
@@ -243,10 +243,11 @@ export function loadFromJson(event) {
     reader.onload = e => {
         try {
             const data = JSON.parse(e.target.result);
-            // Only copy known fields (safe merge)
-            // But logic in index.js.bak modified resumeData directly
             
-            // ... Logic copied from index.js.bak ...
+            // Clear existing data first
+            resetResumeData();
+
+            // Populate fresh
             resumeData.full_name = data.full_name || '';
             resumeData.contacts = { ...resumeData.contacts, ...data.contacts };
             resumeData.education = (data.education || []).map(e => ({
@@ -304,6 +305,8 @@ export function loadFromJson(event) {
             }
             
             renderForm();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showAlert('Resume loaded from JSON');
         } catch (err) { showAlert('Invalid JSON'); }
     };
     reader.readAsText(file);

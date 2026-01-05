@@ -214,12 +214,19 @@
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
-                <!-- Saved Resumes (Local) -->
+                <!-- Saved Resumes (Cloud / Local) -->
                 <fieldset id="savedResumesSection">
-                    <legend>Saved Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Resumes saved in your browser</span></span></legend>
-                    <div id="resumesList">No saved resumes. Save your first resume!</div>
-                    <div class="resume-save-row" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button type="button" id="btnSave" onclick="handleSaveSnapshot()">Save Resume</button>
+                    <legend>Saved Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Resumes saved in the cloud</span></span></legend>
+                    
+                    <div id="guestMessage" style="text-align: center; padding: 1rem; color: var(--text-secondary);">
+                        Log in or sign up to save resumes
+                    </div>
+
+                    <div id="userResumesControl" style="display: none;">
+                        <div id="resumesList">No saved resumes. Save your first resume!</div>
+                        <div class="resume-save-row" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button type="button" id="btnSave" onclick="handleSaveSnapshot()">Save Resume</button>
+                        </div>
                     </div>
                 </fieldset>
 

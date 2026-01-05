@@ -7,7 +7,7 @@ import {
     currentUser, supabaseClient // For check
 } from './state.js';
 import { renderForm } from './form.js'; // Will be created
-import { loadResumes } from './cloud.js'; // Will be created
+import { loadResumes } from './cloud.js';
 import { showAlert } from './ui.js';
 import { STORAGE_KEY } from './config.js';
 
@@ -26,13 +26,24 @@ export async function initSupabase() {
     
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     setSupabaseClient(client);
-    
+
+    // Check for provider redirect flow (Google)
+    // Supabase usually puts access_token in hash
+    let isRedirectLogin = window.location.hash && (
+        window.location.hash.includes('access_token') || 
+        window.location.hash.includes('type=recovery')
+    );
+
     // Listen for auth changes
     client.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && isRedirectLogin) {
+             showAlert('Logged in successfully');
+             isRedirectLogin = false; // Consume
+        }
+
         if (session?.user) {
             setCurrentUser(session.user);
             updateAuthUI(true);
-            // loadResumes(); // Disabled for local-first mode
         } else {
             setCurrentUser(null);
             updateAuthUI(false);
@@ -44,7 +55,6 @@ export async function initSupabase() {
     if (session?.user) {
         setCurrentUser(session.user);
         updateAuthUI(true);
-        // loadResumes(); // Disabled for local-first mode
     }
 }
 
@@ -58,15 +68,37 @@ export async function getAuthHeader() {
     return session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : null;
 }
 
+ 
+
 export function updateAuthUI(loggedIn) {
     const btnLogin = document.getElementById('btnLogin');
     const userInfo = document.getElementById('userInfo');
-    const myResumes = document.getElementById('myResumesSection');
     const userEmail = document.getElementById('userEmail');
     
+    // Resume Section UI
+    const guestMsg = document.getElementById('guestMessage');
+    const userCtrl = document.getElementById('userResumesControl');
+
     if (btnLogin) btnLogin.style.display = loggedIn ? 'none' : '';
     if (userInfo) userInfo.style.display = loggedIn ? '' : 'none';
-    if (myResumes) myResumes.style.display = loggedIn ? '' : 'none';
+    
+    // Toggle Saved Resumes UI
+    if (loggedIn) {
+        // Only load if explicit transition or initial load?
+        // updateAuthUI is called by onAuthStateChange.
+        // loadResumes is safe to call repeatedly but suboptimal?
+        // It clears the list so it's visibly refreshing.
+        if (guestMsg) guestMsg.style.display = 'none';
+        if (userCtrl) userCtrl.style.display = 'block';
+        loadResumes(); // Load from cloud
+    } else {
+        if (guestMsg) guestMsg.style.display = 'block';
+        if (userCtrl) userCtrl.style.display = 'none';
+        // Clear list (visual only, state cleared in logout)
+        const list = document.getElementById('resumesList');
+        if (list) list.innerHTML = '';
+    }
+
     if (loggedIn && currentUser && userEmail) {
         userEmail.textContent = currentUser.email || 'Logged in';
     }
@@ -126,6 +158,7 @@ async function loginWithEmail() {
         const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
         hideLoginModal();
+        showAlert('Logged in successfully');
     } catch (e) {
         showAlert('Login failed: ' + e.message);
     } finally {
@@ -213,4 +246,6 @@ export async function logout() {
     document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
     document.getElementById('btnPdf').disabled = true;
     document.getElementById('btnLatex').disabled = true;
+    
+    showAlert('Logged out successfully');
 }

@@ -70,19 +70,27 @@ export function renderResumesList(resumes) {
 export async function saveToCloud() {
     syncFromForm();
     
-    let name = currentResumeName || 'Untitled Resume';
-    // Logic deviation: Use prompt if new resume or just to confirm
-    // Original used input field. If input field missed, I use prompt.
+    let defaultName = 'Untitled Resume';
+    
+    // Always prompt for name (as per user request)
+    // Use input field value as default if available? NO, user requested strict 'Untitled Resume' fallback.
+    // "fallback should always be "Untitled Resume" not loaded resume." -> This implies ignoring current loaded name.
+    
+    // However, if the user typed something into the input field *manually* before hitting save, maybe we should respect that?
+    // "if none is given, there should be a default name for fallback."
+    // I will interpret this as:
+    // 1. If user typed in #resumeName input -> use that.
+    // 2. If not -> use "Untitled Resume".
+    // 3. NEVER use currentResumeName (the loaded resume's name).
+
     const nameInput = document.getElementById('resumeName');
-    if (nameInput) {
-        name = nameInput.value.trim() || name;
-    } else if (!currentResumeId) {
-        // If no input field and new resume, prompt
-        const p = showPrompt('Enter resume name:', name);
-        if (!p) return; // Cancelled
-        name = p;
+    if (nameInput && nameInput.value.trim()) {
+        defaultName = nameInput.value.trim();
     }
-    // If existing resume, we keep name unless prompt? 
+
+    const p = await showPrompt('Enter resume name:', defaultName);
+    if (!p) return; // Cancelled
+    let name = p; 
     // Without input field, we need a way to rename. "Save As" button?
     // For now, assume simple save updates existing name.
     
@@ -97,11 +105,9 @@ export async function saveToCloud() {
         setCurrentResumeId(null); // Treat as new
     }
     
-    // Unique name check for new
-    if (!currentResumeId) {
-        name = getUniqueName(name);
-        if (nameInput) nameInput.value = name;
-    }
+    // Always enforce unique name for new snapshot
+    name = getUniqueName(name);
+    if (nameInput) nameInput.value = name;
     
     // UI Loading state
     // We check for button with saveToCloud onclick
@@ -120,24 +126,30 @@ export async function saveToCloud() {
             tailored_resume: tailoredResume
         };
         
-        let res;
-        if (currentResumeId) {
-            // Update
-            res = await fetch(`${API_BASE}/resumes/${currentResumeId}`, {
-                method: 'PUT',
-                headers: { ...authHeader, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-        } else {
-            // Create
-            res = await fetch(`${API_BASE}/resumes`, {
-                method: 'POST',
-                headers: { ...authHeader, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-        }
+        // Snapshot Model: ALWAYS create new entry (POST)
+        // Ignoring currentResumeId for update.
+        // But do we want to support updating the SAME snapshot if we haven't changed name?
+        // User requested: "Every save operation should create a new...".
+        // OK, adhering to strict snapshot model.
         
-        if (!res.ok) throw new Error('Failed to save');
+        let res = await fetch(`${API_BASE}/resumes`, {
+            method: 'POST',
+            headers: { ...authHeader, 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        
+        /* 
+           Legacy Update Logic (Disabled for Snapshot Model)
+        if (currentResumeId) {
+             res = await fetch(`${API_BASE}/resumes/${currentResumeId}`, ... PUT ...);
+        } else { ... POST ... }
+        */
+        
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            const detail = errData.detail ? (typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail)) : 'Failed to save';
+            throw new Error(detail);
+        }
         const data = await res.json();
         if (data.resume?.id) {
             setCurrentResumeId(data.resume.id);
@@ -184,10 +196,10 @@ export async function loadCloudResume(id) {
             const savedLangs = extractSkills(fr.languages);
             const savedTechs = extractSkills(fr.technologies);
             
-            // Set data
+            // Set data (Strict replacement, no merging with previous state)
             const newData = {
-                full_name: fr.full_name || resumeData.full_name,
-                contacts: { ...resumeData.contacts, ...(fr.contacts || {}) },
+                full_name: fr.full_name || '',
+                contacts: { ...{ phone: '', email: '', github: '', linkedin: '' }, ...(fr.contacts || {}) },
                 education: fr.education || [],
                 experience: fr.experience || [],
                 projects: fr.projects || [],
@@ -196,7 +208,7 @@ export async function loadCloudResume(id) {
                 spoken_languages: fr.spoken_languages || [],
                 technical_skills: fr.technical_skills || [],
                 programming_languages: fr.programming_languages || [],
-                technologies: fr.technologies_tech || resumeData.technologies || []
+                technologies: fr.technologies_tech || []
             };
             
             // Backward compat
@@ -210,23 +222,26 @@ export async function loadCloudResume(id) {
                 }
             }
             
+            // Determine Type
+            let targetType = 'general';
+            if (resume.resume_type) {
+                targetType = resume.resume_type;
+            } else {
+                // Guess based on content
+                if ((newData.volunteer && newData.volunteer.length > 0) || (newData.certifications && newData.certifications.length > 0)) {
+                    targetType = 'general';
+                } else {
+                    targetType = 'tech';
+                }
+            }
+            
+            setResumeType(targetType, true);
+
             // REPLACE global resumeData
             resetResumeData(newData);
             
             renderForm();
             saveToStorage();
-        }
-        
-        // Load Type
-        if (resume.resume_type) {
-            setResumeType(resume.resume_type, true);
-        } else {
-            // Guess
-            if (resumeData.volunteer.length > 0 || resumeData.certifications.length > 0) {
-                setResumeType('general', true);
-            } else {
-                setResumeType('tech', true);
-            }
         }
         
         if (resume.tailored_resume) {
@@ -239,6 +254,9 @@ export async function loadCloudResume(id) {
         }
         
         if (container) container.innerHTML = originalContent;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showAlert(`Resume "${resume.name}" loaded`);
         
     } catch (e) {
         showAlert('Failed to load resume: ' + e.message);
