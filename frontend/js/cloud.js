@@ -10,7 +10,8 @@ import {
     currentResumeName, setCurrentResumeName,
     currentResumeType, 
     resumeData, updateResumeData, tailoredResume, setTailoredResume,
-    resetResumeData
+    resetResumeData,
+    supabaseClient
 } from './state.js';
 import { syncFromForm, renderForm } from './form.js';
 import { setResumeType } from './resumeType.js';
@@ -62,10 +63,49 @@ export function renderResumesList(resumes) {
     container.innerHTML = resumes.map(r => `
         <div class="resume-item" data-id="${r.id}" onclick="loadCloudResume('${r.id}')">
             <span>${r.name}</span>
-            <button class="btn-remove" onclick="event.stopPropagation(); deleteCloudResume('${r.id}')">×</button>
+            <div class="resume-actions">
+                <button class="btn-icon" title="Rename" onclick="event.stopPropagation(); renameCloudResume('${r.id}')">✎</button>
+                <button class="btn-remove" title="Delete" onclick="event.stopPropagation(); deleteCloudResume('${r.id}')">×</button>
+            </div>
         </div>
     `).join('');
 }
+
+export async function renameCloudResume(id) {
+    const resume = cachedResumes.find(r => r.id === id);
+    if (!resume) return;
+
+    const newName = await showPrompt('Rename resume:', resume.name);
+    if (!newName || newName === resume.name) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from('resumes')
+            .update({ name: newName })
+            .eq('id', id);
+
+        if (error) throw error;
+        
+        // Update local cache immediately for potential UI responsiveness
+        const idx = cachedResumes.findIndex(r => r.id === id);
+        if (idx !== -1) cachedResumes[idx].name = newName;
+        
+        // Also update current resume name if it's the one loaded
+        if (currentResumeId === id) {
+            setCurrentResumeName(newName);
+            const nameInput = document.getElementById('resumeName');
+            if (nameInput) nameInput.value = newName;
+        }
+
+        showAlert('Resume renamed');
+        loadResumes(); // Refresh list to ensure consistency
+    } catch (e) {
+        showAlert('Failed to rename: ' + e.message);
+    }
+}
+
+// Expose to window
+window.renameCloudResume = renameCloudResume;
 
 export async function saveToCloud() {
     syncFromForm();
