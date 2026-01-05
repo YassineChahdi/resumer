@@ -504,7 +504,7 @@ main.loading {
     
     /* Add padding at bottom to prevent content being hidden behind fixed toolbar */
     .container {
-        padding-bottom: 5rem;
+        padding-bottom: 3.5rem;
     }
 
     /* Mobile: Move toasts to top */
