@@ -6,7 +6,8 @@ import {
     resetResumeData, updateResumeData, setTailoredResume,
     currentUser, supabaseClient // For check
 } from './state.js';
-import { renderForm } from './form.js'; // Will be created
+import { renderForm } from './form.js';
+import { clearPreview } from './api.js';
 import { loadResumes } from './cloud.js';
 import { showAlert, showConfirm } from './ui.js';
 import { STORAGE_KEY } from './config.js';
@@ -241,14 +242,12 @@ export async function logout() {
     
     // Clear all fields
     resetResumeData();
-    setTailoredResume(null);
     localStorage.removeItem(STORAGE_KEY);
     
     // Re-render
     renderForm();
-    document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
-    document.getElementById('btnPdf').disabled = true;
-    document.getElementById('btnLatex').disabled = true;
+    
+    clearPreview();
     
     showAlert('Logged out successfully');
 }

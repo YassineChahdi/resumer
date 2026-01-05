@@ -2,7 +2,8 @@
 
 import { RESUME_TYPE_KEY } from './config.js';
 import { currentResumeType, setCurrentResumeType } from './state.js';
-import { syncFromForm, renderForm } from './form.js'; // Will be created
+import { syncFromForm, renderForm } from './form.js';
+import { clearPreview } from './api.js';
 
 export function initResumeType() {
     const savedType = localStorage.getItem(RESUME_TYPE_KEY);
@@ -25,6 +26,7 @@ export function setResumeType(type, skipSync = false) {
     if (!skipSync && document.getElementById('fullName')) {
         renderForm();
     }
+    clearPreview();
 }
 
 export function applyResumeType() {

@@ -15,7 +15,7 @@ import {
 } from './state.js';
 import { syncFromForm, renderForm } from './form.js';
 import { setResumeType } from './resumeType.js';
-import { prepareApiData, renderPreview } from './api.js'; // Will be created
+import { prepareApiData, renderPreview, clearPreview } from './api.js';
 import { saveToStorage } from './storage.js';
 import { showAlert, showConfirm, showPrompt } from './ui.js';
 
@@ -293,8 +293,7 @@ export async function loadCloudResume(id) {
             if(l) l.disabled = false;
         } else {
             // Clear preview when loading resume without tailored version
-            setTailoredResume(null);
-            document.getElementById('preview').innerHTML = 'Fill in your resume and click Generate.';
+            clearPreview();
         }
         
         if (container) container.innerHTML = originalContent;

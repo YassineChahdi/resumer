@@ -2,6 +2,7 @@
 
 import { resumeData, sectionStates, currentResumeType, resetResumeData, setTailoredResume } from './state.js';
 import { debouncedSave, saveSectionStates, saveToStorage } from './storage.js';
+import { clearPreview } from './api.js';
 import { itemHtml, certItemHtml, volItemHtml, eduFields, expFields, projFields } from './components.js';
 import { setResumeType } from './resumeType.js';
 import { showConfirm, showAlert } from './ui.js';
@@ -211,9 +212,7 @@ export async function clearAll() {
     saveToStorage();
     renderForm();
     
-    document.getElementById('btnPdf').disabled = true;
-    document.getElementById('btnLatex').disabled = true;
-    document.getElementById('preview').innerHTML = 'Fill in your resume and click Preview.';
+    clearPreview();
 }
 
 // Toggle Section
@@ -246,6 +245,9 @@ export function loadFromJson(event) {
             
             // Clear existing data first
             resetResumeData();
+
+            // Clear preview on load
+            clearPreview();
 
             // Populate fresh
             resumeData.full_name = data.full_name || '';

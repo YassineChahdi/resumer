@@ -93,6 +93,15 @@ function isResumeEmptyLocal() {
            resumeData.programming_languages.length === 0 && resumeData.technologies.length === 0;
 }
 
+export function clearPreview() {
+    setTailoredResume(null);
+    document.getElementById('preview').innerHTML = 'Fill in your resume and click Generate.';
+    const btnPdf = document.getElementById('btnPdf');
+    const btnLatex = document.getElementById('btnLatex');
+    if (btnPdf) btnPdf.disabled = true;
+    if (btnLatex) btnLatex.disabled = true;
+}
+
 export function renderPreview(r) {
     let html = '';
     if (r.isPlaceholder) {
