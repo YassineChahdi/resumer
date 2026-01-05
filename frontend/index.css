@@ -82,6 +82,7 @@ body {
     ::-webkit-scrollbar-thumb {
         background: transparent;
         border-radius: 3px;
+        transition: background-color 0.3s;
     }
 
     .is-scrolling::-webkit-scrollbar-thumb {
@@ -390,6 +391,7 @@ main.loading {
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal scroll */
     padding-right: 0.5rem; /* Space for scrollbar */
+    scroll-margin-top: 0;
 }
 
 @media (max-width: 900px) {
@@ -530,6 +532,11 @@ main.loading {
     /* Add padding at bottom to prevent content being hidden behind fixed toolbar */
     .container {
         padding-bottom: 3.5rem;
+    }
+
+    /* Fix scroll position for preview to account for sticky header */
+    .preview-section {
+        scroll-margin-top: 5rem;
     }
 
     /* Mobile: Move toasts to top */
