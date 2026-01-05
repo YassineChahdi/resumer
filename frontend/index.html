@@ -272,7 +272,6 @@
                     <div class="toolbar-row">
                         <div class="toolbar-group">
                             <span class="tooltip"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
-                            <span class="tooltip"><button type="button" onclick="downloadJson()">Download JSON</button><span class="tooltip-text">Export resume for backup</span></span>
                         </div>
                         <div class="toolbar-divider"></div>
                         <div class="toolbar-group">
@@ -287,6 +286,7 @@
                     </div>
                     <div class="toolbar-row">
                         <div class="toolbar-group">
+                            <span class="tooltip"><button type="button" onclick="downloadJson()">Download JSON</button><span class="tooltip-text">Export resume for backup</span></span>
                             <button type="button" onclick="downloadPdf()" id="btnPdf" disabled>Download PDF</button>
                             <button type="button" onclick="exportToLatex()" id="btnLatex" disabled>Download LaTeX</button>
                         </div>

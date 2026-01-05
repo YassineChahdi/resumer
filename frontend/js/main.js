@@ -149,28 +149,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // UI Init (listeners)
     UI.initModals();
-    
-    // Tooltips (Mobile)
-    initTooltipTouchHandling();
+    UI.initSmartTooltips();
 });
-
-
-function initTooltipTouchHandling() {
-    document.addEventListener('click', (e) => {
-        const tooltipIcon = e.target.closest('.tooltip-icon');
-        const tooltip = e.target.closest('.tooltip');
-        
-        if (tooltipIcon && tooltip) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const wasActive = tooltip.classList.contains('tooltip-active');
-            document.querySelectorAll('.tooltip-active').forEach(t => t.classList.remove('tooltip-active'));
-            if (!wasActive) {
-                tooltip.classList.add('tooltip-active');
-            }
-        } else {
-            document.querySelectorAll('.tooltip-active').forEach(t => t.classList.remove('tooltip-active'));
-        }
-    });
-}

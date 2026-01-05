@@ -179,3 +179,146 @@ export function renderSavedResumesList(resumes, onLoad, onDelete, onRename) {
 }
 
 // End of file (removed updateSaveButtonState)
+
+// Smart Tooltip Portal
+export function initSmartTooltips() {
+    // Create global tooltip if not exists
+    let globalTooltip = document.getElementById('global-tooltip');
+    if (!globalTooltip) {
+        globalTooltip = document.createElement('div');
+        globalTooltip.id = 'global-tooltip';
+        document.body.appendChild(globalTooltip);
+    }
+
+    let activeTarget = null;
+    let hasTouch = false;
+    
+    // Detect touch capability/usage
+    document.addEventListener('touchstart', () => {
+        hasTouch = true;
+    }, { capture: true, once: true });
+
+    function hideTooltip() {
+        if (activeTarget) {
+            activeTarget.classList.remove('active'); // Turn off blue
+        }
+        if (globalTooltip) {
+            globalTooltip.classList.remove('active');
+        }
+        activeTarget = null;
+    }
+
+    function showTooltip(target) {
+        // If switching targets, hide previous
+        if (activeTarget && activeTarget !== target) {
+            activeTarget.classList.remove('active');
+        }
+
+        const textEl = target.querySelector('.tooltip-text');
+        if (!textEl) return;
+        
+        globalTooltip.innerHTML = textEl.innerHTML;
+        
+        activeTarget = target;
+        activeTarget.classList.add('active'); // Turn on blue
+        updatePosition();
+        globalTooltip.classList.add('active');
+    }
+
+    function updatePosition() {
+        if (!activeTarget) return;
+
+        // Move to center of screen for measurement to avoid edge constraints
+        // forcing premature wrapping (which leads to wrong width calculation).
+        globalTooltip.style.top = '50%';
+        globalTooltip.style.left = '50%';
+        globalTooltip.style.transform = 'translate(-50%, -50%)';
+
+        const targetRect = activeTarget.getBoundingClientRect();
+        const tooltipRect = globalTooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const padding = 10;
+        
+        // Icon center X position
+        const iconCenterX = targetRect.left + (targetRect.width / 2);
+        
+        // Check vertical overflow (if top < 0, move to bottom)
+        let isBottom = false;
+        let top = targetRect.top - 10;
+        if (top - tooltipRect.height < 0) {
+            isBottom = true;
+            top = targetRect.bottom + 10;
+        } else {
+            top = targetRect.top - 10;
+        }
+
+        // Calculate tooltip left edge, clamped to viewport
+        const tooltipWidth = tooltipRect.width;
+        let tooltipLeft = iconCenterX - (tooltipWidth / 2);
+        
+        // Clamp to viewport bounds
+        if (tooltipLeft < padding) {
+            tooltipLeft = padding;
+        } else if (tooltipLeft + tooltipWidth > viewportWidth - padding) {
+            tooltipLeft = viewportWidth - padding - tooltipWidth;
+        }
+
+        // Apply Styles - position tooltip box directly (no transform for X)
+        globalTooltip.style.top = `${top}px`;
+        globalTooltip.style.left = `${tooltipLeft}px`;
+        globalTooltip.style.transform = isBottom ? 'translateY(0%)' : 'translateY(-100%)';
+        
+        // Arrow should point at icon center
+        // Arrow position is relative to tooltip left edge, minus half the arrow width (5px border)
+        const arrowLeft = iconCenterX - tooltipLeft - 5;
+        globalTooltip.style.setProperty('--arrow-x', `${arrowLeft}px`);
+        
+        if (isBottom) {
+             globalTooltip.style.setProperty('--arrow-top', '-10px');
+             globalTooltip.style.setProperty('--arrow-rot', '180deg');
+        } else {
+             globalTooltip.style.setProperty('--arrow-top', '100%');
+             globalTooltip.style.setProperty('--arrow-rot', '0deg');
+        }
+    }
+
+    // Mouse Delegation (Desktop)
+    document.addEventListener('mouseover', (e) => {
+        if (hasTouch) return; // Ignore if touch user
+        const target = e.target.closest('.tooltip');
+        if (target) showTooltip(target);
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+        if (hasTouch) return;
+        const target = e.target.closest('.tooltip');
+        if (target) hideTooltip();
+    });
+
+    // Click Delegation (Mobile/Touch Toggle)
+    document.addEventListener('click', (e) => {
+        if (!hasTouch) return; // On desktop, click usually performs action. Tooltip handled by hover.
+        
+        const target = e.target.closest('.tooltip');
+        if (target) {
+             // Toggle logic
+             if (activeTarget === target) {
+                 hideTooltip();
+             } else {
+                 showTooltip(target);
+             }
+        } else {
+            // Click outside
+            hideTooltip();
+        }
+    });
+    
+    // Hide on scroll
+    window.addEventListener('scroll', () => {
+        if (activeTarget) hideTooltip();
+    }, true);
+    
+    window.addEventListener('resize', () => {
+        if (activeTarget) hideTooltip();
+    });
+}

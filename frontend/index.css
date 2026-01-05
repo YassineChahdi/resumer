@@ -728,7 +728,14 @@ button:disabled {
     transition: color 0.15s, border-color 0.15s;
 }
 
-.tooltip-icon:hover {
+@media (hover: hover) {
+    .tooltip-icon:hover {
+        color: var(--accent-link);
+        border-color: var(--accent-link);
+    }
+}
+
+.tooltip.active .tooltip-icon {
     color: var(--accent-link);
     border-color: var(--accent-link);
 }
@@ -739,7 +746,7 @@ button:disabled {
     position: absolute;
     bottom: calc(100% + 10px);
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(var(--tooltip-x, -50%));
     background: var(--tooltip-bg);
     color: #e0e0e0;
     padding: 0.5rem 0.75rem;
@@ -759,20 +766,46 @@ button:disabled {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
+
+
 .tooltip-text::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: var(--tooltip-bg);
+    display: none; /* Hide default arrow since we handle it in global or simple box */
 }
 
-.tooltip:hover .tooltip-text,
-.tooltip.tooltip-active .tooltip-text {
+/* Global Portal Tooltip */
+#global-tooltip {
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    background: var(--tooltip-bg);
+    color: #e0e0e0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: center;
+    z-index: 9999; /* Top of everything */
+    pointer-events: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    max-width: min(280px, 85vw);
+    white-space: normal;
+    transition: opacity 0.15s, visibility 0.15s;
+    transform: translate(-50%, -100%); /* Bottom-center anchored by default */
+}
+
+#global-tooltip.active {
     visibility: visible;
     opacity: 1;
+}
+
+#global-tooltip::after {
+    content: '';
+    position: absolute;
+    top: var(--arrow-top, 100%);
+    left: var(--arrow-x, 50%);
+    transform: rotate(var(--arrow-rot, 0deg));
+    border: 5px solid transparent;
+    border-top-color: var(--tooltip-bg);
 }
 
 /* Tooltip on right (Side) */
