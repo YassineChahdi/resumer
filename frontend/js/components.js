@@ -28,7 +28,7 @@ export function bulletHtml(type, idx, bi, b = {}, canDelete = true) {
     const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>` : '';
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
-        <span class="tooltip tooltip-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? ''}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
+        <span class="tooltip tooltip-align-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? ''}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
         ${removeBtn}
     </div>`;
 }

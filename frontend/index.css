@@ -716,20 +716,26 @@ button:disabled {
     visibility: hidden;
     opacity: 0;
     position: absolute;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
     background: var(--tooltip-bg);
     color: #e0e0e0;
-    padding: 0.4rem 0.6rem;
-    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
     font-size: 0.8rem;
-    max-width: 300px;
+    line-height: 1.4;
+    
+    /* Responsive sizing */
     width: max-content;
+    max-width: min(280px, 85vw); /* Prevent overflow on mobile */
+    white-space: normal; /* Allow wrapping */
+    
     text-align: center;
-    z-index: 100;
+    z-index: 2005; /* High z-index to ensure visibility over everything (including modals/header) */
     pointer-events: none;
     transition: opacity 0.15s, visibility 0.15s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .tooltip-text::after {
@@ -748,10 +754,10 @@ button:disabled {
     opacity: 1;
 }
 
-/* Tooltip on right for narrow contexts */
+/* Tooltip on right (Side) */
 .tooltip-right .tooltip-text {
     bottom: auto;
-    left: calc(100% + 8px);
+    left: calc(100% + 10px);
     transform: none;
     top: 50%;
     transform: translateY(-50%);
@@ -763,6 +769,19 @@ button:disabled {
     transform: translateY(-50%);
     border: 5px solid transparent;
     border-right-color: var(--tooltip-bg);
+}
+
+/* Tooltip Aligned Right (Stays on top, but body shifts left to prevent right overflow) */
+.tooltip-align-right .tooltip-text {
+    left: auto;
+    right: 0; /* Anchor to right edge of icon */
+    transform: none;
+}
+
+.tooltip-align-right .tooltip-text::after {
+    left: auto;
+    right: 6px; /* Position arrow over the icon roughly */
+    transform: none;
 }
 
 /* Theme Toggle */
