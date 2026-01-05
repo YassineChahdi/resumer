@@ -1,13 +1,49 @@
 // UI & Modals
 
-// Alert Modal functions
+// Toast Notification
+export function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return; // Should exist from HTML
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    // Optional: Add icon based on type (simple text char for now)
+    // if (type === 'success') toast.innerHTML = '✓ ' + message;
+    // if (type === 'error') toast.innerHTML = '⚠ ' + message;
+    
+    container.appendChild(toast);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+        });
+    }, duration);
+}
+
+// Alert Modal functions -> Redirect to Toast
 export function showAlert(message) {
-    document.getElementById('alertMessage').textContent = message;
-    document.getElementById('alertModal').style.display = 'flex';
+    // Determine type based on message content keywords (heuristic)
+    let type = 'info';
+    const lower = message.toLowerCase();
+    if (lower.includes('error') || lower.includes('failed') || lower.includes('invalid') || lower.includes('please')) {
+        type = 'error';
+    } else if (lower.includes('success') || lower.includes('saved')) {
+        type = 'success';
+    }
+    
+    showToast(message, type);
 }
 
 export function hideAlert() {
-    document.getElementById('alertModal').style.display = 'none';
+    // No-op for toasts as they auto-hide
 }
 
 // Confirm Modal functions
@@ -64,12 +100,7 @@ export function initModals() {
         });
     }
 
-    const alertModal = document.getElementById('alertModal');
-    if (alertModal) {
-        alertModal.addEventListener('click', (e) => {
-            if (e.target.id === 'alertModal') hideAlert();
-        });
-    }
+    // Alert modal listener removed (replaced by Toasts)
 
     const confirmModal = document.getElementById('confirmModal');
     if (confirmModal) {
@@ -102,9 +133,6 @@ export function renderSavedResumesList(resumes, onLoad, onDelete, onRename) {
         return;
     }
     
-    // We attach these functions to window or pass handlers?
-    // Using onclick="window.globalHandler..." is messy.
-    // Better: create elements.
     container.innerHTML = '';
     resumes.forEach(r => {
         const div = document.createElement('div');
