@@ -55,9 +55,38 @@
     </script>
     
     <link rel="stylesheet" href="index.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Immediate Theme Application to prevent FOUC
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('resumer_theme'); // Using literal key to avoid module import delay
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.add('light-mode'); // Apply to HTML to be safe
+                    document.body && document.body.classList.add('light-mode');
+                }
+                // Add preload class to suppress animations
+                document.documentElement.classList.add('preload');
+                
+                window.addEventListener('load', () => {
+                    // Remove preload class to enable transitions after initial paint
+                    requestAnimationFrame(() => {
+                        document.documentElement.classList.remove('preload');
+                        if(document.body) document.body.classList.remove('preload');
+                    });
+                });
+            } catch (e) { console.error('Theme init error', e); }
+        })();
+    </script>
 </head>
 <body>
+    <script>
+        // Apply to body immediately if body exists (redundant safety)
+        if (localStorage.getItem('resumer_theme') === 'light') {
+            document.body.classList.add('light-mode');
+        }
+        document.body.classList.add('preload');
+    </script>
     <div class="container">
         <header>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -120,7 +149,7 @@
             </div>
         </div>
 
-        <main>
+        <main class="loading">
             <section class="form-section">
                 <!-- Resume Type Toggle -->
                 <fieldset class="resume-type-fieldset">

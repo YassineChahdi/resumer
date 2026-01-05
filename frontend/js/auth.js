@@ -8,7 +8,7 @@ import {
 } from './state.js';
 import { renderForm } from './form.js'; // Will be created
 import { loadResumes } from './cloud.js';
-import { showAlert } from './ui.js';
+import { showAlert, showConfirm } from './ui.js';
 import { STORAGE_KEY } from './config.js';
 
 let isSignupMode = false;
@@ -217,7 +217,8 @@ export async function loginWithGoogle() {
 
 // Logout
 export async function logout() {
-    if (!supabaseClient) return;
+    if (!await showConfirm('Are you sure you want to log out? All unsaved progress will be lost.')) return;
+    
     try {
         const { error } = await supabaseClient.auth.signOut();
         if (error) console.error('Logout error:', error);

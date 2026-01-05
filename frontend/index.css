@@ -23,7 +23,7 @@
     --btn-cancel-hover: #666;
 }
 
-body.light-mode {
+body.light-mode, html.light-mode body {
     --bg-primary: #f5f5f5;
     --bg-secondary: #ffffff;
     --bg-tertiary: #fafafa;
@@ -66,6 +66,16 @@ body {
     overflow: hidden;
 }
 
+/* Suppress transitions on load to prevent glitches */
+.preload * {
+    transition: none !important;
+}
+
+/* Exception: Allow main to fade in smoothly even during preload */
+.preload main {
+    transition: opacity 0.2s ease-in !important;
+}
+
 html {
     height: 100vh;
     overflow: hidden;
@@ -86,14 +96,14 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
     position: sticky;
     top: 0;
     z-index: 1001;
-    background: var(--bg-primary);
-    padding-top: 0.5rem; /* Ensure top spacing looks good when sticky */
+    background: var(--bg-primary); /* Matches body */
+    padding-top: 0.5rem;
 }
 
 header h1 {
@@ -149,16 +159,16 @@ header h1 {
 
 /* Login Modal */
 .modal {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: var(--modal-overlay);
-    display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000; /* Ensure it stays above sticky header (1001) */
 }
 
 .modal-content {
@@ -267,6 +277,12 @@ main {
     flex: 1;
     min-height: 0; /* Important for flex child scrolling */
     overflow: hidden; /* Prevent invalid layout expansion */
+    transition: opacity 0.2s ease-in;
+    opacity: 1;
+}
+
+main.loading {
+    opacity: 0;
 }
 
 /* Scrollable Columns */

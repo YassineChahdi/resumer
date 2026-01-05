@@ -136,6 +136,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initial Render
     Form.renderForm();
     
+    // Reveal UI
+    document.querySelector('main').classList.remove('loading');
+    
     // Render Saved Resumes & Button State
     refreshResumesList();
     

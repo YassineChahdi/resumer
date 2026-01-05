@@ -60,9 +60,9 @@ export function renderResumesList(resumes) {
         return;
     }
     container.innerHTML = resumes.map(r => `
-        <div class="resume-item" data-id="${r.id}">
-            <span onclick="loadCloudResume('${r.id}')">${r.name}</span>
-            <button class="btn-remove" onclick="deleteCloudResume('${r.id}')">×</button>
+        <div class="resume-item" data-id="${r.id}" onclick="loadCloudResume('${r.id}')">
+            <span>${r.name}</span>
+            <button class="btn-remove" onclick="event.stopPropagation(); deleteCloudResume('${r.id}')">×</button>
         </div>
     `).join('');
 }
