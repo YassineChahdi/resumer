@@ -54,12 +54,14 @@ class ExportRequest(BaseModel):
 
 class SaveResumeRequest(BaseModel):
     name: str = "Untitled Resume"
+    resume_type: str = "general"  # "general" or "tech"
     full_resume: dict
     tailored_resume: Optional[dict] = None
 
 
 class UpdateResumeRequest(BaseModel):
     name: Optional[str] = None
+    resume_type: Optional[str] = None  # "general" or "tech"
     full_resume: Optional[dict] = None
     tailored_resume: Optional[dict] = None
 
@@ -185,6 +187,7 @@ async def save_resume(request: SaveResumeRequest, user: dict = Depends(get_curre
         result = supabase.table("resumes").insert({
             "user_id": user["id"],
             "name": request.name,
+            "resume_type": request.resume_type,
             "full_resume": request.full_resume,
             "tailored_resume": request.tailored_resume
         }).execute()
@@ -246,8 +249,13 @@ async def delete_resume(resume_id: str, user: dict = Depends(get_current_user)):
 
 def _get_template_path(template_name: str) -> str:
     """Get full path to template file."""
-    # Use TEMPLATES_DIR env var (for Docker) or fallback to relative path (local dev)
-    templates_dir = os.getenv("TEMPLATES_DIR", "../data/templates")
+    # Template directory relative to this file (backend/api.py)
+    # backend/../data/templates/ -> data/templates/
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level from backend/ to root, then into data/templates
+    default_templates_dir = os.path.join(base_dir, "..", "data", "templates")
+    # For Docker or explicit override:
+    templates_dir = os.getenv("TEMPLATES_DIR", default_templates_dir)
     templates = {
         "jake": f"{templates_dir}/jake_template.tex",
         "mirage": f"{templates_dir}/mirage_template.tex",

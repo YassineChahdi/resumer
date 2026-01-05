@@ -3,24 +3,29 @@ class Resume:
         self.full_name = resume.get("full_name")
         self.contacts = resume.get("contacts", {})
         self.education = [Education(item) for item in resume.get("education", [])]
-        self.experience = [Experience(item) for item in resume["experience"]]
-        self.projects = [Project(item) for item in resume["projects"]]
-        self.techs = [Tech(item) for item in resume["technologies"]]
-        self.languages = [Language(item) for item in resume["languages"]]
+        self.experience = [Experience(item) for item in resume.get("experience", [])]
+        self.projects = [Project(item) for item in resume.get("projects", [])]
+        self.volunteer = [Volunteer(item) for item in resume.get("volunteer", [])]
+        self.certifications = [Certification(item) for item in resume.get("certifications", [])]
+        self.techs = [Tech(item) for item in resume.get("technologies", [])]
+        self.languages = [Language(item) for item in resume.get("languages", [])]
 
     def all_bullets(self) -> list["Bullet"]:
         exp_bullets = [bullet for exp in self.experience for bullet in exp.bullets]
         proj_bullets = [bullet for project in self.projects for bullet in project.bullets]
-        return exp_bullets + proj_bullets
+        vol_bullets = [bullet for vol in self.volunteer for bullet in vol.bullets]
+        return exp_bullets + proj_bullets + vol_bullets
 
     def all_keywords(self) -> list:
         return self.languages + self.techs
 
-    def trim(self, exp_bullet_count: int, proj_bullet_count: int, tech_count: int, lang_count: int):
+    def trim(self, exp_bullet_count: int, proj_bullet_count: int, tech_count: int, lang_count: int, vol_bullet_count: int = 5):
         for exp in self.experience:
             exp.bullets = exp.bullets[:exp_bullet_count]
         for proj in self.projects:
             proj.bullets = proj.bullets[:proj_bullet_count]
+        for vol in self.volunteer:
+            vol.bullets = vol.bullets[:vol_bullet_count]
         self.techs = self.techs[:tech_count]
         self.languages = self.languages[:lang_count]
 
@@ -29,6 +34,9 @@ class Resume:
 
     def sort_projects_by_score(self):
         self.projects.sort(key=lambda proj: proj.score if proj.score is not None else 0, reverse=True)
+
+    def sort_volunteer_by_score(self):
+        self.volunteer.sort(key=lambda vol: vol.score if vol.score is not None else 0, reverse=True)
 
     def sort_keywords_by_score(self):
         self.techs.sort(key=lambda t: t.score if t.score is not None else 0, reverse=True)
@@ -121,6 +129,8 @@ class Resume:
             "education": [item.to_dict() for item in self.education],
             "experience": [item.to_dict() for item in self.experience],
             "projects": [item.to_dict() for item in self.projects],
+            "volunteer": [item.to_dict() for item in self.volunteer],
+            "certifications": [item.to_dict() for item in self.certifications],
             "technologies": [item.to_dict() for item in self.techs],
             "languages": [item.to_dict() for item in self.languages],
         }
@@ -270,4 +280,63 @@ class Bullet:
             "impressiveness": self.impressiveness,
             "similarity": self.similarity,
             "score": self.score,
+        }
+
+
+class Volunteer:
+    def __init__(self, volunteer: dict):
+        self.organization = volunteer.get("organization", "")
+        self.location = volunteer.get("location", "")
+        self.title = volunteer.get("title", "")
+        self.duration = volunteer.get("duration", "")
+        self.bullets = [Bullet(bullet) for bullet in volunteer.get("bullets", [])]
+        self.similarity = volunteer.get("similarity")
+        self.impressiveness = volunteer.get("impressiveness")
+        self.score = volunteer.get("score")
+
+    def calculate_score(self, sim_weight: float, imp_weight: float) -> float:
+        sim = self.similarity if self.similarity is not None else 0.5
+        imp = self.impressiveness if self.impressiveness is not None else 0.5
+        return sim * sim_weight + imp * imp_weight
+
+    def avg_similarity(self) -> float:
+        if not self.bullets:
+            return 0.5
+        total = sum(bullet.similarity if bullet.similarity else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def avg_impressiveness(self) -> float:
+        if not self.bullets:
+            return 0.5
+        total = sum(bullet.impressiveness if bullet.impressiveness else 0.5 for bullet in self.bullets)
+        return total / len(self.bullets)
+
+    def sort_bullets_by_score(self):
+        self.bullets.sort(key=lambda b: b.score if b.score is not None else 0, reverse=True)
+
+    def to_dict(self) -> dict:
+        return {
+            "organization": self.organization,
+            "location": self.location,
+            "title": self.title,
+            "duration": self.duration,
+            "bullets": [bullet.to_dict() for bullet in self.bullets],
+            "similarity": self.similarity,
+            "impressiveness": self.impressiveness,
+            "score": self.score,
+        }
+
+
+class Certification:
+    """Certification entry - name, issuer, and date."""
+    def __init__(self, certification: dict):
+        self.name = certification.get("name", "")
+        self.issuer = certification.get("issuer", "")
+        self.date = certification.get("date", "")
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "issuer": self.issuer,
+            "date": self.date,
         }

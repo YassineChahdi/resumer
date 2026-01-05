@@ -1,0 +1,85 @@
+{
+  "full_name": "Jordan Smith",
+  "contacts": {
+    "phone": "(555) 987-6543",
+    "email": "jordan.smith@example.com",
+    "linkedin": "linkedin.com/in/jordansmith",
+    "github": ""
+  },
+  "education": [
+    {
+      "est_name": "State University",
+      "location": "New York, NY",
+      "degree": "Bachelor of Business Administration",
+      "year": "2018 - 2022",
+      "gpa": "3.8"
+    }
+  ],
+  "experience": [
+    {
+      "employer": "Global Marketing Solutions",
+      "location": "New York, NY",
+      "title": "Marketing Coordinator",
+      "duration": "June 2022 - Present",
+      "bullets": [
+        { "text": "Managed social media campaigns across 3 platforms, increasing engagement by 40%." },
+        { "text": "Coordinated with cross-functional teams to launch 5 major product campaigns." },
+        { "text": "Analyzed market trends to optimize ad spend, reducing CPA by 15%." }
+      ]
+    },
+    {
+      "employer": "University Business Club",
+      "location": "New York, NY",
+      "title": "Vice President",
+      "duration": "Sept 2020 - May 2022",
+      "bullets": [
+        { "text": "Organized rigorous networking events attended by 500+ students and professionals." },
+        { "text": "Led a team of 10 students to secure sponsorships totaling $10,000." }
+      ]
+    }
+  ],
+  "volunteer": [
+    {
+      "organization": "Community Food Bank",
+      "location": "Brooklyn, NY",
+      "title": "Volunteer Shift Leader",
+      "duration": "Jan 2023 - Present",
+      "bullets": [
+        { "text": "Supervise groups of 15+ volunteers in food sorting and distribution." },
+        { "text": "Streamlined inventory tracking process, reducing waste by 20%." }
+      ]
+    },
+    {
+      "organization": "City Marathon",
+      "location": "New York, NY",
+      "title": "Event Staff",
+      "duration": "Nov 2022, Nov 2023",
+      "bullets": [
+        { "text": "Assisted with runner registration and water station management for 50,000+ participants." }
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Google Data Analytics Professional Certificate",
+      "issuer": "Coursera",
+      "date": "Aug 2023"
+    },
+    {
+      "name": "Certified Associate in Project Management (CAPM)",
+      "issuer": "PMI",
+      "date": "Dec 2022"
+    }
+  ],
+  "languages": [
+    "English (Native)",
+    "Spanish (Professional Working Proficiency)"
+  ],
+  "technologies": [
+    "Microsoft Office Suite (Advanced Excel)",
+    "Salesforce CRM",
+    "Google Analytics",
+    "Tableau",
+    "Canva"
+  ]
+}

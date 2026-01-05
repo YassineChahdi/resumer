@@ -213,8 +213,7 @@
                     <legend>My Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Cloud-synced resumes tied to your account</span></span></legend>
                     <div id="resumesList">No saved resumes. Save your first resume!</div>
                     <div class="resume-save-row">
-                        <input type="text" id="resumeName" placeholder="Resume name" />
-                        <button type="button" onclick="saveToCloud()">Save</button>
+                        <button type="button" id="btnSaveCloud" onclick="saveCurrentToCloud()">Save / Update Cloud Copy</button>
                     </div>
                 </fieldset>
 
@@ -241,13 +240,13 @@
                                     <option value="mirage">Mirage</option>
                                 </select>
                             </label>
-                            <button type="button" class="btn-primary" onclick="generatePreview()">Generate</button>
+                            <button type="button" id="btnGenerate" class="btn-primary" onclick="tailorResume()">Generate</button>
                         </div>
                     </div>
                     <div class="toolbar-row">
                         <div class="toolbar-group">
-                            <button type="button" onclick="downloadPDF()" id="btnPdf" disabled>Download PDF</button>
-                            <button type="button" onclick="downloadLatex()" id="btnLatex" disabled>Download LaTeX</button>
+                            <button type="button" onclick="downloadPdf()" id="btnPdf" disabled>Download PDF</button>
+                            <button type="button" onclick="exportToLatex()" id="btnLatex" disabled>Download LaTeX</button>
                         </div>
                         <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                     </div>
@@ -255,6 +254,6 @@
             </section>
         </main>
     </div>
-    <script src="index.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

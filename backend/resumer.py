@@ -65,6 +65,8 @@ class Resumer:
         content = content.replace("{{EDUCATION_SECTION}}", self._generate_education_latex(resume, section_cmd))
         content = content.replace("{{EXPERIENCE_SECTION}}", self._generate_experience_latex(resume, section_cmd, is_mirage))
         content = content.replace("{{PROJECTS_SECTION}}", self._generate_projects_latex(resume, section_cmd))
+        content = content.replace("{{VOLUNTEER_SECTION}}", self._generate_volunteer_latex(resume, section_cmd))
+        content = content.replace("{{CERTIFICATIONS_SECTION}}", self._generate_certifications_latex(resume, section_cmd))
         content = content.replace("{{SKILLS_SECTION}}", self._generate_skills_latex(resume, section_cmd, is_mirage))
 
         return content
@@ -181,6 +183,56 @@ class Resumer:
     \\resumeSubHeadingListStart
 {content}
     \\resumeSubHeadingListEnd"""
+
+    def _generate_volunteer_latex(self, resume: Resume, section_cmd: str = "\\section") -> str:
+        if not resume.volunteer:
+            return ""
+        entries = []
+        for vol in resume.volunteer:
+            organization = self._escape_latex(vol.organization or "")
+            location = self._escape_latex(vol.location or "")
+            title = self._escape_latex(vol.title or "")
+            duration = self._escape_latex(vol.duration or "")
+            
+            # Use resumeSubheading to match Experience format exactly (Organization, Location, Title, Duration)
+            entry_lines = [
+                f"    \\resumeSubheading",
+                f"      {{{organization}}}{{{location}}}",
+                f"      {{{title}}}{{{duration}}}",
+                f"      \\resumeItemListStart",
+            ]
+            for bullet in vol.bullets:
+                bullet_text = self._escape_latex(bullet.text or "")
+                entry_lines.append(f"            \\resumeItem{{{bullet_text}}}")
+            entry_lines.append("    \\resumeItemListEnd")
+            entries.append("\n".join(entry_lines))
+        
+        content = "\n".join(entries)
+        return f"""{section_cmd}{{Volunteer Work}}
+    \\resumeSubHeadingListStart
+{content}
+    \\resumeSubHeadingListEnd"""
+
+    def _generate_certifications_latex(self, resume: Resume, section_cmd: str = "\\section") -> str:
+        if not resume.certifications:
+            return ""
+        entries = []
+        for cert in resume.certifications:
+            name = self._escape_latex(cert.name or "")
+            issuer = self._escape_latex(cert.issuer or "")
+            date = self._escape_latex(cert.date or "")
+            
+            # Format: Left(Name - Issuer) Right(Date)
+            left_content = f"\\textbf{{{name}}}"
+            if issuer:
+                left_content += f" -- {issuer}"
+            
+            # Use simple hfill layout - safer than tabular inside section
+            entries.append(f"    {left_content} \\hfill {date}\\\\")
+        
+        content = "\n".join(entries)
+        return f"""{section_cmd}{{Certifications}}
+{content}"""
     
     def _generate_skills_latex(self, resume: Resume, section_cmd: str = "\\section", is_mirage: bool = False) -> str:
         langs = ", ".join(self._escape_latex(lang.text or "") for lang in resume.languages)
@@ -218,9 +270,9 @@ class Resumer:
     }}}}
  \\end{{itemize}}"""
 
-    def tailor_resume(self, resume: Resume, job_description: str, exp_bullet_count: int = 7, proj_bullet_count: int = 5, tech_count: int = 5, lang_count: int = 5) -> Resume:
+    def tailor_resume(self, resume: Resume, job_description: str, exp_bullet_count: int = 7, proj_bullet_count: int = 5, tech_count: int = 5, lang_count: int = 5, vol_bullet_count: int = 5) -> Resume:
         self._populate_resume_metrics(resume, job_description)
-        resume.trim(exp_bullet_count, proj_bullet_count, tech_count, lang_count)
+        resume.trim(exp_bullet_count, proj_bullet_count, tech_count, lang_count, vol_bullet_count)
         return resume
 
     def _populate_resume_metrics(self, resume: Resume, job_description: str):
@@ -234,6 +286,7 @@ class Resumer:
 
         self._populate_experience_metrics(resume)
         self._populate_project_metrics(resume)
+        self._populate_volunteer_metrics(resume)
 
         keywords = resume.all_keywords()
         keyword_scores = self._get_keyword_scores(keywords, job_description)
@@ -255,6 +308,14 @@ class Resumer:
             project.score = project.calculate_score(sim_weight=0.4, imp_weight=0.6)
             project.sort_bullets_by_score()
         resume.sort_projects_by_score()
+
+    def _populate_volunteer_metrics(self, resume: Resume):
+        for volunteer in resume.volunteer:
+            volunteer.similarity = volunteer.avg_similarity()
+            volunteer.impressiveness = volunteer.avg_impressiveness()
+            volunteer.score = volunteer.calculate_score(sim_weight=0.4, imp_weight=0.6)
+            volunteer.sort_bullets_by_score()
+        resume.sort_volunteer_by_score()
 
     def _get_bullet_similarities(self, bullets: list[Bullet], job_description: str) -> list[float]:
         bullet_texts = [bullet.text for bullet in bullets]
