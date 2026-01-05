@@ -306,6 +306,9 @@ export function loadFromJson(event) {
             
             renderForm();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            const formSection = document.querySelector('.form-section');
+            if (formSection) formSection.scrollTo({ top: 0, behavior: 'smooth' });
+            
             showAlert('Resume loaded from JSON');
         } catch (err) { showAlert('Invalid JSON'); }
     };

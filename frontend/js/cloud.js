@@ -256,6 +256,9 @@ export async function loadCloudResume(id) {
         if (container) container.innerHTML = originalContent;
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        const formSection = document.querySelector('.form-section');
+        if (formSection) formSection.scrollTo({ top: 0, behavior: 'smooth' });
+        
         showAlert(`Resume "${resume.name}" loaded`);
         
     } catch (e) {
@@ -277,6 +280,7 @@ export async function deleteCloudResume(id) {
         if (!res.ok) throw new Error('Failed to delete');
         if (currentResumeId === id) setCurrentResumeId(null);
         loadResumes();
+        showAlert('Resume deleted');
     } catch (e) {
         showAlert('Failed to delete: ' + e.message);
     }
