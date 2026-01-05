@@ -314,12 +314,17 @@ main.loading {
         position: relative; /* Disable sticky on mobile */
         top: auto;
         padding-top: 0;
-        flex-wrap: wrap;
+        padding-bottom: 1.25rem;
+        flex-wrap: nowrap; /* Prevent stacking */
+        justify-content: space-between; /* Ensure logo left, auth right */
         gap: 0.5rem;
     }
-    
+
     #authSection {
-        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto; /* Push to right boundary */
     }
     
     #userInfo {
@@ -329,12 +334,22 @@ main.loading {
         gap: 0.5rem;
     }
     
+    /* Move email to second row on mobile */
     #userEmail {
-        margin-right: auto;
-        max-width: 180px;
+        position: absolute;
+        bottom: 0.25rem;
+        right: 0.5rem; /* Align to right padding */
+        left: auto; /* Do not stretch */
+        width: auto;
+        max-width: 200px; /* Cap width */
+        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--accent-success); /* Green color as requested */
+        z-index: 10;
+        pointer-events: none;
     }
     
     main { 
