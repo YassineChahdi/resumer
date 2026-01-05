@@ -370,9 +370,9 @@ main.loading {
 @media (max-width: 900px) {
     html, body {
         width: 100%;
-        overflow-x: hidden;
+        overflow-x: visible;
         height: auto; /* Reset */
-        overflow-y: auto; /* Reset */
+        overflow-y: visible; /* Reset to use native viewport scroll */
     }
     
     .container {
@@ -385,13 +385,15 @@ main.loading {
     }
     
     header {
-        position: relative; /* Disable sticky on mobile */
-        top: auto;
-        padding-top: 0;
+        position: sticky; /* Enable sticky on mobile */
+        top: 0;
+        padding-top: 0.5rem; /* Add some top padding for cleanliness */
         padding-bottom: 1.25rem;
         flex-wrap: nowrap; /* Prevent stacking */
         justify-content: space-between; /* Ensure logo left, auth right */
         gap: 0.5rem;
+        z-index: 1001; /* Ensure it stays on top */
+        background: var(--bg-primary); /* Ensure background is solid */
     }
 
     body.is-logged-in header {
