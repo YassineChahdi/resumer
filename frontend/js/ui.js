@@ -122,6 +122,29 @@ export function initModals() {
             });
         }
     }
+
+    // Escape key to close any open modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const loginModal = document.getElementById('loginModal');
+            const confirmModal = document.getElementById('confirmModal');
+            const promptModal = document.getElementById('promptModal');
+            const downloadModal = document.getElementById('downloadModal');
+
+            if (loginModal?.style.display === 'flex' || loginModal?.style.display === 'block') {
+                if (window.hideLoginModal) window.hideLoginModal();
+            }
+            if (confirmModal?.style.display === 'flex' || confirmModal?.style.display === 'block') {
+                resolveConfirm(false);
+            }
+            if (promptModal?.style.display === 'flex' || promptModal?.style.display === 'block') {
+                resolvePrompt(null);
+            }
+            if (downloadModal?.style.display === 'flex' || downloadModal?.style.display === 'block') {
+                if (window.hideDownloadModal) window.hideDownloadModal();
+            }
+        }
+    });
 }
 
 export function renderSavedResumesList(resumes, onLoad, onDelete, onRename) {
