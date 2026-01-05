@@ -162,8 +162,8 @@ export async function saveToCloud() {
         const body = {
             name,
             resume_type: currentResumeType,
-            full_resume: prepareApiData(),
-            tailored_resume: tailoredResume
+            full_resume: prepareApiData()
+            // Note: tailored_resume intentionally not saved - each load starts fresh
         };
         
         // Snapshot Model: ALWAYS create new entry (POST)
@@ -291,6 +291,10 @@ export async function loadCloudResume(id) {
             const l = document.getElementById('btnLatex');
             if(p) p.disabled = false;
             if(l) l.disabled = false;
+        } else {
+            // Clear preview when loading resume without tailored version
+            setTailoredResume(null);
+            document.getElementById('preview').innerHTML = 'Fill in your resume and click Generate.';
         }
         
         if (container) container.innerHTML = originalContent;

@@ -1,6 +1,6 @@
 // Form Rendering & Logic
 
-import { resumeData, sectionStates, currentResumeType, resetResumeData } from './state.js';
+import { resumeData, sectionStates, currentResumeType, resetResumeData, setTailoredResume } from './state.js';
 import { debouncedSave, saveSectionStates, saveToStorage } from './storage.js';
 import { itemHtml, certItemHtml, volItemHtml, eduFields, expFields, projFields } from './components.js';
 import { setResumeType } from './resumeType.js';
@@ -305,6 +305,11 @@ export function loadFromJson(event) {
             }
             
             renderForm();
+            
+            // Clear preview since we're loading fresh data
+            setTailoredResume(null);
+            document.getElementById('preview').innerHTML = 'Fill in your resume and click Generate.';
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
             const formSection = document.querySelector('.form-section');
             if (formSection) formSection.scrollTo({ top: 0, behavior: 'smooth' });
