@@ -76,6 +76,11 @@ header {
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1001;
+    background: var(--bg-primary);
+    padding-top: 0.5rem; /* Ensure top spacing looks good when sticky */
 }
 
 header h1 {
@@ -262,6 +267,9 @@ main {
     }
     
     header {
+        position: relative; /* Disable sticky on mobile */
+        top: auto;
+        padding-top: 0;
         flex-wrap: wrap;
         gap: 0.5rem;
     }
