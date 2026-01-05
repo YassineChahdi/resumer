@@ -228,7 +228,7 @@ function applyToggleState(type) {
     const list = document.getElementById(listId);
     const btn = document.querySelector(`[data-toggle="${type}"]`);
     if (list) list.style.display = sectionStates[type] ? '' : 'none';
-    if (btn) btn.textContent = sectionStates[type] ? '▼' : '▶';
+    if (btn) btn.innerHTML = sectionStates[type] ? '<span class="material-symbols-outlined">expand_more</span>' : '<span class="material-symbols-outlined">chevron_right</span>';
 }
 
 export function applyAllToggleStates() {

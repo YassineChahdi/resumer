@@ -84,6 +84,7 @@ export function updateAuthUI(loggedIn) {
     
     // Toggle Saved Resumes UI
     if (loggedIn) {
+        document.body.classList.add('is-logged-in');
         // Only load if explicit transition or initial load?
         // updateAuthUI is called by onAuthStateChange.
         // loadResumes is safe to call repeatedly but suboptimal?
@@ -92,6 +93,7 @@ export function updateAuthUI(loggedIn) {
         if (userCtrl) userCtrl.style.display = 'block';
         loadResumes(); // Load from cloud
     } else {
+        document.body.classList.remove('is-logged-in');
         if (guestMsg) guestMsg.style.display = 'block';
         if (userCtrl) userCtrl.style.display = 'none';
         // Clear list (visual only, state cleared in logout)

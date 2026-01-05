@@ -11,7 +11,8 @@
     --accent-link: #8cf;
     --accent-success: #8f8;
     --accent-danger: #ff6b6b;
-    --accent-clear: #ff8c8c;
+    --accent-danger-hover: #ff4c4c;
+    /* --accent-clear consolidated to danger */
     --modal-overlay: rgba(0, 0, 0, 0.7);
     --tooltip-bg: #333;
     --placeholder-bg: linear-gradient(135deg, #2d4a3e 0%, #1a3a2a 100%);
@@ -36,7 +37,8 @@ body.light-mode, html.light-mode body {
     --accent-link: #0891b2;
     --accent-success: #10b981;
     --accent-danger: #ef4444;
-    --accent-clear: #ef4444;
+    --accent-danger-hover: #dc2626;
+    /* --accent-clear consolidated to danger */
     --modal-overlay: rgba(0, 0, 0, 0.5);
     --tooltip-bg: #333;
     --placeholder-bg: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
@@ -64,6 +66,27 @@ body {
     /* Desktop: Fixed viewport for independent column scrolling */
     height: 100vh;
     overflow: hidden;
+}
+
+/* Material Symbols Utility */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.25rem; /* Default size */
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  vertical-align: middle;
+}
+
+/* Smaller icon for buttons */
+button .material-symbols-outlined {
+    font-size: 1.1rem;
 }
 
 /* Suppress transitions on load to prevent glitches */
@@ -119,9 +142,13 @@ header h1 {
 
 #authSection button {
     font-size: 0.85em;
-    padding: 0.4rem 0.75rem;
+    padding: 0 0.75rem;
+    height: 2.2rem; /* Fixed height for consistency */
     line-height: 1;
     box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #userEmail {
@@ -367,6 +394,10 @@ main.loading {
         gap: 0.5rem;
     }
 
+    body.is-logged-in header {
+        padding-bottom: 2rem;
+    }
+
     #authSection {
         display: flex;
         align-items: center;
@@ -533,13 +564,15 @@ legend button {
 }
 
 .legend-btn.btn-clear {
-    color: var(--accent-clear);
+    color: var(--accent-danger);
     background: none;
-    border: 1px solid var(--accent-clear);
+    border: 1px solid var(--accent-danger);
 }
 
 .legend-btn.btn-clear:hover {
-    background: rgba(255, 100, 100, 0.15);
+    background: rgba(255, 100, 100, 0.15); /* Keep generic or use a variable if we want strictly themable */
+    color: var(--accent-danger-hover);
+    border-color: var(--accent-danger-hover);
 }
 
 .btn-danger {
@@ -684,7 +717,7 @@ button:disabled {
 .btn-remove {
     background: none;
     border: none;
-    color: #c00;
+    color: var(--accent-danger);
     cursor: pointer;
     padding: 0.25rem 0.5rem;
     min-width: 1.5rem;

@@ -19,5 +19,5 @@ export function toggleTheme() {
 
 export function updateThemeIcon(isLight) {
     const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = isLight ? '🌙' : '☀️';
+    if (btn) btn.innerHTML = isLight ? '<span class="material-symbols-outlined">dark_mode</span>' : '<span class="material-symbols-outlined">light_mode</span>';
 }

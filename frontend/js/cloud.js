@@ -64,8 +64,8 @@ export function renderResumesList(resumes) {
         <div class="resume-item" data-id="${r.id}" onclick="loadCloudResume('${r.id}')">
             <span>${r.name}</span>
             <div class="resume-actions">
-                <button class="btn-icon" title="Rename" onclick="event.stopPropagation(); renameCloudResume('${r.id}')">✎</button>
-                <button class="btn-remove" title="Delete" onclick="event.stopPropagation(); deleteCloudResume('${r.id}')">×</button>
+                <button class="btn-icon" title="Rename" onclick="event.stopPropagation(); renameCloudResume('${r.id}')"><span class="material-symbols-outlined">edit</span></button>
+                <button class="btn-remove" title="Delete" onclick="event.stopPropagation(); deleteCloudResume('${r.id}')"><span class="material-symbols-outlined">delete</span></button>
             </div>
         </div>
     `).join('');

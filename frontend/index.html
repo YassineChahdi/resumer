@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     
     <!-- Primary Meta Tags -->
     <title>resumer</title>
@@ -99,14 +100,16 @@
                     <span id="userEmail"></span>
                     <button onclick="logout()">Logout</button>
                 </div>
-                <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
+                <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+                    <span class="material-symbols-outlined">light_mode</span>
+                </button>
             </div>
         </header>
 
         <!-- Login Modal -->
         <div id="loginModal" class="modal" style="display:none;">
             <div class="modal-content">
-                <span class="modal-close" onclick="hideLoginModal()">&times;</span>
+                <span class="modal-close" onclick="hideLoginModal()"><span class="material-symbols-outlined">close</span></span>
                 <h2 id="authModalTitle">Log In</h2>
                 <div class="auth-form">
                     <input type="email" id="authEmail" placeholder="Email" />
@@ -127,7 +130,7 @@
         <!-- Confirm Modal -->
         <div id="confirmModal" class="modal" style="display:none;">
             <div class="modal-content alert-modal-content">
-                <span class="modal-close" onclick="resolveConfirm(false)">&times;</span>
+                <span class="modal-close" onclick="resolveConfirm(false)"><span class="material-symbols-outlined">close</span></span>
                 <p id="confirmMessage"></p>
                 <div class="confirm-buttons">
                     <button class="btn-cancel" onclick="resolveConfirm(false)">Cancel</button>
@@ -139,7 +142,7 @@
         <!-- Prompt Modal -->
         <div id="promptModal" class="modal" style="display:none;">
             <div class="modal-content alert-modal-content">
-                <span class="modal-close" onclick="resolvePrompt(null)">&times;</span>
+                <span class="modal-close" onclick="resolvePrompt(null)"><span class="material-symbols-outlined">close</span></span>
                 <p id="promptMessage"></p>
                 <input type="text" id="promptInput" class="modal-input" />
                 <div class="confirm-buttons">
@@ -152,7 +155,7 @@
         <!-- Download Modal -->
         <div id="downloadModal" class="modal" style="display:none;">
             <div class="modal-content download-modal-content">
-                <span class="modal-close" onclick="hideDownloadModal()">&times;</span>
+                <span class="modal-close" onclick="hideDownloadModal()"><span class="material-symbols-outlined">close</span></span>
                 <h2>Download Resume</h2>
                 <div class="download-form">
                     <label>Template:
@@ -184,7 +187,7 @@
             <section class="form-section">
                 <!-- Resume Type Toggle -->
                 <fieldset class="resume-type-fieldset">
-                    <legend>Resume Type <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Choose the right resume for your field</span></span></legend>
+                    <legend>Resume Type <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Choose the right resume for your field</span></span></legend>
                     <div class="toggle-container">
                         <button type="button" id="btnGeneral" class="toggle-btn active" onclick="setResumeType('general')">General</button>
                         <button type="button" id="btnTech" class="toggle-btn" onclick="setResumeType('tech')">Tech</button>
@@ -197,18 +200,18 @@
                     <input type="text" id="fullName" placeholder="Full Name" />
                     <input type="text" id="phone" placeholder="Phone" />
                     <input type="email" id="email" placeholder="Email" />
-                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="github" placeholder="GitHub URL" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><i class="tooltip-icon">i</i><span class="tooltip-text">e.g. github.com/yourname</span></span></div>
-                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="linkedin" placeholder="LinkedIn URL" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><i class="tooltip-icon">i</i><span class="tooltip-text">e.g. linkedin.com/in/yourname</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="github" placeholder="GitHub URL" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">e.g. github.com/yourname</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="linkedin" placeholder="LinkedIn URL" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">e.g. linkedin.com/in/yourname</span></span></div>
                 </fieldset>
 
                 <!-- Education -->
                 <fieldset>
                     <legend>
-                        <button type="button" class="btn-toggle" data-toggle="edu" onclick="toggleSection('edu')">▼</button>
+                        <button type="button" class="btn-toggle" data-toggle="edu" onclick="toggleSection('edu')"><span class="material-symbols-outlined">expand_more</span></button>
                         Education
-                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Add degrees, certifications, or coursework</span></span>
-                        <button type="button" class="legend-btn" onclick="addItem('edu')">+ Add</button>
-                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('edu')">Clear</button>
+                        <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Add degrees, certifications, or coursework</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('edu')"><span class="material-symbols-outlined">add</span></button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('edu')"><span class="material-symbols-outlined">delete_sweep</span></button>
                     </legend>
                     <div id="educationList"></div>
                 </fieldset>
@@ -216,11 +219,11 @@
                 <!-- Experience -->
                 <fieldset>
                     <legend>
-                        <button type="button" class="btn-toggle" data-toggle="exp" onclick="toggleSection('exp')">▼</button>
+                        <button type="button" class="btn-toggle" data-toggle="exp" onclick="toggleSection('exp')"><span class="material-symbols-outlined">expand_more</span></button>
                         Experience
-                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Work experience with action-driven bullets</span></span>
-                        <button type="button" class="legend-btn" onclick="addItem('exp')">+ Add</button>
-                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('exp')">Clear</button>
+                        <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Work experience with action-driven bullets</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('exp')"><span class="material-symbols-outlined">add</span></button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('exp')"><span class="material-symbols-outlined">delete_sweep</span></button>
                     </legend>
                     <div id="experienceList"></div>
                 </fieldset>
@@ -228,11 +231,11 @@
                 <!-- Projects (Tech mode only) -->
                 <fieldset id="projectsSection">
                     <legend>
-                        <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')">▼</button>
+                        <button type="button" class="btn-toggle" data-toggle="proj" onclick="toggleSection('proj')"><span class="material-symbols-outlined">expand_more</span></button>
                         Projects
-                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Side projects that showcase your skills</span></span>
-                        <button type="button" class="legend-btn" onclick="addItem('proj')">+ Add</button>
-                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('proj')">Clear</button>
+                        <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Side projects that showcase your skills</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('proj')"><span class="material-symbols-outlined">add</span></button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('proj')"><span class="material-symbols-outlined">delete_sweep</span></button>
                     </legend>
                     <div id="projectList"></div>
                 </fieldset>
@@ -240,11 +243,11 @@
                 <!-- Volunteer Work (General mode only) -->
                 <fieldset id="volunteerSection" style="display:none;">
                     <legend>
-                        <button type="button" class="btn-toggle" data-toggle="vol" onclick="toggleSection('vol')">▼</button>
+                        <button type="button" class="btn-toggle" data-toggle="vol" onclick="toggleSection('vol')"><span class="material-symbols-outlined">expand_more</span></button>
                         Volunteer Work
-                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Community service and volunteer experience</span></span>
-                        <button type="button" class="legend-btn" onclick="addItem('vol')">+ Add</button>
-                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('vol')">Clear</button>
+                        <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Community service and volunteer experience</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('vol')"><span class="material-symbols-outlined">add</span></button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('vol')"><span class="material-symbols-outlined">delete_sweep</span></button>
                     </legend>
                     <div id="volunteerList"></div>
                 </fieldset>
@@ -252,11 +255,11 @@
                 <!-- Certifications (General mode only) -->
                 <fieldset id="certificationsSection" style="display:none;">
                     <legend>
-                        <button type="button" class="btn-toggle" data-toggle="cert" onclick="toggleSection('cert')">▼</button>
+                        <button type="button" class="btn-toggle" data-toggle="cert" onclick="toggleSection('cert')"><span class="material-symbols-outlined">expand_more</span></button>
                         Certifications
-                        <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Professional certifications and licenses</span></span>
-                        <button type="button" class="legend-btn" onclick="addItem('cert')">+ Add</button>
-                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('cert')">Clear</button>
+                        <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Professional certifications and licenses</span></span>
+                        <button type="button" class="legend-btn" onclick="addItem('cert')"><span class="material-symbols-outlined">add</span></button>
+                        <button type="button" class="legend-btn btn-clear" onclick="clearSection('cert')"><span class="material-symbols-outlined">delete_sweep</span></button>
                     </legend>
                     <div id="certificationList"></div>
                 </fieldset>
@@ -264,20 +267,19 @@
                 <!-- Additional Information / Skills -->
                 <fieldset>
                     <legend id="skillsLegend">Additional Information</legend>
-                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Spoken Languages" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><i class="tooltip-icon">i</i><span class="tooltip-text" id="languagesTooltip">Languages you speak: English, French, etc.</span></span></div>
-                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technical Skills" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><i class="tooltip-icon">i</i><span class="tooltip-text" id="technologiesTooltip">Software skills: Excel, PowerPoint, etc.</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;margin-bottom:0.5rem;"><input type="text" id="languages" placeholder="Spoken Languages" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text" id="languagesTooltip">Languages you speak: English, French, etc.</span></span></div>
+                    <div style="display:flex;align-items:center;gap:0.25rem;"><input type="text" id="technologies" placeholder="Technical Skills" style="margin-bottom:0;" /><span class="tooltip tooltip-align-right"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text" id="technologiesTooltip">Software skills: Excel, PowerPoint, etc.</span></span></div>
                 </fieldset>
 
                 <!-- Job Description -->
                 <fieldset>
-                    <legend>Job Description <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Paste the job posting - AI uses this to tailor your resume</span></span></legend>
+                    <legend>Job Description <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Paste the job posting - AI uses this to tailor your resume</span></span></legend>
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
                 <!-- Saved Resumes (Cloud / Local) -->
                 <fieldset id="savedResumesSection">
-                    <legend>Saved Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Resumes saved in the cloud</span></span></legend>
-                    
+                    <legend>Saved Resumes <span class="tooltip"><span class="material-symbols-outlined tooltip-icon">info</span><span class="tooltip-text">Resumes saved in the cloud</span></span></legend>
                     <div id="guestMessage" style="text-align: center; padding: 1rem; color: var(--text-secondary);">
                         Log in or sign up to save resumes
                     </div>

@@ -2,7 +2,7 @@
 
 export function itemHtml(type, idx, fields, hasBullets = false, bullets = [], canDelete = true) {
     const label = { edu: 'Education', exp: 'Experience', proj: 'Project' }[type];
-    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('${type}',${idx})">×</button>` : '';
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('${type}',${idx})"><span class="material-symbols-outlined">delete</span></button>` : '';
     let html = `<div class="list-item" data-type="${type}" data-idx="${idx}">
         <div class="list-item-header"><span>${label} #${idx + 1}</span>${removeBtn}</div>
         <div class="row">${fields.slice(0, 2).map(f => fieldInput(f)).join('')}</div>
@@ -12,7 +12,7 @@ export function itemHtml(type, idx, fields, hasBullets = false, bullets = [], ca
         const bulletCount = bullets.length || 1;
         html += `<div class="bullets" data-type="${type}" data-idx="${idx}">
             ${bullets.length ? bullets.map((b, bi) => bulletHtml(type, idx, bi, b, bulletCount > 1)).join('') : bulletHtml(type, idx, 0, {}, false)}
-        </div><button class="btn-add-bullet" onclick="addBullet('${type}',${idx})">+ Bullet</button>`;
+        </div><button class="btn-add-bullet" onclick="addBullet('${type}',${idx})"><span class="material-symbols-outlined">add</span> Bullet</button>`;
     }
     return html + '</div>';
 }
@@ -25,7 +25,7 @@ export function fieldInput(f) {
 }
 
 export function bulletHtml(type, idx, bi, b = {}, canDelete = true) {
-    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})">×</button>` : '';
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeBullet('${type}',${idx},${bi})"><span class="material-symbols-outlined">close</span></button>` : '';
     return `<div class="bullet-row">
         <input type="text" placeholder="Bullet" data-field="text" value="${b.text || ''}"/>
         <span class="tooltip tooltip-align-right"><input type="text" inputmode="decimal" placeholder="Imp" data-field="impressiveness" value="${b.impressiveness ?? ''}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1')" onchange="clampImpressiveness(this)" style="margin-bottom:0;"/><span class="tooltip-text">Impressiveness, in [0, 1]</span></span>
@@ -34,7 +34,7 @@ export function bulletHtml(type, idx, bi, b = {}, canDelete = true) {
 }
 
 export function certItemHtml(idx, c = {}, canDelete = true) {
-    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('cert',${idx})">×</button>` : '';
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('cert',${idx})"><span class="material-symbols-outlined">delete</span></button>` : '';
     return `<div class="list-item cert-item" data-type="cert" data-idx="${idx}">
         <div class="list-item-header"><span>Certification #${idx + 1}</span>${removeBtn}</div>
         <div class="row">
@@ -49,7 +49,7 @@ export function certItemHtml(idx, c = {}, canDelete = true) {
 }
 
 export function volItemHtml(idx, v = {}, canDelete = true) {
-    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('vol',${idx})">×</button>` : '';
+    const removeBtn = canDelete ? `<button class="btn-remove" onclick="removeItem('vol',${idx})"><span class="material-symbols-outlined">delete</span></button>` : '';
     const bullets = v.bullets || [];
     const bulletCount = bullets.length || 1;
     return `<div class="list-item vol-item" data-type="vol" data-idx="${idx}">
@@ -65,7 +65,7 @@ export function volItemHtml(idx, v = {}, canDelete = true) {
         <div class="bullets" data-type="vol" data-idx="${idx}">
             ${bullets.length ? bullets.map((b, bi) => bulletHtml('vol', idx, bi, b, bulletCount > 1)).join('') : bulletHtml('vol', idx, 0, {}, false)}
         </div>
-        <button class="btn-add-bullet" onclick="addBullet('vol',${idx})">+ Bullet</button>
+        <button class="btn-add-bullet" onclick="addBullet('vol',${idx})"><span class="material-symbols-outlined">add</span> Bullet</button>
     </div>`;
 }
 
