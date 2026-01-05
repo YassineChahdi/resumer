@@ -55,7 +55,7 @@ export async function generatePreview() {
     
     // Check if empty
     if (isResumeEmptyLocal()) {
-        const { PLACEHOLDER_RESUME_GENERAL, PLACEHOLDER_RESUME_TECH } = await import('./config.js');
+        const { PLACEHOLDER_RESUME_GENERAL, PLACEHOLDER_RESUME_TECH } = await import('./constants.js');
         setTailoredResume(currentResumeType === 'general' ? PLACEHOLDER_RESUME_GENERAL : PLACEHOLDER_RESUME_TECH);
         renderPreview(tailoredResume);
         scrollToPreviewOnMobile();
