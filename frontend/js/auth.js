@@ -32,7 +32,7 @@ export async function initSupabase() {
         if (session?.user) {
             setCurrentUser(session.user);
             updateAuthUI(true);
-            loadResumes();
+            // loadResumes(); // Disabled for local-first mode
         } else {
             setCurrentUser(null);
             updateAuthUI(false);
@@ -44,7 +44,7 @@ export async function initSupabase() {
     if (session?.user) {
         setCurrentUser(session.user);
         updateAuthUI(true);
-        loadResumes();
+        // loadResumes(); // Disabled for local-first mode
     }
 }
 

@@ -519,6 +519,24 @@ button:disabled {
     background: none;
 }
 
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    color: var(--text-primary);
+    background: none;
+}
+
 .btn-add-bullet {
     font-size: 0.85em;
     padding: 0.25rem 0.5rem;

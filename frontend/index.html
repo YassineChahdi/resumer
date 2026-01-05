@@ -114,6 +114,19 @@
             </div>
         </div>
 
+        <!-- Prompt Modal -->
+        <div id="promptModal" class="modal" style="display:none;">
+            <div class="modal-content alert-modal-content">
+                <span class="modal-close" onclick="resolvePrompt(null)">&times;</span>
+                <p id="promptMessage"></p>
+                <input type="text" id="promptInput" class="modal-input" />
+                <div class="confirm-buttons">
+                    <button class="btn-cancel" onclick="resolvePrompt(null)">Cancel</button>
+                    <button class="btn-confirm" onclick="resolvePrompt(document.getElementById('promptInput').value.trim())">OK</button>
+                </div>
+            </div>
+        </div>
+
         <main>
             <section class="form-section">
                 <!-- Resume Type Toggle -->
@@ -208,12 +221,12 @@
                     <textarea id="jobDescription" rows="6" placeholder="Paste job description here..."></textarea>
                 </fieldset>
 
-                <!-- My Resumes (Auth Required) -->
-                <fieldset id="myResumesSection" style="display:none;">
-                    <legend>My Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Cloud-synced resumes tied to your account</span></span></legend>
+                <!-- Saved Resumes (Local) -->
+                <fieldset id="savedResumesSection">
+                    <legend>Saved Resumes <span class="tooltip"><i class="tooltip-icon">i</i><span class="tooltip-text">Resumes saved in your browser</span></span></legend>
                     <div id="resumesList">No saved resumes. Save your first resume!</div>
-                    <div class="resume-save-row">
-                        <button type="button" id="btnSaveCloud" onclick="saveCurrentToCloud()">Save / Update Cloud Copy</button>
+                    <div class="resume-save-row" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" id="btnSave" onclick="handleSaveSnapshot()">Save Resume</button>
                     </div>
                 </fieldset>
 
