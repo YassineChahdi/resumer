@@ -98,9 +98,69 @@ window.handleSaveSnapshot = async () => {
 
 // API
 window.tailorResume = API.generatePreview;
-window.downloadPdf = API.downloadPdf;
-window.exportToLatex = API.exportToLatex;
 window.downloadJson = API.downloadJson;
+
+// Download Modal
+window.showDownloadModal = () => {
+    const modal = document.getElementById('downloadModal');
+    const formatSelect = document.getElementById('downloadFormat');
+    const note = document.getElementById('downloadNote');
+    const templateLabel = document.getElementById('downloadTemplate').parentElement;
+    
+    // Check if resume has been generated (tailoredResume exists)
+    const hasGenerated = !!State.tailoredResume;
+    
+    // Enable/disable PDF and LaTeX options based on generation status
+    const pdfOption = formatSelect.querySelector('option[value="pdf"]');
+    const latexOption = formatSelect.querySelector('option[value="latex"]');
+    
+    pdfOption.disabled = !hasGenerated;
+    latexOption.disabled = !hasGenerated;
+    
+    // Show/hide note and auto-select appropriate format
+    if (!hasGenerated) {
+        note.style.display = 'block';
+        formatSelect.value = 'json';
+        templateLabel.style.display = 'none'; // Hide template for JSON
+    } else {
+        note.style.display = 'none';
+        formatSelect.value = 'pdf'; // Default to PDF when generated
+        templateLabel.style.display = 'flex';
+    }
+    
+    // Pre-fill filename based on current resume name (same fallback as cloud save)
+    const filenameInput = document.getElementById('downloadFilename');
+    if (filenameInput) {
+        const defaultName = State.currentResumeName || 'Untitled Resume';
+        filenameInput.value = defaultName;
+    }
+    modal.style.display = 'flex';
+};
+
+window.hideDownloadModal = () => {
+    document.getElementById('downloadModal').style.display = 'none';
+};
+
+window.onFormatChange = () => {
+    const format = document.getElementById('downloadFormat').value;
+    const templateLabel = document.getElementById('downloadTemplate').parentElement;
+    // Hide template dropdown for JSON (not needed)
+    templateLabel.style.display = format === 'json' ? 'none' : 'flex';
+};
+
+window.doDownload = () => {
+    const template = document.getElementById('downloadTemplate').value;
+    const format = document.getElementById('downloadFormat').value;
+    const filename = document.getElementById('downloadFilename').value;
+    
+    if (format === 'pdf') {
+        API.downloadPdf(template, filename);
+    } else if (format === 'latex') {
+        API.exportToLatex(template, filename);
+    } else {
+        API.downloadJson(filename);
+    }
+};
 
 // Helper to refresh list
 function refreshResumesList() {

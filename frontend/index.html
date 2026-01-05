@@ -149,6 +149,37 @@
             </div>
         </div>
 
+        <!-- Download Modal -->
+        <div id="downloadModal" class="modal" style="display:none;">
+            <div class="modal-content download-modal-content">
+                <span class="modal-close" onclick="hideDownloadModal()">&times;</span>
+                <h2>Download Resume</h2>
+                <div class="download-form">
+                    <label>Template:
+                        <select id="downloadTemplate">
+                            <option value="jake">Jake</option>
+                            <option value="mirage">Mirage</option>
+                        </select>
+                    </label>
+                    <label>Format:
+                        <select id="downloadFormat" onchange="onFormatChange()">
+                            <option value="pdf" selected>PDF</option>
+                            <option value="latex">LaTeX</option>
+                            <option value="json">JSON</option>
+                        </select>
+                    </label>
+                    <label>Filename:
+                        <input type="text" id="downloadFilename" />
+                    </label>
+                    <p id="downloadNote" class="download-note" style="display:none;">PDF/LaTeX require generating first. Only JSON is available.</p>
+                    <div class="download-buttons">
+                        <button type="button" class="btn-cancel" onclick="hideDownloadModal()">Cancel</button>
+                        <button type="button" id="btnDoDownload" class="btn-confirm" onclick="doDownload()">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <main class="loading">
             <section class="form-section">
                 <!-- Resume Type Toggle -->
@@ -272,25 +303,12 @@
                     <div class="toolbar-row">
                         <div class="toolbar-group">
                             <span class="tooltip"><button type="button" onclick="document.getElementById('jsonFileInput').click()">Load JSON</button><span class="tooltip-text">Import a saved resume file</span></span>
+                            <button type="button" onclick="showDownloadModal()" id="btnDownload">Download</button>
                         </div>
-                        <div class="toolbar-divider"></div>
                         <div class="toolbar-group">
-                            <label>Template:
-                                <select id="template">
-                                    <option value="jake">Jake</option>
-                                    <option value="mirage">Mirage</option>
-                                </select>
-                            </label>
                             <button type="button" id="btnGenerate" class="btn-primary" onclick="tailorResume()">Generate</button>
+                            <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                         </div>
-                    </div>
-                    <div class="toolbar-row">
-                        <div class="toolbar-group">
-                            <span class="tooltip"><button type="button" onclick="downloadJson()">Download JSON</button><span class="tooltip-text">Export resume for backup</span></span>
-                            <button type="button" onclick="downloadPdf()" id="btnPdf" disabled>Download PDF</button>
-                            <button type="button" onclick="exportToLatex()" id="btnLatex" disabled>Download LaTeX</button>
-                        </div>
-                        <button type="button" class="btn-danger" onclick="clearAll()">Clear All</button>
                     </div>
                 </div>
             </section>

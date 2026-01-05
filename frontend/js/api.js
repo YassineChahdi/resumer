@@ -58,8 +58,6 @@ export async function generatePreview() {
         const { PLACEHOLDER_RESUME_GENERAL, PLACEHOLDER_RESUME_TECH } = await import('./config.js');
         setTailoredResume(currentResumeType === 'general' ? PLACEHOLDER_RESUME_GENERAL : PLACEHOLDER_RESUME_TECH);
         renderPreview(tailoredResume);
-        document.getElementById('btnPdf').disabled = false;
-        document.getElementById('btnLatex').disabled = false;
         scrollToPreviewOnMobile();
         return;
     }
@@ -76,8 +74,6 @@ export async function generatePreview() {
         const data = await res.json();
         setTailoredResume(data);
         renderPreview(data);
-        document.getElementById('btnPdf').disabled = false;
-        document.getElementById('btnLatex').disabled = false;
         scrollToPreviewOnMobile();
     } catch (e) {
         preview.innerHTML = `<span class="error">Error: ${e.message}</span>`;
@@ -152,25 +148,23 @@ export function renderPreview(r) {
     document.getElementById('preview').innerHTML = html;
 }
 
-export async function downloadPdf() {
+export async function downloadPdf(template, filename) {
     syncFromForm();
     const apiData = prepareApiData();
-    const btn = document.getElementById('btnPdf');
-    // Guard against button not existing? No, should replace onclick.
+    const btn = document.getElementById('btnDoDownload');
     if (!btn) return;
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Preparing...';
     try {
-        const select = document.getElementById('template');
         const res = await fetch(`${API_BASE}/export/pdf`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resume: tailoredResume || apiData, template: select ? select.value : 'jake' })
+            body: JSON.stringify({ resume: tailoredResume || apiData, template: template || 'jake' })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        const fileName = getDownloadFileName('pdf');
-        download(await res.blob(), fileName);
+        const finalName = filename && filename.trim() ? `${filename.trim()}.pdf` : getDownloadFileName('pdf');
+        download(await res.blob(), finalName);
     } catch (e) { showAlert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
@@ -178,24 +172,23 @@ export async function downloadPdf() {
     }
 }
 
-export async function exportToLatex() {
+export async function exportToLatex(template, filename) {
     syncFromForm();
     const apiData = prepareApiData();
-    const btn = document.getElementById('btnLatex');
+    const btn = document.getElementById('btnDoDownload');
     if (!btn) return;
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = 'Preparing...';
     try {
-        const select = document.getElementById('template');
         const res = await fetch(`${API_BASE}/export/latex`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resume: tailoredResume || apiData, template: select ? select.value : 'jake' })
+            body: JSON.stringify({ resume: tailoredResume || apiData, template: template || 'jake' })
         });
         if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
-        const fileName = getDownloadFileName('tex');
-        download(new Blob([await res.text()], { type: 'text/plain' }), fileName);
+        const finalName = filename && filename.trim() ? `${filename.trim()}.tex` : getDownloadFileName('tex');
+        download(new Blob([await res.text()], { type: 'text/plain' }), finalName);
     } catch (e) { showAlert('Error: ' + e.message); }
     finally {
         btn.disabled = false;
@@ -203,7 +196,8 @@ export async function exportToLatex() {
     }
 }
 
-export function downloadJson() {
+export function downloadJson(filename) {
     syncFromForm();
-    download(new Blob([JSON.stringify(prepareApiData(), null, 2)], { type: 'application/json' }), 'resume.json');
+    const finalName = filename && filename.trim() ? `${filename.trim()}.json` : getDownloadFileName('json');
+    download(new Blob([JSON.stringify(prepareApiData(), null, 2)], { type: 'application/json' }), finalName);
 }
